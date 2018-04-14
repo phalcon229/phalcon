@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
+        <?php $this->assets->outputJs() ?>
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+     <div class="container">    
+	<div class="row clearfix">
+		<div class="col-md-12 column">
+                    </br></br>
+<!--                    <form >-->
+                       
+                        <?php for ($i = 0; $i < count($info); $i++){ ?>
+                                <input type="hidden" value="<?php echo  $info[$i]['ubc_id'] ?>" class="ubcId">
+				<div class="form-group">
+                                    <label for="exampleInputEmail1">真实姓名</label><input class="form-control" id="name" name="name" value="<?php echo $info[$i]['ubc_name']?>" type="text" />
+				</div>
+                               
+                                <div class="form-group">
+					<div class="form-group">所属银行
+                                            <select class="ui-mar-r10" name="bankId" id="bankId">
+                                                <option value="<?php echo $info[$i]['ubc_bank_id']?>" selected = "selected" ><?php echo $info[$i]['ubc_bank_name']?></option>
+                                                <?php foreach ($bank as $key=>$value) { ?>
+                                                <option value="<?php echo $key ?>"><?php echo $value ?></option>
+                                                <?php } ?>
+                                            </select></br></br>	
+                                        </div>
+                                </div>
+                                <div class="form-group">
+					 <label for="exampleInputEmail1">银行账户</label><input class="form-control" id="account" name="account" value="<?php echo $info[$i]['ubc_number']?>" type="text" />
+				</div>
+                                <div class="form-group">
+					 <label for="exampleInputEmail1">开户行</label><input class="form-control" id="where" name="where" value="<?php echo $info[$i]['ubc_city']?>" type="text" />
+				</div>
+                             
+                                <div class="form-group">
+					 <!--<label for="exampleInputEmail1">省份（选择）</label><input class="form-control" id="province" name="province" value="<?php echo $info[$i]['ubc_province']?>" type="text" />-->
+				<div class="form-group">
+<!--					 <label for="exampleInputEmail1">省份（选择）</label><input class="form-control" id="province" name="province" type="text" />-->
+                                    <select name="province" id="province">
+                                                                                      <option value="<?php echo $info[$i]['ubc_province']?>"  selected = "selected"><?php echo $info[$i]['ubc_province']?></option>
+                                                                                      <option value="北京">北京市</option>
+                                                                                      <option value="浙江省">浙江省</option>
+                                                                                      <option value="天津市">天津市</option>
+                                                                                      <option value="安徽省">安徽省</option>
+                                                                                      <option value="上海市">上海市</option>
+                                                                                      <option value="福建省">福建省</option>
+                                                                                      <option value="重庆市">重庆市</option>
+                                                                                      <option value="江西省">江西省</option>
+                                                                                      <option value="山东省">山东省</option>
+                                                                                      <option value="河南省">河南省</option>
+                                                                                      <option value="湖北省">湖北省</option>
+                                                                                      <option value="湖南省">湖南省</option>
+                                                                                      <option value="广东省">广东省</option>
+                                                                                      <option value="海南省">海南省</option>
+                                                                                      <option value="山西省">山西省</option>
+                                                                                      <option value="青海省">青海省</option>
+                                                                                      <option value="江苏省">江苏省</option>
+                                                                                        <option value="辽宁省">辽宁省</option>
+                                                                                      <option value="吉林省">吉林省</option>
+                                                                                      <option value="台湾省">台湾省</option>
+                                                                                      <option value="河北省">河北省</option>
+                                                                                      <option value="贵州省">贵州省</option>
+                                                                                      <option value="四川省">四川省</option>
+                                                                                      <option value="云南省">云南省</option>
+                                                                                      <option value="陕西省">陕西省</option>
+                                                                                      <option value="甘肃省">甘肃省</option>
+                                                                                      <option value="黑龙江省">黑龙江省</option>
+                                                                                      <option value="香港特别行政区">香港特别行政区</option>
+                                                                                      <option value="澳门特别行政区">澳门特别行政区</option>
+                                                                                      <option value="广西壮族自治区">广西壮族自治区</option>
+                                                                                      <option value="宁夏回族自治区">宁夏回族自治区</option>
+                                                                                      <option value="新疆维吾尔自治区">新疆维吾尔自治区</option>
+                                                                                      <option value="内蒙古自治区">内蒙古自治区</option>
+                                                                                      <option value="西藏自治区">西藏自治区</option>
+                                    </select> 
+				</div>
+                                </div>
+                        <?php } ?>
+                                <button type="button" class="btnbtn-default">提交</button>
+<!--                    </form>-->
+		</div>
+	</div>
+    </div>
+        <script type="text/javascript">
+        
+        $(function(){
+           $('.btnbtn-default').click(function(){
+            var ubcId=$(".ubcId").val();
+            var name = $("#name").val();
+            var bankId = $('#bankId option:selected') .val();
+            var account = $("#account").val() ;
+            var province = $('#province option:selected') .val(); 
+            var city =  $("#where").val();
+            $.ajax({
+                    type: "POST",
+                    url: "/bank/doUpdate",
+                    data:{name:name, bankId:bankId,account:account,province:province,city:city,ubcId:ubcId},
+                    dataType: "json",
+                    success: function(data){
+                             }
+                });
+           });
+       });
+    </script>
+    </body>
+</html>

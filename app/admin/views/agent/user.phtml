@@ -1,0 +1,83 @@
+        <div class="table-box">
+            <table class="main-table" cellpadding="0" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>用户名</th>
+                        <th>用户类型</th>
+                        <th>注册时间</th>
+                        <th>余额</th>
+                        <th>返点级别</th>
+                        <th>状态</th>
+                        <th>用户操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($lists as $list) : ?>
+                    <tr>
+                        <td><?=$list['u_name']?></td>
+                        <td><?=$type[$list['ua_type']]?></td>
+                        <td><?=date('Y-m-d H:i', $list['ua_created_time'])?></td>
+                        <td><?=$list['w_money']?></td>
+                        <td><?=$list['ua_rate']?></td>
+                        <td><?=$list['ua_status'] == 1 ? '启动' : '关闭';?></td>
+                        <td>
+                            <a class="operate teamview">团队预览</a>
+                            <a class="operate">返点设定</a>
+                            <a class="operate">账变记录</a>
+                        </td>
+                        <input type="hidden" name="uid" value="<?=$list['u_id']?>">
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+        <div class="pages">
+            <div class="posl">
+                共<em class="counts"><?=$total?></em>条 每页显示
+                <div class="select-box line-num">
+                    <select class="list" id="limit">
+                    <?php foreach ($perPage as $value) : ?>
+                        <option value="<?=$value?>" <?=$this->request->get('limit') == $value ? 'selected="selected"' : ''?>><?=$value?></option>
+                    <?php endforeach; ?>
+                    </select>
+                    <em class="txt"><?=$this->request->get('limit')?: current($perPage)?></em>
+                    <i class="i-arrow"></i>
+                </div>条
+            </div>
+            <div class="switch-box">
+                <a class="page-btn mr10" id="left"><i class="left"></i></a> 第
+                <div class="select-box line-num">
+                    <select class="list" id="page">
+                    <?php for($i=1; $i<=ceil($total/$nums);$i++) : ?>
+                        <option value="<?=$i?>" <?= $this->request->get('page') == $i ? 'selected="selected"' : '';?>><?=$i?></option>
+                    <?php endfor; ?>
+                    </select>
+                    <em class="txt"><?=!empty($this->request->get('page')) ? $this->request->get('page') : 1?></em>
+                    <i class="i-arrow"></i>
+                </div>
+                共<em id="total"><?=ceil($total/$nums)?></em>页
+                <a class="page-btn ml10" id="right"><i class="right"></i></a>
+            </div>
+        </div>
+
+<script type="text/javascript">
+    $('.search-box').removeClass('unsee');
+    $('.teamview').on('click', function(){
+        var uId = $(this).parent().parent().find('input').val();
+        $.ajax({
+            url: '/agent/userteam',
+            async: true,
+            type: 'POST',
+            data: {uId:uId},
+            dataType: 'html',
+            error: function()
+            {
+                layer.msg('没有权限或服务器连接超时!');
+            },
+            success: function(msgObj)
+            {
+                $('.agent-manage-body').append(msgObj);
+            }
+        });
+    });
+</script>

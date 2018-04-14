@@ -1,0 +1,189 @@
+
+        <div class="act-set">
+            <div class="group-box">
+                <span class="btn-group active" data-id="0">活动</span>
+                <span class="btn-group" data-id="1">URL</span>
+            </div>
+            <div class="act-content banner-set">
+                <div class="table-box ">
+                <table class="main-table" cellpadding="0" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>ID</th>
+                        <th>标题</th>
+                        <th>默认Banner图</th>
+                    </tr>
+                </thead>
+                <form action='bndoadd' id="active" enctype="multipart/form-data">
+                <tbody>
+                    <?php if(empty($info['total'])) {?>
+                    <tr class="null">
+                        <td colspan="4">暂无数据！</td>
+                    </tr>
+                    <?php } if(!empty($info['total'])) { foreach ($info['list'] as $value) :?>
+                    <tr>
+                        <td><input type="radio" name="radio"  value=<?=$value['pa_id']?>></td>
+                        <td><?=$value['pa_id']?></td>
+                        <td><?=$value['pa_title']?></td>
+                        <td><img src="<?=$value['pa_img']?>" style="width:50; height:50"></td>
+                    </tr>
+                    <?php endforeach; }?>
+                </tbody>
+                </table>
+                <?php if(!empty($info['total'])) {  ?>
+                 <div class="act-content" align="center">
+                        <dl class="item" >
+                        <dd class="width4">排序:</dd>
+                        <dt>
+                            <input type="text" class="input-txt width-s" name="sort1">
+                        </dt>
+                        </dl>
+                        <dl class="item" >
+                        <dd class="width4">Banner图:</dd>
+                        <dt>
+                            <div class="img-box unsee">
+                                <img class="ImgPr" >
+                            </div>
+                            <div class="add-img">
+                                <input type="file" name="img1"  class="up" value=""/>
+                                <i class="add-black"></i>
+                            </div>
+                        </dt>
+                    </dl>
+                </div>
+                <input type='hidden' name='type' value='1'>
+                <div class="divide-btn" >
+                    <button class="regist-btn" id="subt">确定</button>
+                </div>
+                </form>
+                    <?php }?>
+                </div>
+            </div>
+
+            <form action='bndoadd' id="URL" enctype="multipart/form-data">
+            <div class="banner-set unsee">
+                <div class="act-content">
+                <dl class="item">
+                    <dd class="width4">排序:</dd>
+                    <dt>
+                        <input type="text" class="input-txt width-s" name="sort">
+                    </dt>
+                </dl>
+
+                <dl class="item">
+                    <dd class="width4">说明:</dd>
+                    <dt>
+                        <input type="text" class="input-txt" name="title">
+                    </dt>
+                </dl>
+
+                <dl class="item">
+                    <dd class="width4">URL:</dd>
+                    <dt>
+                        <input type="text" class="input-txt" name="URL">
+                    </dt>
+                </dl>
+
+                <dl class="item">
+                    <dd class="width4">Banner图:</dd>
+                    <dt>
+                        <div class="img-box unsee">
+                            <img class="ImgPr" >
+                        </div>
+                        <div class="add-img">
+                            <input type="file" name="img"  class="up" value=""/>
+                            <i class="add-black"></i>
+                        </div>
+                    </dt>
+                </dl>
+            </div>
+            <div class="divide-btn">
+                <button class="regist-btn" id="sub" >确定</button>
+            </div>
+            <input type='hidden' value='3' name='type'>
+            </form>
+            </div>
+        </div>
+
+    <script type="text/javascript">
+
+    function reload()
+    {
+        location.href = "bannerlist";
+    }
+
+    $('#sub').on('click', function() {
+        if(isNaN($("input[name='sort']").val())) {
+            layer.msg('请输入正确排序');
+            return false;
+        };
+        if( $.trim($("input[name='title']").val()) == '') {
+            layer.msg('说明不能为空');
+            return false;
+        };
+        if( $.trim($("input[name='URL']").val()) == '') {
+            layer.msg('URL不能为空');
+            return false;
+        };
+        if($("input[name='img']").val() == '') {
+            layer.msg('Banner图不能为空');
+            return false;
+        };
+
+    })
+    $('#URL').submit(function() {
+        $(this).ajaxSubmit({
+            dataType: 'json',
+            type: "POST",
+            success: function (msgObj) {
+                if(msgObj.ret == 1)
+                {
+                    layer.msg(msgObj.msg);
+                    setTimeout("reload()",1000);
+                }else {
+                    layer.msg(msgObj.msg);
+                }
+            },
+            error: function(e){
+                   layer.msg("获取参数失败！");
+                 },
+        });
+        return false;
+      });
+
+        $('#subt').on('click', function() {
+
+             var aid = $("input[name='radio']:checked").val();
+             var type = 1;
+             if (aid == undefined) {
+                layer.msg('请选择一个活动');
+                return false;
+            }
+            if(isNaN($("input[name='sort1']").val())) {
+            layer.msg('请输入正确排序');
+            return false;
+        };
+        })
+
+        $('#active').submit(function() {
+        $(this).ajaxSubmit({
+            dataType: 'json',
+            type: "POST",
+            success: function (msgObj) {
+                if(msgObj.ret == 1)
+                {
+                    layer.msg(msgObj.msg);
+                    setTimeout("reload()",1000);
+                }else {
+                    layer.msg(msgObj.msg);
+                }
+            },
+            error: function(e){
+                   layer.msg("获取参数失败！");
+                 },
+        });
+        return false;
+      });
+
+    </script>

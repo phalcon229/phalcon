@@ -1,0 +1,79 @@
+<div class="junior-ban">
+    <div class="title">
+        两面长龙
+        <i class="close"></i>
+    </div>
+    <ul class="game-bar flex">
+        <li class="item flex1 on" data-id="0"><span>冷热</span></li>
+        <li class="item flex1" data-id="1"><span>两面长龙</span></li>
+    </ul>
+    <div class="h-auto move">
+        <table class="t-column2">
+            <tbody>
+                <?php $cfg = [1 => '大', 2 => '小', 3 => '双', 4 => '单'];?>
+                <?php foreach ($lr as $info): if (!empty($info[2]) && $info[2] > 1):?>
+                <tr>
+                    <td><?=$info[0] == 6 ? '总和' : '第' . $info[0] . '球';?> <em><?=$cfg[$info[1]];?></em></td>
+                    <td class="red">已连开<?=$info[2];?>期</td>
+                </tr>
+                <?php endif; endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <div class="h-auto move movements unsee">
+        <ul class="move-bar ">
+            <li class="item on" data-id="0" style="width: 49.9%;">大小</li>
+            <li class="item" data-id="1" style="width: 49.9%;">单双</li>
+        </ul>
+        <div class="size">
+            <p class="move-tit">最近十二期开奖走势图</p>
+            <table class="t-move ">
+                <thead>
+                    <tr>
+                        <td>期号</td>
+                        <td>万</td>
+                        <td>千</td>
+                        <td>百</td>
+                        <td>十</td>
+                        <td>个</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach($dx as $perid => $item): ?>
+                    <tr>
+                        <td><?=$perid;?></td>
+                        <?php foreach ($item as $v): ?>
+                        <td class="<?=$v == 1 ? 'red' : 'green'?>"><?=$v == 1 ? '大' : '小';?></td>
+                        <?php endforeach; ?>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+        <div class="size unsee">
+            <p class="move-tit">最近十二期开奖走势图</p>
+            <table class="t-move ">
+                <thead>
+                    <tr>
+                        <td>期号</td>
+                        <td>万</td>
+                        <td>千</td>
+                        <td>百</td>
+                        <td>十</td>
+                        <td>个</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach($ds as $perid => $item): ?>
+                    <tr>
+                        <td><?=$perid;?></td>
+                        <?php foreach ($item as $v): ?>
+                        <td class="<?=$v == 1 ? 'red' : 'green'?>"><?=$v == 1 ? '双' : '单';?></td>
+                        <?php endforeach; ?>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

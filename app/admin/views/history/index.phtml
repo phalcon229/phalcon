@@ -1,0 +1,140 @@
+<?php
+    $bet = $js = $js2 = $js3 = '';
+    if(!empty($type)) {
+        if (isset($_GET['type'])) {
+            $js= '$("#bet_type").val('.$_GET['type'].');';
+            if (!empty($type))
+                $bet = $type[$_GET['type']];
+        } else
+            $bet = current($type);
+    }
+
+    if (isset($_GET['limit'])) {
+        $urlLimit = $_GET['limit'];
+        $js2 = '$("#limit").val('.$urlLimit.');';
+        if (!in_array($_GET['limit'], $perpage))
+            $urlLimit = current($perpage);
+    }
+    if (!empty($_GET['page'])) {
+        if (is_numeric($_GET['page'])) {
+            $js3 = '$("#page").val('.$_GET['page'].');';
+            $page = $_GET['page'];
+        }
+        else {
+            $js3 = '$("#page").val(1);';
+            $page =1;
+        }
+    }
+?>
+    <div class="history-body container">
+        <div class="top-title">
+            <i class="history-red"></i> <em class="tit">历史开奖结果</em>
+            <div class="select-box pos">
+                <select class="list" name = "type" id="bet_type">
+                <?php foreach ($type as $key => $value) :?>
+                    <option value="<?=$key?>"><?=$value?></option>
+                <?php endforeach; ?>
+                </select>
+                <em class="txt"><?=$bet?></em>
+                <i class="i-arrow"></i>
+            </div>
+        </div>
+
+        <div class="table-box">
+            <table class="main-table " cellpadding="0" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>期数</th>
+                        <th>开奖时间</th>
+                        <th>开奖号码</th>
+                        <th>总和</th>
+                        <th>大小</th>
+                        <th>单双</th>
+                        <th>龙虎</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php  if(empty($date['list']) ) { ?>
+                    <tr class="null">
+                        <td colspan="7">暂无数据！</td>
+                    </tr>
+                <?php } else { foreach ($date['list'] as $key => $values) : $json = json_decode($values['bres_memo'],true); ?>
+                    <tr>
+                        <td><?=$values['bres_periods']?>期</td>
+                        <td><?=date('Y-m-d H:i:s', $values['bres_open_time'])?></td>
+                        <td>
+                        <?php $result = explode(',', $values['bres_result']); foreach ($result as $value) : ?>
+                          <span class="bett-size red">
+                        <i class="circle mr5"><?=$value?></i>
+                        </span>
+                          <?php endforeach;?>
+                        </td>
+                        <td><?php if(in_array($_GET['type'], [14,15,16])) echo array_sum($result); else {if(!empty($json['zh']))echo $json['zh'];else echo '-'; } ?></td>
+                        <td class="red"><?php  if(!empty($json['dx']))echo $json['dx'] ==1 ? '大' : '小';else echo '-' ?></td>
+                        <td class="red"><?php  if(!empty($json['ds']))echo $json['ds'] ==1 ? '双' : '单';else echo '-'?></td>
+                        <td class="red"><?php switch ($values['bet_id']) {
+                            case 1:
+                                echo in_array('1-14', $json['detail'])?'龙':'虎';
+                                break;
+                            case 3:
+                            case 5:
+                                echo in_array('8-14', $json['detail'])?'龙,':'虎,';
+                                echo in_array('9-14', $json['detail'])?'龙,':'虎,';
+                                echo in_array('10-14', $json['detail'])?'龙,':'虎,';
+                                echo in_array('11-14', $json['detail'])?'龙,':'虎,';
+                                echo in_array('12-14', $json['detail'])?'龙':'虎';
+                                break;
+                            case 4:
+                                echo in_array('18-48', $json['detail'])?'龙,':'虎,';
+                                echo in_array('19-48', $json['detail'])?'龙,':'虎,';
+                                echo in_array('20-48', $json['detail'])?'龙,':'虎,';
+                                echo in_array('21-48', $json['detail'])?'龙':'虎';
+                                break;
+                            default:
+                                echo '-';
+                                break;
+                        } ?></td>
+                    </tr>
+                  <?php endforeach ?>
+                </tbody>
+            </table>
+        </div>
+       <div class="pages">
+            <div class="posl">
+                共<em class="counts" ><?=$date['total']?></em>条 每页显示
+                <div class="select-box line-num">
+                    <select class="list" id="limit">
+                    <?php foreach ($perpage as $key => $value) : ?>
+                        <option value="<?=$key?>"><?=$value?></option>
+                    <?php endforeach ?>
+                    </select>
+                    <em class="txt"><?=!empty($urlLimit) ? $urlLimit : current($perpage); ?></em>
+                    <i class="i-arrow"></i>
+                </div>条
+            </div>
+            <div class="switch-box">
+                <a class="page-btn mr10" id="left"><i class="left"></i></a> 第
+                <div class="select-box line-num">
+                    <select class="list" id="page">
+                      <?php if(!empty($date['limit'])): for($i=1; $i <= $date['limit']; $i++ ) : ?>
+                        <option value="<?=$i?>"><?=$i?></option>
+                    <?php endfor; endif;?>
+                    </select>
+                    <em class="txt"><?=!empty($page) ? $page : 1?></em>
+                    <i class="i-arrow"></i>
+                </div>
+                共<em id="total"><?=$date['limit']?></em>页
+                <a class="page-btn ml10" id="right"><i class="right" ></i></a>
+            </div>
+        </div>
+        <?php }?>
+
+        <script type="text/javascript">
+        <?php echo$js; echo $js2; echo $js3?>
+        $('#bet_type').on('change', function(){
+            var bid = $('#bet_type').val();
+            var url = '/history/index?type='+bid;
+            location.href = url;
+        });
+
+        </script>

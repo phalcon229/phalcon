@@ -1,0 +1,37 @@
+        <div class="mask">
+            <div class="pop-panel bank-panel ">
+                <span class="close">
+                <i></i>关闭
+            </span>
+                <div class="pop-tit s">
+                    <em><?=$name?></em> 的银行账号
+                </div>
+                <table class="bank-table">
+                    <thead>
+                        <tr>
+                            <th>持卡人姓名</th>
+                            <th>银行卡号</th>
+                            <th>银行名称</th>
+                            <th>手机号</th>
+                            <th>状态</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($list as $value) : ?>
+                        <tr>
+                            <td><?=$value['ubc_uname']?></td>
+                            <td><?=$value['ubc_number']?></td>
+                            <td><?=$bank[$value['ubc_bank_id']]?></td>
+                            <td><?=$value['ubc_mobi']?></td>
+                            <td><?=($value['ubc_status'] == 1) ? '已绑定' : '已解绑'?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+<script type="text/javascript">
+    $('.close').on('click', function(){
+        $(this).parent().parent().addClass('unsee');
+    });
+</script>

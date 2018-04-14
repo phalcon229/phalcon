@@ -1,0 +1,563 @@
+
+<div class="team-chart-body">
+        <?php $this->partial("shared/usertop"); ?>
+        <div class="search-box">
+            <div class="date flex">
+                <span class="box flex1">
+                    <input type="date" value="" id="startDay" placeholder="请选择日期">
+                    <em>请选择日期</em>
+                </span>
+                <label class="word">至</label>
+                <span class="box flex1">
+                    <input type="date" value="" id="endDay" placeholder="请选择日期">
+                    <em>请选择日期</em>
+                </span>
+            </div>
+
+            <input type="submit" value="搜索" class="btn">
+            <div class="options-list">
+                <span id="today" sdate="<?php echo $todayBegin ?>" edate="<?php echo $todayBegin ?>">今日</span>
+                <span id="today" sdate="<?php echo $yBegin ?>" edate="<?php echo $yBegin ?>">昨日</span>
+                <span class="on" id="today" sdate="<?php echo $tWeekFirst ?>" edate="<?php echo $tWeekLast ?>">本周</span>
+                <span id="today" sdate="<?php echo $lWeekFirst ?>" edate="<?php echo $lWeekLast ?>">上周</span>
+                <span id="today" sdate="<?php echo $tMonthFirst ?>" edate="<?php echo $tMonthLast ?>">本月</span>
+                <span id="today" sdate="<?php echo $lMonthFirst ?>" edate="<?php echo $lMonthLast ?>">上月</span>
+                <input type="hidden" name="selectUid" id="selectUid" value="<?php echo $selectUid ?>">
+            </div>
+        </div>
+        <div class="main-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>用户名</th>
+                        <th>类型</th>
+                        <th>充值</th>
+                        <th>提现</th>
+                        <th>投注额</th>
+                        <th>输赢</th>
+                        <th>我的佣金</th>
+                        <th>详情</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php for($i=0;$i<count($base);$i++){ ?>
+                    <tr id="tbody">
+                        <td><a href="/team/next?uId=<?php echo $base[$i]['u_id']?>"><?php echo $base[$i]['u_name']?></a></td>
+                        <td><?php echo $base[$i]['ua_type']?></td>
+                        <td class="red"><?php echo $othorInfo[$i]['ar_team_recharge_money']  ?></td>
+                        <td class="red"><?php echo $othorInfo[$i]['ar_team_withdraw_money']  ?></td>
+                        <td class="red"><?php echo $othorInfo[$i]['ar_team_bet_money'] + $othorInfo[$i]['ar_my_bet_money']  ?></td>
+                        <td class="red"><?php echo sprintf('%.1f', $othorInfo[$i]['ar_team_earn_money']-$othorInfo[$i]['ar_team_bet_money']+$othorInfo[$i]['ar_team_reback_money']+$othorInfo[$i]['ar_team_back_money']+$othorInfo[$i]['ar_my_earn_money'] - $othorInfo[$i]['ar_my_bet_money'] + $othorInfo[$i]['ar_my_reback_money'])?></td>
+                        <td class="red"><?php echo $othorInfo[$i]['ar_team_back_money'] - $othorInfo[$i]['ar_my_back_money'] ?></td>
+                        <td><i class="right"></i></td>
+                    </tr>
+                    <tr class="detail-list unsee">
+                        <td colspan="8">
+                            <ul class="detail clearfix">
+                                <li class="flex">
+                                    <span class="tit">此级投注</span>
+                                    <span class="va flex1" id="mybet"><?php echo $othorInfo[$i]['ar_my_bet_money']?></span>
+                                </li>
+                                <li class="flex">
+                                    <span class="tit">此级盈亏</span>
+                                    <span class="va flex1" id="myearn"><?php echo $othorInfo[$i]['ar_my_earn_money'] - $othorInfo[$i]['ar_my_bet_money']+$othorInfo[$i]['ar_my_reback_money']?></span>
+                                </li>
+                                <!-- <li class="flex">
+                                    <span class="tit">此级佣金</span>
+                                    <span class="va flex1" id="backMoney"><?php echo $othorInfo[$i]['ar_my_back_money']?></span>
+                                </li>
+                                <li class="flex">
+                                    <span class="tit">次级佣金</span>
+                                    <span class="va flex1" id="backMoney"><?php echo $othorInfo[$i]['ar_team_back_money'] - $othorInfo[$i]['ar_my_back_money']?></span>
+                                </li> -->
+<!--                                <li class="flex">
+                                    <span class="tit">回水金额</span>
+                                    <span class="va flex1" id="rebackMoney"><?php echo $othorInfo[$i]['ar_team_reback_money']?></span>
+                                </li>-->
+                                <!-- <li class="flex">
+                                    <span class="tit">投注金额</span>
+                                    <span class="va flex1" id="betMoney"><?php echo $othorInfo[$i]['ar_team_bet_money'] ?></span>
+                                </li> -->
+<!--                                <li class="flex">
+                                    <span class="tit">派彩金额</span>
+                                    <span class="va flex1" id="bonuses"><?php echo $othorInfo[$i]['ar_team_earn_money'] ?></span>
+                                </li>-->
+                                <!-- <li class="flex">
+                                    <span class="tit">充值总额</span>
+                                    <span class="va flex1" id="recharge"><?php echo $othorInfo[$i]['ar_team_recharge_money'] ?></span>
+                                </li>
+                                <li class="flex">
+                                    <span class="tit">提现总额</span>
+                                    <span class="va flex1" id="widraw"><?php echo $othorInfo[$i]['ar_team_withdraw_money'] ?></span>
+                                </li> -->
+                                <li class="flex">
+                                    <span class="tit">注册人数</span>
+                                    <span class="va flex1" id="widraw"><?php echo $base[$i]['ua_reg_nums'] ?></span>
+                                </li>
+                                <li class="flex">
+                                    <span class="tit">备注<i class="edit-icon" data-uId="<?php echo $base[$i]['u_id']?>"></i></span>
+                                    <span class="va flex1" id="memo">(<?php echo $base[$i]['ua_memo'] ?>)</span>
+                                </li>
+                                <!-- <li class="flex">
+                                    <span class="tit">输赢</span>
+                                    <span class="va flex1" id="earnMoney"><?php echo $othorInfo[$i]['ar_team_earn_money']-$othorInfo[$i]['ar_team_bet_money']+$othorInfo[$i]['ar_team_reback_money']+$othorInfo[$i]['ar_team_back_money'] ?></span>
+                                </li> -->
+                            </ul>
+                        </td>
+                    </tr>
+                    <?php }?>
+                    <tr>
+                        <td colspan="2">总计</td>
+                        <td class="red" id="total"><?php echo $total['ar_team_recharge_money'] ?></td>
+                        <td class="red" id="total"><?php echo $total['ar_team_withdraw_money'] ?></td>
+                        <td class="red" id="total"><?php echo $total['ar_team_bet_money'] + $total['ar_my_bet_money'] ?></td>
+                        <td class="red" id="total"><?php echo $total['ar_oneteam_earn'] ?></td>
+                        <td class="red" id="total"><?php echo $total['ar_team_back_money'] ?></td>
+                        <td><i class="right"></i></td>
+                    </tr>
+                    <tr class="detail-list unsee">
+                        <td colspan="8">
+                            <ul class="detail clearfix">
+                                <li class="flex">
+                                    <span class="tit">此级团队投注</span>
+                                    <span class="va flex1" id="backMoney"><?php echo $total['ar_my_bet_money'] ?></span>
+                                </li>
+                                <li class="flex">
+                                    <span class="tit">此级团队盈亏</span>
+                                    <span class="va flex1" id="backMoney"><?php echo $total['ar_team_my_earn'] ?></span>
+                                </li>
+<!--                                <li class="flex">
+                                    <span class="tit">回水金额</span>
+                                    <span class="va flex1" id="rebackMoney"><?php echo $total['ar_team_reback_money'] ?></span>
+                                </li>-->
+                                <!-- <li class="flex">
+                                    <span class="tit">投注金额</span>
+                                    <span class="va flex1" id="betMoney"><?php echo $total['ar_team_bet_money'] ?></span>
+                                </li> -->
+<!--                                <li class="flex">
+                                    <span class="tit">派彩金额</span>
+                                    <span class="va flex1" id="bonuses"><?php echo $total['ar_team_earn_money'] ?></span>
+                                </li>-->
+                                <!-- <li class="flex">
+                                    <span class="tit">充值总额</span>
+                                    <span class="va flex1" id="recharge"><?php echo $total['ar_team_recharge_money'] ?></span>
+                                </li>
+                                <li class="flex">
+                                    <span class="tit">提现总额</span>
+                                    <span class="va flex1" id="widraw"><?php echo $total['ar_team_withdraw_money'] ?></span>
+                                </li> -->
+                                <li class="flex">
+                                    <span class="tit">注册人数</span>
+                                    <span class="va flex1" id="widraw"><?php echo $totalReg ?></span>
+                                </li>
+                                <li></li>
+                                <!-- <li class="flex">
+                                    <span class="tit">输赢</span>
+                                    <span class="va flex1" id="earnMoney"><?php echo $total['ar_team_earn_money']-$total['ar_team_bet_money']+$total['ar_team_reback_money']+$total['ar_team_back_money'] ?></span>
+                                </li> -->
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- <div class="mask unsee" id="editmemoma"></div> -->
+          <div class="pwd-pop unsee" id="editmemo">
+            <div class="row-cells">
+              <div class="row-cell flex mt20">
+                <div class="row-box_cd">
+                  <input type="text" placeholder="请输入备注" class="row-input" />
+                </div>
+              </div>
+            </div>
+            <div class="mt20">
+              <button class="f-btn f-cancel">取消</button>
+              <button class="f-btn f-sure">确定</button>
+            </div>
+          </div>
+    <script type="text/javascript">
+
+    var editid = '';
+    $('.edit-icon').on('click',function(){
+        editid = $(this).attr('data-uId');
+        $('.mask').removeClass('unsee');
+        $('#editmemo').removeClass('unsee');
+        $('.f-sure').on('click',function(){
+            var id = editid;
+            var info = $('.row-input').val();
+            $.ajax({
+                    type: "POST",
+                    url: "/user/edit",
+                    data:{info:info,uId:editid},
+                    dataType: "json",
+                    success: function(res)
+                    {
+                        if(res.code == 200)
+                        {
+                            alert('修改成功');
+                            window.location.href = '/team/table';
+                            return false;
+                        }else{
+                            alert('修改失败');
+                        }
+                    }
+                });
+            
+        })
+    })
+
+    $('.f-cancel').on('click',function(){
+        $('.mask').addClass('unsee');
+        $('#editmemo').addClass('unsee');  
+    })
+
+        var lotteryType = $("#lotteryType option:selected").val();
+        $(function(){
+        $("#lotteryType").change(function () {
+            lotteryType = $("#lotteryType option:selected").val();
+        });
+        $(".options-list span").each(function() {
+        $(this).click(function() {
+            var sDate = $(this).attr("sdate");
+            var eDate = $(this).attr("edate");
+            $('#startDay').val(sDate);
+            $('#endDay').val(eDate);
+            $('#startDay').next().html(sDate);
+            $('#endDay').next().html(eDate);
+            var selectUid=$('#selectUid').val(); 
+            $(".options-list span").removeClass("on");
+            $(this).addClass("on");
+            $.ajax({
+                    type: "POST",
+                    url: "/team/tablefresh",
+                    data:{startDay:sDate, endDay:eDate,selectUid:selectUid,lotteryType:lotteryType},
+                    dataType: "json",
+                    success: function(data){
+                                var str = '';
+                                if(data.status == '3'){
+                                    $.each(data.base,function(i,n){
+                                        str = str+'<tr>'+
+                                                    '<td><a href="/team/next?uId='+data.base[i]['u_id']+'">'+data.base[i]['u_name']+'</a></td>'+
+                                                    '<td>'+data.base[i]['ua_type']+'</td>'+
+                                                    '<td class="red">'+data.base[i]['ar_team_recharge_money']+'</td>'+
+                                                    '<td class="red">'+data.base[i]['ar_team_withdraw_money']+'</td>'+
+                                                    '<td class="red">'+data.base[i]['ar_t_bet_money']+'</td>'+   
+                                                    '<td class="red">'+data.base[i]['ar_team_earn']+'</td>'+
+                                                    '<td class="red">'+data.base[i]['ar_t_my_back']+'</td>'+
+                                                    '<td><i class="right"></i></td>'+
+                                                '</tr>'+
+                                                '<tr class="detail-list unsee">'+
+                                                    '<td colspan="8">'+
+                                                        '<ul class="detail clearfix">'+
+                                                            '<li class="flex">'+
+                                                                '<span class="tit">此级投注</span>'+
+                                                                '<span class="va flex1" id="mybet">'+data.base[i]['ar_my_bet_money']+'</span>'+
+                                                            '</li>'+
+                                                            '<li class="flex">'+
+                                                                '<span class="tit">此级盈亏</span>'+
+                                                                '<span class="va flex1" id="myearn">'+data.base[i]['my_earn']+'</span>'+
+                                                            '</li>'+
+                                                            // '<li class="flex">'+
+                                                            //     '<span class="tit">此级佣金</span>'+
+                                                            //     '<span class="va flex1" id="backMoney">'+data.base[i]['ar_my_back_money']+'</span>'+
+                                                            // '</li>'+
+                                                            // '<li class="flex">'+
+                                                            //     '<span class="tit">次级佣金</span>'+
+                                                            //     '<span class="va flex1" id="backMoney">'+data.base[i]['ar_next_back_money']+'</span>'+
+                                                            // '</li>'+
+//                                                            '<li class="flex">'+
+//                                                                '<span class="tit">回水金额</span>'+
+//                                                                '<span class="va flex1" id="rebackMoney">'+data.base[i]['ar_team_reback_money']+'</span>'+
+//                                                            '</li>'+
+                                                            // '<li class="flex">'+
+                                                            //     '<span class="tit">投注金额</span>'+
+                                                            //     '<span class="va flex1" id="betMoney">'+data.base[i]['ar_team_bet_money']+'</span>'+
+                                                            // '</li>'+
+//                                                            '<li class="flex">'+
+//                                                                '<span class="tit">派彩金额</span>'+
+//                                                                '<span class="va flex1" id="bonuses">'+data.base[i]['ar_team_earn_money']+'</span>'+
+//                                                            '</li>'+
+                                                            // '<li class="flex">'+
+                                                            //     '<span class="tit">充值总额</span>'+
+                                                            //     '<span class="va flex1" id="recharge">'+data.base[i]['ar_team_recharge_money']+'</span>'+
+                                                            // '</li>'+
+                                                            // '<li class="flex">'+
+                                                            //     '<span class="tit">提现总额</span>'+
+                                                            //     '<span class="va flex1" id="widraw">'+data.base[i]['ar_team_withdraw_money']+'</span>'+
+                                                            // '</li>'+
+                                                            '<li class="flex">'+
+                                                                '<span class="tit">注册人数</span>'+
+                                                                '<span class="va flex1" id="widraw">'+data.base[i]['ua_reg_nums']+'</span>'+
+                                                            '</li>'+
+                                                            '<li class="flex">'+
+                                                                '<span class="tit">备注<i class="edit-icon" data-uId="'+data.base[i]['u_id']+'"></i></span>'+
+                                                                '<span class="va flex1" id="widraw">('+data.base[i]['ua_memo']+')</span>'+
+                                                            '</li>'+
+                                                            // '<li class="flex">'+
+                                                            //     '<span class="tit">输赢</span>'+
+                                                            //     '<span class="va flex1" id="earnMoney">'+data.base[i]['ar_team_earn']+'</span>'+
+                                                            // '</li>'+
+                                                        '</ul>'+
+                                                    '</td>'+
+                                               '</tr>';
+                                            });
+                                    var pull = '<tr><td colspan="2">总计'+'</td><td class="red" id="total">'+data.total['ar_team_recharge_money']+'</td><td class="red" id="total">'+data.total['ar_team_withdraw_money']+'</td><td class="red" id="total">'+data.total['ar_team_bet_money']+'</td><td class="red" id="total">'+data.total['ar_oneteam_earn']+'</td><td class="red" id="total">'+data.total['ar_team_back_money']+'</td><td><i class="right"></i>'+'</td></tr>'+
+                                                '<tr class="detail-list unsee">'+
+                                                        '<td colspan="8">'+
+                                                            '<ul class="detail clearfix">'+
+                                                                '<li class="flex">'+
+                                                                    '<span class="tit">此级团队投注</span>'+
+                                                                    '<span class="va flex1" id="backMoney">'+data.total['ar_my_bet_money']+'</span>'+
+                                                                '</li>'+
+                                                                '<li class="flex">'+
+                                                                    '<span class="tit">此级团队盈亏</span>'+
+                                                                    '<span class="va flex1" id="backMoney">'+data.total['ar_team_my_earn']+'</span>'+
+                                                                '</li>'+
+//                                                                '<li class="flex">'+
+//                                                                    '<span class="tit">回水金额</span>'+
+//                                                                    '<span class="va flex1" id="rebackMoney">'+data.total['ar_team_reback_money']+'</span>'+
+//                                                                '</li>'+
+                                                                // '<li class="flex">'+
+                                                                //     '<span class="tit">投注金额</span>'+
+                                                                //     '<span class="va flex1" id="betMoney">'+data.total['ar_team_bet_money']+'</span>'+
+                                                                // '</li>'+
+//                                                                '<li class="flex">'+
+//                                                                    '<span class="tit">派彩金额</span>'+
+//                                                                    '<span class="va flex1" id="bonuses">'+data.total['ar_team_earn_money']+'</span>'+
+//                                                                '</li>'+
+                                                                // '<li class="flex">'+
+                                                                //     '<span class="tit">充值总额</span>'+
+                                                                //     '<span class="va flex1" id="recharge">'+data.total['ar_team_recharge_money']+'</span>'+
+                                                                // '</li>'+
+                                                                // '<li class="flex">'+
+                                                                //     '<span class="tit">提现总额</span>'+
+                                                                //     '<span class="va flex1" id="widraw">'+data.total['ar_team_withdraw_money']+'</span>'+
+                                                                // '</li>'+    
+                                                                '<li class="flex">'+
+                                                                    '<span class="tit">注册人数</span>'+
+                                                                    '<span class="va flex1" id="earnMoney">'+data.totalReg+'</span>'+
+                                                                '</li>'+
+                                                                '<li></li>'+
+                                                                // '<li class="flex">'+
+                                                                //     '<span class="tit">输赢</span>'+
+                                                                //     '<span class="va flex1" id="earnMoney">'+data.total['ar_team_earn']+'</span>'+
+                                                                // '</li>'+
+                                                            '</ul>'+
+                                                        '</td>'+
+                                                   '</tr>';
+                                    $("tbody").html(str);
+                                    $("tbody").append(pull);
+                                    var editid = '';
+                                    $('.edit-icon').on('click',function(){
+                                        editid = $(this).attr('data-uId');
+                                        $('.mask').removeClass('unsee');
+                                        $('#editmemo').removeClass('unsee');
+                                        $('.f-sure').on('click',function(){
+                                            var id = editid;
+                                            var info = $('.row-input').val();
+                                            $.ajax({
+                                                    type: "POST",
+                                                    url: "/user/edit",
+                                                    data:{info:info,uId:editid},
+                                                    dataType: "json",
+                                                    success: function(res)
+                                                    {
+                                                        if(res.code == 200)
+                                                        {
+                                                            alert('修改成功');
+                                                            window.location.href = '/team/table';
+                                                            return false;
+                                                        }else{
+                                                            alert('修改失败');
+                                                        }
+                                                    }
+                                                });
+                                            
+                                        })
+                                    })
+                            }
+                        }
+                });
+        });
+    });
+    function changeTime(time) {
+        var Month = time.substring(5,7 );
+        var Day = time.substring(8,10);
+        var Year = time.substring(0,4);
+        return Year + '/' + Month + '/' + Day ;
+        }
+           $('.btn').click(function(){
+                   lotteryType = $("#lotteryType option:selected").val();
+                var start = $("#startDay").val();
+                var end = $("#endDay").val();
+                var selectUid=$('#selectUid').val(); 
+                var startDay = changeTime(start);
+                var endDay = changeTime(end);
+                if(startDay == "//")
+                {
+                     alert("请选择开始日期");return;
+                }
+                if(endDay == "//")
+                {
+                     alert("请选择截止日期");return;
+                }
+                if(endDay < startDay)
+                {
+                    alert("截止日期不能小于开始日期");return;
+                }
+            $.ajax({
+                    type: "POST",
+                    url: "/Team/tablefresh",
+                    data:{startDay:start, endDay:end,selectUid:selectUid,lotteryType:lotteryType},
+                    dataType: "json",
+                    success: function(data){
+                                var str = '';
+                                if(data.status == '3'){
+                                    $.each(data.base,function(i,n){                               
+                                        str = str+'<tr>'+
+                                                    '<td><a href="/team/next?uId='+data.base[i]['u_id']+'">'+data.base[i]['u_name']+'</a></td>'+
+                                                    '<td>'+data.base[i]['ua_type']+'</td>'+
+                                                    '<td class="red">'+data.base[i]['ar_team_recharge_money']+'</td>'+
+                                                    '<td class="red">'+data.base[i]['ar_team_withdraw_money']+'</td>'+
+                                                    '<td class="red">'+data.base[i]['ar_t_bet_money']+'</td>'+
+                                                    '<td class="red">'+data.base[i]['ar_team_earn']+'</td>'+
+                                                    '<td class="red">'+data.base[i]['ar_t_my_back']+'</td>'+
+                                                    '<td><i class="right"></i></td>'+
+                                                '</tr>'+
+                                                '<tr class="detail-list unsee">'+
+                                                    '<td colspan="8">'+
+                                                        '<ul class="detail clearfix">'+
+                                                            '<li class="flex">'+
+                                                                '<span class="tit">此级投注</span>'+
+                                                                '<span class="va flex1" id="mybet">'+data.base[i]['ar_my_bet_money']+'</span>'+
+                                                            '</li>'+
+                                                            '<li class="flex">'+
+                                                                '<span class="tit">此级盈亏</span>'+
+                                                                '<span class="va flex1" id="myearn">'+data.base[i]['my_earn']+'</span>'+
+                                                            '</li>'+
+                                                            // '<li class="flex">'+
+                                                            //     '<span class="tit">此级佣金</span>'+
+                                                            //     '<span class="va flex1" id="backMoney">'+data.base[i]['ar_my_back_money']+'</span>'+
+                                                            // '</li>'+
+                                                            // '<li class="flex">'+
+                                                            //     '<span class="tit">次级佣金</span>'+
+                                                            //     '<span class="va flex1" id="backMoney">'+data.base[i]['ar_next_back_money']+'</span>'+
+                                                            // '</li>'+
+//                                                             '<li class="flex">'+
+//                                                                '<span class="tit">回水金额</span>'+
+//                                                                '<span class="va flex1" id="rebackMoney">'+data.base[i]['ar_team_reback_money']+'</span>'+
+//                                                            '</li>'+
+                                                            // '<li class="flex">'+
+                                                            //     '<span class="tit">投注金额</span>'+
+                                                            //     '<span class="va flex1" id="betMoney">'+data.base[i]['ar_team_bet_money']+'</span>'+
+                                                            // '</li>'+
+//                                                            '<li class="flex">'+
+//                                                                '<span class="tit">派彩金额</span>'+
+//                                                                '<span class="va flex1" id="bonuses">'+data.base[i]['ar_team_earn_money']+'</span>'+
+//                                                            '</li>'+
+                                                        //     '<li class="flex">'+
+                                                        //         '<span class="tit">充值总额</span>'+
+                                                        //         '<span class="va flex1" id="recharge">'+data.base[i]['ar_team_recharge_money']+'</span>'+
+                                                        //     '</li>'+
+                                                        //    '<li class="flex">'+
+                                                        //         '<span class="tit">提现总额</span>'+
+                                                        //         '<span class="va flex1" id="widraw">'+data.base[i]['ar_team_withdraw_money']+'</span>'+
+                                                        //     '</li>'+
+                                                            '<li class="flex">'+
+                                                                '<span class="tit">注册人数</span>'+
+                                                                '<span class="va flex1" id="widraw">'+data.base[i]['ua_reg_nums']+'</span>'+
+                                                            '</li>'+
+                                                            '<li class="flex">'+
+                                                                '<span class="tit">备注<i class="edit-icon" data-uId="'+data.base[i]['u_id']+'"></i></span>'+
+                                                                '<span class="va flex1" id="widraw">('+data.base[i]['ua_memo']+')</span>'+
+                                                            '</li>'+
+                                                            // '<li class="flex">'+
+                                                            //     '<span class="tit">输赢</span>'+
+                                                            //     '<span class="va flex1" id="earnMoney">'+data.base[i]['ar_team_earn']+'</span>'+
+                                                            // '</li>'+
+                                                        '</ul>'+
+                                                    '</td>'+
+                                               '</tr>';
+                                            });
+                                            
+                                    var pull = '<tr><td colspan="2">总计'+'</td><td class="red" id="total">'+data.total['ar_team_recharge_money']+'</td><td class="red" id="total">'+data.total['ar_team_withdraw_money']+'</td><td class="red" id="total">'+data.total['ar_team_bet_money']+'</td><td class="red" id="total">'+data.total['ar_oneteam_earn']+'</td><td class="red" id="total">'+data.total['ar_team_back_money']+'</td><td><i class="right"></i>'+'</td></tr>'+
+                                                '<tr class="detail-list unsee">'+
+                                                                    '<td colspan="8">'+
+                                                                        '<ul class="detail clearfix">'+
+                                                                            '<li class="flex">'+
+                                                                                '<span class="tit">此级团队投注</span>'+
+                                                                                '<span class="va flex1" id="backMoney">'+data.total['ar_my_bet_money']+'</span>'+
+                                                                            '</li>'+
+                                                                            '<li class="flex">'+
+                                                                                '<span class="tit">此级团队盈亏</span>'+
+                                                                                '<span class="va flex1" id="backMoney">'+data.total['ar_team_my_earn']+'</span>'+
+                                                                            '</li>'+
+//                                                                            '<li class="flex">'+
+//                                                                                '<span class="tit">回水金额</span>'+
+//                                                                                '<span class="va flex1" id="rebackMoney">'+data.total['ar_team_reback_money']+'</span>'+
+//                                                                            '</li>'+
+                                                                            // '<li class="flex">'+
+                                                                            //     '<span class="tit">投注金额</span>'+
+                                                                            //     '<span class="va flex1" id="betMoney">'+data.total['ar_team_bet_money']+'</span>'+
+                                                                            // '</li>'+
+//                                                                            '<li class="flex">'+
+//                                                                                '<span class="tit">派彩金额</span>'+
+//                                                                                '<span class="va flex1" id="bonuses">'+data.total['ar_team_earn_money']+'</span>'+
+//                                                                            '</li>'+
+                                                                            // '<li class="flex">'+
+                                                                            //     '<span class="tit">充值总额</span>'+
+                                                                            //     '<span class="va flex1" id="recharge">'+data.total['ar_team_recharge_money']+'</span>'+
+                                                                            // '</li>'+
+                                                                            // '<li class="flex">'+
+                                                                            //     '<span class="tit">提现总额</span>'+
+                                                                            //     '<span class="va flex1" id="widraw">'+data.total['ar_team_withdraw_money']+'</span>'+
+                                                                            // '</li>'+
+                                                                            '<li class="flex">'+
+                                                                                '<span class="tit">注册人数</span>'+
+                                                                                '<span class="va flex1" id="widraw">'+data.totalReg+'</span>'+
+                                                                            '</li>'+
+                                                                            '<li></li>'+
+                                                                            // '<li class="flex">'+
+                                                                            //     '<span class="tit">输赢</span>'+
+                                                                            //     '<span class="va flex1" id="earnMoney">'+data.total['ar_team_earn']+'</span>'+
+                                                                            // '</li>'+
+                                                                        '</ul>'+
+                                                                    '</td>'+
+                                                               '</tr>';
+                                    $("tbody").html(str);
+                                    $("tbody").append(pull);
+                                    var editid = '';
+                                    $('.edit-icon').on('click',function(){
+                                        editid = $(this).attr('data-uId');
+                                        $('.mask').removeClass('unsee');
+                                        $('#editmemo').removeClass('unsee');
+                                        $('.f-sure').on('click',function(){
+                                            var id = editid;
+                                            var info = $('.row-input').val();
+                                            $.ajax({
+                                                    type: "POST",
+                                                    url: "/user/edit",
+                                                    data:{info:info,uId:editid},
+                                                    dataType: "json",
+                                                    success: function(res)
+                                                    {
+                                                        if(res.code == 200)
+                                                        {
+                                                            alert('修改成功');
+                                                            window.location.href = '/team/table';
+                                                            return false;
+                                                        }else{
+                                                            alert('修改失败');
+                                                        }
+                                                    }
+                                                });
+                                            
+                                        })
+                                    })
+                            }
+                        }
+                });
+           });
+       });
+
+    </script>

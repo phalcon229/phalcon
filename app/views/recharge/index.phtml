@@ -1,0 +1,545 @@
+<?php
+    $js='<select class="flex1" id="bank" name="bank">';
+    foreach($bankcfg as $key=>$value)
+    {
+        $js.='<option value="'.$key.'">'.$value.'</option>';
+    }
+    $js .= '</select>';
+?>
+<div class="recharge-detail-body" id='body'>
+<form action="" id="next" method="post">
+    <?php $this->partial("shared/usertop"); ?>
+        <div class="tab-nav">
+            <ul class="newbie-nav flex" id='payWay'>
+            <?php $aId = $this->request->getQuery('aid');?>
+                <?php
+                    foreach ($payType as $typeId => $name):
+                        $q = $aId ? '?aid=' . $aId : '';
+                        $q .= $q ? '&' : '?';
+                        $q .= 't=' . $typeId;
+                ?>
+                <li class="item flex1 <?=$typeId == $type ? 'on' : ''; ?>" data-type='<?=$typeId;?>'><a href="/recharge/index<?=$q;?>" style="display: block;"><?=$typeId==1?'扫码支付':'银行卡汇款'?></a></li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+        <ul class="input-panel union-panel">
+
+        <?php if($type !== 1){ ?>
+            <div class="qr-pop" id="scankf">
+                <i class="qr-close" id="close"></i>
+                <div class="qr-title">扫一扫联系客服，获取入款银行账号</div>
+                <div class="qr-box">
+                    <img src="<?php echo $this->redis->get('wxcustomerservicebase64'); ?>" />
+                </div>
+            </div>
+            <div class="mask " >
+        <?php }else{ ?>
+            <div class="quick-nav clearfix" id="xianxia">
+                <div class="item <?php echo $switch[1]==3?'unsee':'' ?> <?php echo $ptype==1?'on':'' ?>" id="wxscan"><i class="icon wx-icon" data="1"></i>微信入款</div>
+                <div class="item <?php echo $switch[11]==3?'unsee':'' ?> <?php echo $ptype==11?'on':'' ?>" id="wxscan"><i class="icon wx-icon" data="11"></i>微信收款码</div>
+                <div class="item <?php echo $switch[5]==3?'unsee':'' ?> <?php echo $ptype==5?'on':'' ?>" id=""><i class="icon alipay-icon" data="5"></i>支付宝入款</div>
+                <div class="item <?php echo $switch[9]==3?'unsee':'' ?> <?php echo $ptype==9?'on':'' ?>" id=""><i class="icon alipay-icon" data="9"></i>支付宝收款码</div>
+                <div class="item <?php echo $switch[3]==3?'unsee':'' ?> <?php echo $ptype==3?'on':'' ?>" id="qqqb"><i class="icon qq-icon"  data="3"></i>QQ钱包入款</div>
+                <div class="item <?php echo $switch[13]==3?'unsee':'' ?> <?php echo $ptype==13?'on':'' ?>" id="ylscan"><i class="icon yl-icon" data="13"></i>银联扫码<em style='font-size: 5px;color: red'>(云闪付APP)</em></div>
+                <div class="item <?php echo $switch[17]==3?'unsee':'' ?> <?php echo $ptype==17?'on':'' ?>"><i class="icon jd-icon" data="17"></i>京东金融</div>
+                <div class="item <?php echo $switch[19]==3?'unsee':'' ?> <?php echo $ptype==19?'on':'' ?>"><i class="icon baidu-icon" data="19"></i>百度钱包</div>
+                <div class="item <?php echo $switch[7]==3?'unsee':'' ?> <?php echo $ptype==7?'on':'' ?>" id="ylscan"><i class="icon yl-icon" data="7"></i>网银入款</div>
+                
+
+
+
+            </div>
+            <div class="item flex tbmb">
+                <label>金额限制</label>
+                <span class="flex1 on">
+                    最低<i class="red money-min"><?php echo $channel[0]['pcc_min']?></i>
+                    最高<i class="red money-max"><?php echo $channel[0]['pcc_max']?></i>
+                    </span>
+            </div>
+            <div class="" id="xianxhtml" data-type = ''>
+                <div class="item flex tb" >
+                    <label>充值金额</label>
+                    <input class="flex1" type="tel"  name="money" id="money" placeholder="请输入金额" />
+                </div>
+                <div class="item flex">
+                <label>金额大写</label>
+                <span class="flex1 on" id="bigMoney">
+                零元
+                </span>
+            </div>
+            <?php if($ptype==9){ ?>
+            <!-- <div class="item flex">
+                <label>支付宝账号</label>
+                <input class="flex1" type="text" name='account' id="account"  placeholder="请输入支付宝账号" />
+            </div> -->
+            <?php } else if($ptype==11){ ?>
+                <?php if ( $ifwxlogin == 1 ){  ?>
+               <!--  <div class="item flex">
+                <label>微信账号</label>
+                <input class="flex1" type="text" name='account' id="account" value='<?php echo $uname; ?>' placeholder="请输入微信账号" />
+            </div> -->
+            <?php }else{ ?>
+                <!-- <div class="item flex">
+                <label>微信账号</label>
+                <input class="flex1" type="text" name='account' id="account"  placeholder="请输入微信账号" />
+            </div> -->
+            <?php } ?>
+            <?php } ?>
+            </div>
+        <?php } ?>
+        </ul>
+        <?php if($ptype!==15){ ?>
+        <p class="title txt-r" id="actualdiv">实际充值金额:<i class="red" id="actual">0.00元</i></p>
+        <?php } ?>
+        <?php if($type == 1 && $ptype!==9 && $ptype!==11 ) { ?>
+            <p class="title">渠道选择</p>
+            <ul class="pay-way">
+                <?php $i = 0; foreach ($channel as $id => $v):?>
+                <li class="item flex" data-id='<?=$id;?>'>
+                    <span class="flex1"><?=$v['pcc_name'];?><i class="checkbox <?=$i==0 ? 'on' : '';?>"></i></span>
+                </li>
+                <?php $i++; endforeach; ?>
+            </ul>
+        <?php } ?>
+        <?php if($ptype!==15){ ?>
+        <div class="btn-center">
+            <input type="hidden" name="aId" value="<?=$aId;?>">
+            <input type="submit" value="下一步" class="btn">
+        </div>
+        <?php } ?>
+    </form>
+    <div id="codeshow"></div>
+    <form action="" method="post" id="payForm" ></form>
+<script>
+    var activity = <?php echo $aId>0?$aId:-1; ?>;
+    var way = <?php echo $type; ?>;
+    var pcc_way = <?php echo $ptype; ?>;
+    var type =9;
+    var bank = '<?php echo $js ?>';
+    $("#xianxia div").each(function() {
+        $(this).click(function() {
+            $("#xianxia div").removeClass("on");
+            type = $(this).children().attr('data');
+            $(this).addClass("on");
+            var yltype = $("#yltype option:selected").val();
+            window.location.href='/recharge/index?aid='+activity+'&pcc_type='+type;
+
+            $("#money").blur(function () {
+                var money = parseFloat($('#money').val());
+                var inc = Math.random().toFixed(2);
+                // var inc = 0.01;
+                var test = pcc_way;debugger;
+                if(pcc_way == 15 || pcc_way == 9 || pcc_way == 11)
+                {
+                        var actualM = money ;
+                }
+                else
+                {
+                        var actualM = money + parseFloat(inc);
+                }
+
+                if (!actualM) return false;
+
+                var bigMoney=nameToChinese(String(actualM));
+
+                $("#bigMoney").html(bigMoney);
+                $("#actual").html(actualM.toFixed(2));
+            });
+            if(type == 13 || type == 11)
+            {
+                $("#bank").change(function () {
+                    var bank = $("#bank option:selected").html();
+                    $("#bank").next().html(bank);
+                });
+                $("#yltype").change(function () {
+                    var ylway = $("#yltype option:selected").html();
+                    var yltype = $("#yltype option:selected").val();
+                    $("#yltype").next().html(ylway);
+                    if(yltype == 1)
+                    {
+                        $('#bankdiv').hide();
+                        $('#accountdiv').hide();
+                        $('#banknamediv').hide();
+                    }
+                    else
+                    {
+                        $('#bankdiv').show();
+                        $('#accountdiv').show();
+                        $('#banknamediv').show();
+                    }
+                });
+            }
+        });
+    });
+
+    var channel = <?=json_encode($channel);?>;
+
+    var channelIdx = 0;
+
+    $("#money").blur(function () {
+       var money = parseFloat($('#money').val());
+       var inc = Math.random().toFixed(2);
+       // var inc = 0.01;
+       if(pcc_way == 15 || pcc_way == 9 || pcc_way == 11)
+       {
+               var actualM = money ;
+       }
+       else
+       {
+               var actualM = money + parseFloat(inc);
+       }
+
+       if (!actualM) return false;
+
+       var bigMoney=nameToChinese(String(actualM));
+
+       $("#bigMoney").html(bigMoney);
+       $("#actual").html(actualM.toFixed(2));
+    });
+
+    if(way==1)
+    {
+        var seleway = $("#way option:selected").html();
+        $("#way").change(function () {
+            seleway = $("#way option:selected").html();
+            $('#sel').html(seleway);
+        });
+    }
+
+    $('.pay-way li').click(function() {
+        $('.pay-way span i').removeClass('on');
+        $(this).find('span i').addClass('on');
+        var id = $(this).data('id');
+        var c = channel[id];
+
+        $('.money-min').html(c.pcc_min);
+        $('.money-max').html(c.pcc_max);
+        channelIdx = id;
+    });
+
+    $('#ylqdway li').click(function() {
+        $('.pay-way span i').removeClass('on');
+        $(this).find('span i').addClass('on');
+        var id = $(this).data('id');
+        var c = channel[id];
+
+        $('.money-min').html(c.pcc_min);
+        $('.money-max').html(c.pcc_max);
+        channelIdx = id;
+    });
+
+    $("form#next").validate({
+        debug: true,
+        rules: {
+            money: {
+                required: true,
+                digits: true
+            },
+            account: {
+                required: true,
+                // digits: true
+            }
+
+        },
+        messages: {
+            money: {
+                // digits: '请输入整数金额'
+            }
+        },
+        submitHandler: function(form) {
+            $('form#next input[type="submit"]').attr('disabled', true).val('提交中...');
+
+            var acMoney=$("#actual").html();
+            if(way == 1  && pcc_way!==9 && pcc_way !== 11)
+            {
+                var channel = <?=json_encode($channel);?>;
+                var channelSel = channel[channelIdx];
+
+                api.post('/recharge/create', {amount: acMoney, channel: channelSel.pcc_id, aId:activity }, function(res) {
+                    if (res.code != 200) {
+                        alert('充值失败，请重新尝试');
+                        return;
+                    }
+                    if(res.data.channel == 1)
+                    {
+                        var form = "";
+                        for(var i in res.data.data) {
+                            form += '<input type="hidden" name="'+i+'" value="'+res.data.data[i]+'" />';
+                        }
+                        $('form#payForm').attr('action', res.data.url);
+                        $('form#payForm').html(form);
+                        $('form#payForm').submit();
+                    }
+                    else
+                    {
+
+                        // var form = "";
+                        // for(var i in res.data.value) {
+                        //     form += '<input type="hidden" name="'+i+'" value="'+res.data.value[i]+'" />';
+                        // }
+                        // $('form#payForm').attr('action', '/recharge/scan');
+                        // $('form#payForm').html(form);
+                        // $('form#payForm').submit();
+                        api.post('/recharge/scan', {data: res.data.value}, function(res) {
+                            if(res.code == 200)
+                            {
+                                var img = '<div class="recharge-detail-body"><div class="mask" id="maskdiv"></div>'+
+                                '<div class="qr-pop"  id="paydiv">'+
+                                    '<i class="qr-close" id="closepay"></i>'+
+                                    '<div class="qr-title">银联钱包APP扫一扫转账</div>'+
+                                    '<div class="qr-box">'+
+                                        '<img src="'+res.data.code+'" />'+
+                                    '</div>'+
+                                    '<div class="qr-price">￥'+res.data.money+'</div>'+
+                                    '<div>'+
+                                        '<button  class="qr-btn qr-cancel" id="lxkf" >遇到问题联系客服</button>'+
+                                        '<button  class="qr-btn qr-sure" id="backfir" >付款成功返回首页</button>'+
+                                    '</div>'+
+                                '</div></div>' ;
+                                $('#codeshow').html(img);
+                                infoValue = res.data.infoValue;
+                                enterurl = res.data.enterurl;
+
+                            }
+                            $("#lxkf").click(function () {
+                                    window.location.href='https://vp8.livechatvalue.com/chat/chatClient/chatbox.jsp?companyID=80000802&configID=2371&k=1&s=1&info='+infoValue+'&enterurl='+enterurl+'';
+                                });
+                                $("#backfir").click(function () {
+                                    window.location.href='/';
+                                });
+                                $("#closepay").click(function () {
+                                    $('#paydiv').addClass('unsee');
+                                    $('#maskdiv').addClass('unsee');
+                                });
+
+                        });
+                    }
+                    }, function() {
+                    $('form#next input[type="submit"]').attr('disabled', false).val('下一步');
+                });
+            }
+            else
+            {
+                var account = $('#account').val();
+                var xxway = type;
+                if(xxway==2)
+                {
+                    pcc_way = 15;
+                }
+                var bank = $("#bank option:selected").val();
+                var yltype = $("#yltype option:selected").val();
+                var bankname = $("#bankname").val();
+                var channel = <?=json_encode($channel);?>;
+                var channelSel = channel[channelIdx];
+                var channel = channelSel.pcc_id;
+                var infoValue = '';
+                var enterurl = '';
+                api.post('/recharge/man', {amount: acMoney,pcc_type:pcc_way, account:account,yltype:yltype,bank:bank,bankname:bankname,xxway:xxway,channel: channelSel.pcc_id, aId:activity}, function(res) {
+                    if (res.code != 200) {
+                        alert('充值失败，请重新尝试');
+                        return;
+                    }
+                    console.log(res);
+                    if(res.data.scan == 1)
+                    {
+                        var img = '<div class="recharge-detail-body"><div class="mask" id="maskdiv"></div>'+
+                        '<input type=hidden id="did" value='+res.data.id+'>'+
+                        '<input type=hidden id="dpccType" value='+res.data.pccType+'>'+
+                        '<div class="qr-pop"  id="paydiv">'+
+                            '<div class="qr-title">'+res.data.name+'扫一扫转账</div>'+
+                            '<div class="qr-box">'+
+                                '<img src="'+res.data.code+'" />'+
+                            '</div>'+
+                            '<div class="qr-price">￥'+res.data.money+'</div>'+
+                            '<div class="qr-cell">'+
+                            '<input type="tel" id="dcode" placeholder="(必填):付款成功后，在此处输入扫码订单后四位" class="row-input">'+
+                            '</div>'+
+                            '<div>'+
+                                '<button class="qr-btn qr-cancel" id="lxkf">取消</button>'+
+                                '<button  class="qr-btn qr-sure" id="backfir" >付款成功返回首页</button>'+
+                            '</div>'+
+                        '</div></div>' ;
+                        $('#codeshow').html(img);
+                        $('#dcode').focus();
+                        infoValue = res.data.infoValue;
+                        enterurl = res.data.enterurl;
+
+                        $("#lxkf").click(function () {
+                            $('#paydiv').addClass('unsee');
+                            $('#maskdiv').addClass('unsee');
+                            // window.location.href='https://vp8.livechatvalue.com/chat/chatClient/chatbox.jsp?companyID=80000802&configID=2371&k=1&s=1&info='+infoValue+'&enterurl='+enterurl+'';
+                        });
+                        $("#backfir").click(function () {
+                            var code = $('#dcode').val()
+                            if(code == '' || code.length > 4) {
+                                alert('请输入订单后4位');
+                                $('#dcode').focus();
+                                return false;
+                            }
+                            var id = $('#did').val();
+                            var pcc_type = $('#dpccType').val();
+                            if(id == '' || pcc_type == '' ) {
+                                alert('充值失败，请重新操作');
+                                return false;
+                            }
+                            api.post('/recharge/changememo', {code: code, id: id, pcc_type:pcc_type}, function(res) {
+                                if (res.code != 200) {
+                                    alert('充值失败，请重新尝试');
+                                    return;
+                                }
+                            });
+                            window.location.href='/';
+                        });
+                        $("#closepay").click(function () {
+                            $('#paydiv').addClass('unsee');
+                            $('#maskdiv').addClass('unsee');
+                        });
+                        // var form = "";
+                        // for(var i in res.data.value) {
+                        //     form += '<input type="hidden" name="'+i+'" value="'+res.data.value[i]+'" />';
+                        // }
+                        // $('form#payForm').attr('action', "/recharge/scan");
+                        // $('form#payForm').html(form);
+                        // $('form#payForm').submit();
+                    }
+                    else if(res.data.scan == 0)
+                    {
+                        var img = '<div class="recharge-detail-body"><div class="mask" id="maskdiv"></div>'+
+                                '<div class="qr-pop"  id="paydiv">'+
+                                    '<i class="qr-close" id="closepay"></i>'+
+                                    '<div class="qr-title">转账到银行账户</div>'+
+                                    '<ul class="qr-list">'+
+                                    '<li class="item flex">'+
+                                        '<label class="list-text">开户行</label>'+
+                                        '<p class="list-content flex1">'+res.data.bankname+
+                                        '</p>'+
+                                    '</li>'+
+                                    '<li class="item flex">'+
+                                        '<label class="list-text">银行账号</label>'+
+                                        '<p class="list-content flex1">'+res.data.code+
+                                        '</p>'+
+                                    '</li>'+
+                                    '<li class="item flex">'+
+                                        '<label class="list-text">银行户名</label>'+
+                                        '<p class="list-content flex1">'+res.data.name+
+                                        '</p>'+
+                                    '</li>'+
+                                    '<li class="item flex">'+
+                                        '<label class="list-text">转账金额</label>'+
+                                        '<p class="list-content flex1">￥'+res.data.money+
+                                        '</p>'+
+                                    '</li>'+
+                                    '</ul>'+
+                                    '<div>'+
+                                        '<button  class="qr-btn qr-cancel" id="lxkf" >遇到问题联系客服</button>'+
+                                        '<button  class="qr-btn qr-sure" id="backfir" >付款成功返回首页</button>'+
+                                    '</div>'+
+                                '</div></div>' ;
+                                $('#codeshow').html(img);
+                                infoValue = res.data.infoValue;
+                                enterurl = res.data.enterurl;
+                                $("#lxkf").click(function () {
+                                    window.location.href='https://vp8.livechatvalue.com/chat/chatClient/chatbox.jsp?companyID=80000802&configID=2371&k=1&s=1&info='+infoValue+'&enterurl='+enterurl+'';
+                                });
+                                $("#backfir").click(function () {
+                                    window.location.href='/';
+                                });
+                                $("#closepay").click(function () {
+                                    $('#paydiv').addClass('unsee');
+                                    $('#maskdiv').addClass('unsee');
+                                });
+                        // alert('充值申请成功');
+                    }
+
+                    }, function() {
+                    $('form#next input[type="submit"]').attr('disabled', false).val('下一步');
+                });
+            }
+        }
+    });
+
+ function nameToChinese(Num) {
+    for (i = Num.length - 1; i >= 0; i--) {
+        Num = Num.replace(",", "")//替换tomoney()中的“,”
+        Num = Num.replace(" ", "")//替换tomoney()中的空格
+    }
+    Num = Num.replace("￥", "")//替换掉可能出现的￥字符
+    if (isNaN(Num)) { //验证输入的字符是否为数字
+        return;
+    }
+    //---字符处理完毕，开始转换，转换采用前后两部分分别转换---//
+    part = String(Num).split(".");
+    newchar = "";
+    //小数点前进行转化
+    for (i = part[0].length - 1; i >= 0; i--) {
+        if (part[0].length > 10) { alert("位数过大，无法计算"); return ""; } //若数量超过拾亿单位，提示
+        tmpnewchar = ""
+        perchar = part[0].charAt(i);
+        switch (perchar) {
+            case "0": tmpnewchar = "零" + tmpnewchar; break;
+            case "1": tmpnewchar = "壹" + tmpnewchar; break;
+            case "2": tmpnewchar = "贰" + tmpnewchar; break;
+            case "3": tmpnewchar = "叁" + tmpnewchar; break;
+            case "4": tmpnewchar = "肆" + tmpnewchar; break;
+            case "5": tmpnewchar = "伍" + tmpnewchar; break;
+            case "6": tmpnewchar = "陆" + tmpnewchar; break;
+            case "7": tmpnewchar = "柒" + tmpnewchar; break;
+            case "8": tmpnewchar = "捌" + tmpnewchar; break;
+            case "9": tmpnewchar = "玖" + tmpnewchar; break;
+        }
+        switch (part[0].length - i - 1) {
+            case 0: tmpnewchar = tmpnewchar + "元"; break;
+            case 1: if (perchar != 0) tmpnewchar = tmpnewchar + "拾"; break;
+            case 2: if (perchar != 0) tmpnewchar = tmpnewchar + "佰"; break;
+            case 3: if (perchar != 0) tmpnewchar = tmpnewchar + "仟"; break;
+            case 4: tmpnewchar = tmpnewchar + "万"; break;
+            case 5: if (perchar != 0) tmpnewchar = tmpnewchar + "拾"; break;
+            case 6: if (perchar != 0) tmpnewchar = tmpnewchar + "佰"; break;
+            case 7: if (perchar != 0) tmpnewchar = tmpnewchar + "仟"; break;
+            case 8: tmpnewchar = tmpnewchar + "亿"; break;
+            case 9: tmpnewchar = tmpnewchar + "拾"; break;
+        }
+        newchar = tmpnewchar + newchar;
+    }
+    //小数点之后进行转化
+    if (Num.indexOf(".") != -1) {
+        if (part[1].length > 2) {
+            // alert("小数点之后只能保留两位,系统将自动截段");
+            part[1] = part[1].substr(0, 2)
+        }
+        for (i = 0; i < part[1].length; i++) {
+            tmpnewchar = ""
+            perchar = part[1].charAt(i)
+            switch (perchar) {
+                case "0": tmpnewchar = "零" + tmpnewchar; break;
+                case "1": tmpnewchar = "壹" + tmpnewchar; break;
+                case "2": tmpnewchar = "贰" + tmpnewchar; break;
+                case "3": tmpnewchar = "叁" + tmpnewchar; break;
+                case "4": tmpnewchar = "肆" + tmpnewchar; break;
+                case "5": tmpnewchar = "伍" + tmpnewchar; break;
+                case "6": tmpnewchar = "陆" + tmpnewchar; break;
+                case "7": tmpnewchar = "柒" + tmpnewchar; break;
+                case "8": tmpnewchar = "捌" + tmpnewchar; break;
+                case "9": tmpnewchar = "玖" + tmpnewchar; break;
+            }
+            if (i == 0) tmpnewchar = tmpnewchar + "角";
+            if (i == 1) tmpnewchar = tmpnewchar + "分";
+            newchar = newchar + tmpnewchar;
+        }
+    }
+    //替换所有无用汉字
+    while (newchar.search("零零") != -1)
+        newchar = newchar.replace("零零", "零");
+    newchar = newchar.replace("零亿", "亿");
+    newchar = newchar.replace("亿万", "亿");
+    newchar = newchar.replace("零万", "万");
+    newchar = newchar.replace("零元", "元");
+    newchar = newchar.replace("零角", "");
+    newchar = newchar.replace("零分", "");
+
+    if (newchar.charAt(newchar.length - 1) == "元" || newchar.charAt(newchar.length - 1) == "角")
+        newchar = newchar + "整"
+  //  document.write(newchar);
+    return newchar;
+}
+</script>

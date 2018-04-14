@@ -1,0 +1,71 @@
+<div class="junior-ban">
+    <div class="title">
+        投注记录
+        <i class="close"></i>
+    </div>
+    <ul class="game-bar flex">
+        <li class="item flex1 on" data-id="0"><span>常规</span></li>
+        <li class="item flex1" data-id="1"><span>追号</span></li>
+    </ul>
+    <div class="h-auto main-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>玩法/日期</th>
+                    <th>期号/奖金-返点</th>
+                    <th>投注金额</th>
+                    <th>中奖状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (!$normal):?>
+                    <tr>
+                        <td colspan="7" class="null">没有任何资料</td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($normal as $v): $n = explode('-', $v['bo_content']);?>
+                    <tr>
+                        <td><?=$type==1 ? '信用玩法' : '官方玩法'; ?> <br /> <?php if($n[0]==39 || $n[0]== 42) echo $v['bo_played_name']; else echo ($type==1 ) ? $this->di['config']['game']['rule_type'][$n[0]].':'.$this->di['config']['game']['rule_base_type'][$n[1]] : $v['bo_played_name'].':'.$n[1]?><br /><?=date('m-d H:i:s', $v['bo_created_time']);?></td>
+                        <td><?=$v['bo_issue']?><br /><?=sprintf("%.3f", $v['bo_odds'])?>/<?=sprintf("%.2f", $v['bo_back'] * 100)?>%</td>
+                        <td><?=$v['bo_money']?></td>
+                        <?php if($v['bo_status']==5){ ?>
+                            <td>撤销订单</td>
+                        <?php }else{?>
+                            <td><?=$this->di['config']['order_draw'][$v['bo_draw_result']];?></td>
+                        <?php } ?>
+                    </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="h-auto main-table unsee">
+        <table>
+            <thead>
+                <tr>
+                    <th>玩法/日期</th>
+                    <th>期号/奖金-返点</th>
+                    <th>投注金额</th>
+                    <th>中奖状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (!$track):?>
+                    <tr>
+                        <td colspan="7" class="null">没有任何资料</td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($track as $v): $n = explode('-', $v['bo_content']);?>
+                    <tr>
+                        <td><?=$type==1 ? '信用玩法' : '官方玩法'; ?> <br /> <?php if($n[0]==39 || $n[0]== 42) echo $v['bo_played_name']; else echo ($type==1 ) ? $this->di['config']['game']['rule_type'][$n[0]].':'.$this->di['config']['game']['rule_base_type'][$n[1]] : $v['bo_played_name'].':'.$n[1]?><br /><?=date('m-d H:i:s', $v['bo_created_time']);?></td>
+                        <td><?=$v['bo_issue']?><br /><?=sprintf("%.3f", $v['bo_odds'])?>/<?=sprintf("%.2f", $v['bo_back'] * 100)?>%</td>
+                        <td><?=$v['bo_money']?></td>
+                        <td><?=$this->di['config']['order_draw'][$v['bo_draw_result']];?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+</div>

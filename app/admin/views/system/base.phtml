@@ -1,0 +1,171 @@
+
+<div class="act-set">
+            <div class="act-content">
+            <form action="dobase" id="rule">
+                <dl class="item">
+                    <dd class="width4">前台域名:</dd>
+                    <dt>
+                        <input type="text" class="input-txt" value="<?=$info[9]['sc_value']?>" name="sc_<?=$info[9]['sc_id']?>">
+                    </dt>
+                </dl>
+                <dl class="item">
+                    <dd class="width4">返点比例:</dd>
+                    <dt>
+                        <input type="text" class="input-txt width-xs" value="<?=$info[2]['sc_value']?>" name="sc_<?=$info[2]['sc_id']?>">%
+                    </dt>
+                </dl>
+                <dl class="item">
+                    <dd class="width4">每期封盘时间:</dd>
+                    <dt>
+                        <input type="text" class="input-txt width-xs" value="<?=$info[1]['sc_value']?>" name="sc_<?=$info[1]['sc_id']?>">
+                            <i class="add"></i>秒
+                    </dt>
+                </dl>
+                <?php $check1 = $check2 = ''; if ($info[0]['sc_value'] == 1) $check1 = "checked" ; else $check2 = "checked" ?>
+                <dl class="item">
+                    <dd class="width4">是否审核提现:</dd>
+                    <dt>
+                        <input type="radio" name="sc_<?=$info[0]['sc_id']?>" <?=$check1?> value=1>是
+                        <input type="radio" name="sc_<?=$info[0]['sc_id']?>" class="ml10" <?=$check2?> value=3>否
+                    </dt>
+                </dl>
+
+                <dl class="item">
+                    <dd class="width4">单次提现最低金额:</dd>
+                    <dt>
+                        <input type="text" class="input-txt" value="<?=$info[5]['sc_value']?>" name="sc_<?=$info[5]['sc_id']?>">
+                    </dt>
+                </dl>
+                <dl class="item">
+                    <dd class="width4">单次提现最高金额:</dd>
+                    <dt>
+                        <input type="text" class="input-txt" value="<?=$info[6]['sc_value']?>" name="sc_<?=$info[6]['sc_id']?>">
+                    </dt>
+                </dl>
+                <dl class="item">
+                    <dd class="width4">单天提现限额:</dd>
+                    <dt>
+                        <input type="text" class="input-txt" value="<?=$info[7]['sc_value']?>" name="sc_<?=$info[7]['sc_id']?>">
+                    </dt>
+                </dl>
+
+            </div>
+            <div class="divide-btn">
+                <button class="regist-btn">确定</button>
+            </div>
+            </form>
+        </div>
+
+<script type="text/javascript">
+
+    function reload()
+    {
+        window.location.reload();
+    }
+
+    $.validator.setDefaults({
+    submitHandler: function() {
+        $('form').ajaxSubmit({
+            dataType: 'json',
+            type: "POST",
+              success: function (msgObj) {
+                if(msgObj.ret == 1)
+                {
+                    layer.msg(msgObj.msg);
+                    setTimeout("reload()",1000);
+                }else if(msgObj.ret == 0) {
+                    layer.msg(msgObj.msg);
+                }
+            },
+            error: function(e){
+                layer.msg("<h2>System mistake</h2>");
+            },
+        });
+        return false;
+        }
+    });
+
+    $().ready(function() {
+    // 在键盘按下并释放及提交后验证提交表单
+
+      $("#rule").validate({
+
+          rules: {
+            sc_1: {
+                required: true,
+                number:true
+              },
+            sc_2: {
+                required: true,
+                number:true
+              },
+            sc_3: {
+                required: true,
+                number:true
+              },
+            sc_4: {
+                required: true,
+                number:true
+              },
+            sc_5: {
+                required: true,
+                number:true
+              },
+            sc_6: {
+                required: true,
+                number:true
+              },
+            sc_7: {
+                required: true,
+                number:true
+              },
+            sc_8: {
+                required: true,
+                number:true
+              },
+            sc_10: {
+                required: true,
+              }
+            },
+        messages: {
+            sc_1: {
+                required: "请输入内容",
+                number: "Invalid data"
+              },
+            sc_2: {
+                required: "请输入内容",
+                number: "Invalid data"
+              },
+            sc_3: {
+                required: "请输入内容",
+                number: "Invalid data"
+            },
+            sc_4: {
+                required: "请输入内容",
+                number: "Invalid data"
+             },
+            sc_5: {
+                required: "请输入内容",
+                number: "Invalid data"
+            },
+            sc_6: {
+                required: "请输入内容",
+                number: "Invalid data"
+            },
+            sc_7: {
+                required: "请输入内容",
+                number: "Invalid data"
+            },
+            sc_8: {
+                required: "请输入内容",
+                number: "Invalid data"
+            },
+            sc_10: {
+                required: "域名或IP不能为空",
+            },
+        },
+       });
+
+    });
+
+</script>

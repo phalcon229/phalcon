@@ -1,0 +1,89 @@
+<div class="login-regist-body">
+    <form>
+        <div class="bannar">
+            <img src="../img/login-bg.png" />
+        </div>
+        <div class="container">
+            <div class="row">
+                <i class="icon user"></i>
+                <input type="text" name="username" id="username" value="<?php echo $remUname;?>" placeholder="请输入账号" />
+            </div>
+            <div class="row">
+                <i class="icon pwd"></i>
+                <input type="password" name="pwd" id="pwd" value="<?php echo $remPwd;?>"placeholder="请输入密码" />
+            </div>
+            <div class="lg-checkbox">
+                <label>
+                <?php if(!empty($remPwd)){ ?>
+                    <input type="checkbox" class="rem" checked="<?php echo empty($remPwd)?'':'checked' ?>" name='rem'/> 记住密码
+                <?php }else{ ?>
+                    <input type="checkbox" class="rem" name='rem'/> 记住密码
+                <?php } ?>
+                    <i class="chk-style"></i>
+                </label>
+            </div>
+            <input type="submit" value="登录" class="btn">
+            <a class="btn unsee" onClick="loginWx();" id="wx">
+                <i class="login-wx-icon"></i>微信登入
+            </a>
+            <div class="center">
+                <a href="/auth/forget"  class="con">忘记密码</a> &nbsp | &nbsp <a href="https://vp8.livechatvalue.com/chat/chatClient/chatbox.jsp?companyID=80000802&configID=2371&k=1"  class="con">联系客服</a>
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript" src="/js/shellJsHelper.js"></script>
+<script type="text/javascript" src="/js/WebViewJavascriptBridge.js"></script>
+<script>
+checkIsAppMode()
+
+var check = $('.rem').is(':checked');
+if(check)
+{
+    var rem = 1;
+}
+else
+{
+    var rem = 0;
+}
+
+$(document).ready(function() {
+    $("form").validate({
+        debug: true,
+        rules: {
+            username: {
+                required: true
+            },
+            pwd: {
+                required: true
+            }
+        },
+        messages: {
+
+        },
+        submitHandler: function(form) {
+            $('form input[type="submit"]').attr('disabled', true).val('登录中...');
+            var data = $.param({rem:rem})+'&'+$('form').serialize();
+            $.ajax({
+                type: 'post',
+                url: '/auth/login',
+                data: data,
+                dataType: 'json',
+                success: function(res) {
+                    if (res.code != 200) {
+                        alert(res.msg);
+                        return false;
+                    }
+                    window.location.href = res.data.url;
+                },
+                error: function() {
+                    alert('服务器错误，请重新尝试');
+                },
+                complete: function() {
+                    $('form input[type="submit"]').attr('disabled', false).val('登录');
+                }
+            });
+        }
+    });
+});
+</script>

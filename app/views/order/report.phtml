@@ -1,0 +1,257 @@
+<div class="bett-chart-body">
+    <?php $this->partial("shared/usertop"); ?>
+    <div class="select-title-black">
+            <span>
+                    <select class="select-p" id="lotteryType">
+                        <option value="0">全部彩种</option>
+                        <?php for($i = 1; $i <= count($lotteryType);$i++) { ?>
+                        <option value="<?php echo $i ?>"><?php echo $lotteryType[$i-1]['bet_name'] ?></option>
+                        <?php } ?>
+                    </select>
+                    <em>全部彩种</em>
+                </span>
+        </div>
+        <div class="search-box">
+            <div class="date flex">
+                <span class="box flex1">
+                    <input type="date" value="" id="startDay" placeholder="请选择日期">
+                    <em id="showDayone">请选择日期</em>
+                </span>
+                <label class="word">至</label>
+                <span class="box flex1">
+                    <input type="date" value="" id="endDay" placeholder="请选择日期">
+                    <em id="showDaytwo">请选择日期</em>
+                </span>
+            </div>
+            <input type="hidden" name="startTime" id="startTime" value="">
+            <input type="hidden" name="endTime" id="endTime" value="">
+            <input type="submit" value="搜索" class="btn">
+            <div class="options-list">
+                <span id="today" class="on" sdate="<?php echo $todayBegin ?>" edate="<?php echo $todayBegin ?>">今日</span>
+                <span  sdate="<?php echo $yBegin ?>" edate="<?php echo $yBegin ?>">昨日</span>
+                <span   sdate="<?php echo $tWeekFirst ?>" edate="<?php echo $tWeekLast ?>">本周</span>
+                <span  sdate="<?php echo $lWeekFirst ?>" edate="<?php echo $lWeekLast ?>">上周</span>
+                <span  sdate="<?php echo $tMonthFirst ?>" edate="<?php echo $tMonthLast ?>">本月</span>
+                <span  sdate="<?php echo $lMonthFirst ?>" edate="<?php echo $lMonthLast ?>">上月</span>
+            </div>
+        </div>
+        <div class="main-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>日期</th>
+                        <th>有效笔数/投注金额</th>
+                        <th>输赢</th>
+                        <th>回水</th>
+                        <th>实际输赢</th>
+                        <th>详情</th>
+                    </tr>
+                </thead>
+                <tbody id="total">
+                    <?php if(!empty($result)){ ?>
+                    <?php for($i = 0; $i < count($result);$i++) { ?>
+                    <tr>
+                        <td><?php echo $result[$i]['date'] ?></td>
+                        <td><?php echo $result[$i]['num'] ?>/<?php echo $result[$i]['money'] ?></td>
+                        <td class="orange"><?php echo $result[$i]['win'] ?></td>
+                        <td class="orange"><?php echo sprintf("%.2f",$result[$i]['water']) ?></td>
+                        <td class="red"><?php echo $result[$i]['earn'] ?></td>
+                        <td><a class="right" href="/order/reportdetail?zh=0&day=<?php echo $result[$i]['date'] ?>&log=1"></a></td>
+                        
+                    </tr>
+                    <?php } ?>
+                    <tr>
+                        <td>总计</td>
+                        <td><?php echo $total['num'] ?>/<?php echo $total['money'] ?></td>
+                        <td class="orange"><?php echo $total['win'] ?></td>
+                        <td class="orange"><?php echo $total['water'] ?></td>
+                        <td class="red"><?php echo $total['earn'] ?></td>
+                        <td></td>
+                    </tr>
+                    <?php }else{?>
+                    <tr>
+                        <td colspan="6" class="null">没有任何资料</td>
+                    </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
+        </div>
+    <script>
+    var lotteryType = $("#lotteryType option:selected").val();
+    $(function(){
+        $("#lotteryType").change(function () {
+            lotteryType = $("#lotteryType option:selected").val();
+        });
+        $(".options-list span").each(function() {
+        $(this).click(function() {
+            var sDate = $(this).attr("sdate");
+            var eDate = $(this).attr("edate");
+            $('#startTime').val(sDate);
+            $('#endTime').val(eDate);
+            $("#startDay").val(sDate)
+            $('#endDay').val(eDate);
+            $('#showDayone').html(sDate);
+            $('#showDaytwo').html(eDate);
+            $(".options-list span").removeClass("on");
+            $(this).addClass("on");
+            $.ajax({
+                    type: "POST",
+                    url: "/order/reportFresh",
+                    data:{startDay:sDate, endDay:eDate,lotteryType:lotteryType},
+                    dataType: "json",
+                    success: function(data){
+                                var str = '';
+                                if(data.code == '200'){
+                                    $.each(data.data.betsTotalInfo,function(i,n){
+                                        str = str+'<tr>'+
+                                                    '<td>'+data.data.betsTotalInfo[i]['date']+'</a></td>'+
+                                                    '<td>'+data.data.betsTotalInfo[i]['num']+'/'+data.data.betsTotalInfo[i]['money']+'</a></td>'+
+                                                    '<td class="orange">'+data.data.betsTotalInfo[i]['win']+'</td>'+
+                                                    '<td class="orange">'+data.data.betsTotalInfo[i]['water']+'</td>'+
+                                                    '<td class="red">'+data.data.betsTotalInfo[i]['earn']+'</td>'+
+                                                    '<td><a class="right" href="/order/reportdetail?zh=0&day='+data.data.betsTotalInfo[i]['date']+'&log=1"></a></td>'+
+                                                '</tr>';
+                                    });
+                                    str = str +'<tr>'+
+                                                    '<td>总计</td>'+
+                                                    '<td>'+data.data.total['num']+'/'+data.data.total['money']+'</td>'+
+                                                    '<td class="orange">'+data.data.total['win']+'</td>'+
+                                                    '<td class="orange">'+data.data.total['water']+'</td>'+
+                                                    '<td class="red">'+data.data.total['earn']+'</td>'+
+                                                    '<td></td>'+
+                                                '</tr>';
+                                    $("#total").html(str);
+                            }
+                            else{
+                                    str = str+'<tr>'+
+                                                    '<td colspan="6" class="null">没有任何资料</td>'+
+                                             '</tr>';
+                                        $("#total").html(str);
+                            }
+                        }
+                });
+        });
+    });
+    });
+    $(function(){
+        $("#lotteryType").change(function () {
+            lotteryType = $("#lotteryType option:selected").val();
+            var sDate = $("#startDay").val();
+            var eDate = $("#endDay").val();
+            if(eDate == '')
+            {
+                var sDate = $("#today").attr("sdate");
+                var eDate = $("#today").attr("edate");
+            }
+            $('#startDay').val(sDate);
+            $('#endDay').val(eDate);
+            $('#showDayone').html(sDate);
+            $('#showDaytwo').html(eDate);
+            $.ajax({
+                    type: "POST",
+                    url: "/order/reportFresh",
+                    data:{startDay:sDate, endDay:eDate,lotteryType:lotteryType},
+                    dataType: "json",
+                    success: function(data){
+                                var str = '';
+                                if(data.code == '200'){
+                                    $.each(data.data.betsTotalInfo,function(i,n){
+                                        str = str+'<tr>'+
+                                                    '<td>'+data.data.betsTotalInfo[i]['date']+'</a></td>'+
+                                                    '<td>'+data.data.betsTotalInfo[i]['num']+'/'+data.data.betsTotalInfo[i]['money']+'</a></td>'+
+                                                    '<td class="orange">'+data.data.betsTotalInfo[i]['win']+'</td>'+
+                                                    '<td class="orange">'+data.data.betsTotalInfo[i]['water']+'</td>'+
+                                                    '<td class="red">'+data.data.betsTotalInfo[i]['earn']+'</td>'+
+                                                    '<td><a class="right" href="/order/reportdetail?zh=0&day='+data.data.betsTotalInfo[i]['date']+'&log=1"></a></td>'+
+                                                '</tr>';
+                                    });
+                                    str = str +'<tr>'+
+                                                    '<td>总计</td>'+
+                                                    '<td>'+data.data.total['num']+'/'+data.data.total['money']+'</td>'+
+                                                    '<td class="orange">'+data.data.total['win']+'</td>'+
+                                                    '<td class="orange">'+data.data.total['water']+'</td>'+
+                                                    '<td class="red">'+data.data.total['earn']+'</td>'+
+                                                    '<td></td>'+
+                                                '</tr>';
+                                    $("#total").html(str);
+                            }
+                            else{
+                                    str = str+'<tr>'+
+                                                    '<td colspan="6" class="null">没有任何资料</td>'+
+                                             '</tr>';
+                                        $("#total").html(str);
+                            }
+                        }
+                });
+        });
+});
+    function changeTime(time) {
+        var Month = time.substring(5,7 );
+        var Day = time.substring(8,10);
+        var Year = time.substring(0,4);
+        return Year + '/' + Month + '/' + Day ;
+    }
+        $('.btn').click(function(){
+                lotteryType = $("#lotteryType option:selected").val();
+                var start = $("#startDay").val();
+                var end = $("#endDay").val();
+                var startDay = changeTime(start);
+                var endDay = changeTime(end);        
+                if(startDay == "//")
+                {
+                     alert("请选择开始日期");return;
+                }
+                if(endDay == "//")
+                {
+                     alert("请选择截止日期");return;
+                }
+                if(endDay < startDay)
+                {
+                    alert("截止日期不能小于开始日期");return;
+                }
+            $.ajax({
+                    type: "POST",
+                    url: "/order/reportFresh",
+                    data:{startDay:startDay, endDay:endDay,lotteryType:lotteryType},
+                    dataType: "json",
+                    success: function(data){
+                                var str = '';
+                                if(data.code == '200'){
+                                    $.each(data.data.betsTotalInfo,function(i,n){
+                                        str = str = str+'<tr>'+
+                                                    '<td>'+data.data.betsTotalInfo[i]['date']+'</a></td>'+
+                                                    '<td>'+data.data.betsTotalInfo[i]['num']+'/'+data.data.betsTotalInfo[i]['money']+'</a></td>'+
+                                                    '<td class="orange">'+data.data.betsTotalInfo[i]['win']+'</td>'+
+                                                    '<td class="orange">'+data.data.betsTotalInfo[i]['water']+'</td>'+
+                                                    '<td class="red">'+data.data.betsTotalInfo[i]['earn']+'</td>'+
+                                                    '<td><a class="right" href="/order/reportdetail?zh=0&day='+data.data.betsTotalInfo[i]['date']+'&log=1"></a></td>'+
+                                                '</tr>';
+                                    });
+                                    str = str +'<tr>'+
+                                                    '<td>总计</td>'+
+                                                    '<td>'+data.data.total['num']+'/'+data.data.total['money']+'</td>'+
+                                                    '<td class="orange">'+data.data.total['win']+'</td>'+
+                                                    '<td class="orange">'+data.data.total['water']+'</td>'+
+                                                    '<td class="red">'+data.data.total['earn']+'</td>'+
+                                                    '<td></td>'+
+                                                '</tr>';
+                                    $("#total").html(str);
+                                    $(document).ready(function(){
+                                        $('#startDay').click(function(){
+                                            $(".options-list span").removeClass("on");
+                                        });
+                                        $('#endDay').click(function(){
+                                           $(".options-list span").removeClass("on");
+                                        });
+                                    });
+                            }
+                            else{
+                                    str = str+'<tr>'+
+                                                    '<td colspan="6" class="null">没有任何资料</td>'+
+                                             '</tr>';
+                                        $("#total").html(str);
+                            }
+                        }
+                });
+           });
+        </script>

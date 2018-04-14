@@ -1,0 +1,184 @@
+
+        <div class="act-set">
+            <form action="acdoadd" id='rule' enctype="multipart/form-data">
+            <div class="act-content">
+                <dl class="item">
+                    <dd class="width4">活动类型:</dd>
+                    <dt>
+                        <div class="select-box  variety-c">
+                            <select class="list" name="pa_type" id="type">
+                            <?php foreach ($type as $key => $value) : ?>
+                                <option value="<?=$key?>"><?=$value?></option>
+                            <?php endforeach;?>
+                            </select>
+                            <em class="txt on"><?=current($type);?></em>
+                            <i class="i-arrow"></i>
+                        </div>
+                        <p class="mt10" style="display:none" id="gift_money">充
+                            <input type="text" class="input-txt width-ss" name="pa_money3">送
+                            <input type="text" class="input-txt width-ss" name="pa_gift_money">
+                        </p>
+                    </dt>
+                </dl>
+                <dl class="item">
+                    <dd class="width4">活动名称:</dd>
+                    <dt>
+                        <input type="text" class="input-txt" name="pa_title">
+                    </dt>
+                </dl>
+                <dl class="item">
+                    <dd class="width4">开始结束时间:</dd>
+                    <dt>
+                        <div class="date-box">
+                            <em class="txt"><input type="text" name="pa_starttime"  id="start_time" ></em>
+                            <i class="date-icon"></i>
+                        </div>
+                        <em class="lineae"></em>
+                        <div class="date-box">
+                            <em class="txt"><input type="text" name="pa_endtime"  id="end_time" ></em>
+                            <i class="date-icon"></i>
+                        </div>
+                    </dt>
+                </dl>
+                <dl class="item" id="gift">
+                    <dd class="width4">赠送金额:</dd>
+                    <dt>
+                        <input type="text" class="input-txt" name="pa_money1" >
+                    </dt>
+                </dl>
+                <dl class="item">
+                    <dd class="width4">提现最低流水:</dd>
+                    <dt>
+                        <input type="text" class="input-txt width-s" name="pa_history_money">元
+                    </dt>
+                </dl>
+
+                <dl class="item">
+                    <dd class="width4">活动图片:</dd>
+                    <dt>
+                        <div class="img-box unsee">
+                            <img class="ImgPr" >
+                        </div>
+                        <div class="add-img">
+                            <input type="file" name="pa_img"  class="up" value=""/>
+                            <i class="add-black"></i>
+                        </div>
+                    </dt>
+                </dl>
+                <dl class="item">
+                    <dd class="width4">活动内容:</dd>
+                    <dt>
+                        <textarea class="act-contxt" name="pa_content"></textarea>
+                    </dt>
+                </dl>
+            </div>
+            <div class="divide-btn">
+                <button class="regist-btn" id='sub'>确定</button>
+            </div>
+
+            </form>
+        </div>
+
+    <script type="text/javascript">
+     $('#start_time').cxCalendar({
+        type: 'datetime',
+        format:'YYYY-MM-DD HH:mm:ss'
+    });
+     $('#end_time').cxCalendar({
+        type: 'datetime',
+        format:'YYYY-MM-DD HH:mm:ss'
+    });
+
+    $('#type').on('change',function(){
+        if ($('#type').val() == 3) {
+            $('#gift').hide();
+            $('#gift_money').show();
+        } else {
+            $('#gift').show();
+            $('#gift_money').hide();
+        }
+    })
+    function reload()
+    {
+        location.href = "aclist";
+    }
+
+    $('#sub').on('click', function(){
+         if($('#type').val() == 3) {
+            if($("input[name='pa_money3']").val() == '' || $("input[name='pa_gift_money']").val() == '') {
+                layer.msg('充值赠送金额不能为空');
+                return false;
+            }
+        };
+        if($("input[name='pa_title']").val() == '') {
+            layer.msg('活动名称不能为空');
+            return false;
+        };
+
+        var start_time = $("input[name='pa_starttime']").val();
+        var end_time = $("input[name='pa_endtime']").val();
+        if(start_time == '') {
+            layer.msg('活动开始时间不能为空');
+            return false;
+        };
+        var start = Date.parse(new Date(start_time));
+
+        if(end_time == '') {
+            layer.msg('活动结束时间不能为空');
+            return false;
+        };
+        var end = Date.parse(new Date(end_time));
+
+        if (start > end) {
+            layer.msg('请输入正确活动时间');
+            return false;
+        }
+
+        if (end <= Date.parse(new Date())) {
+            layer.msg('请输入正确活动时间');
+            return false;
+        }
+
+        if($("input[name='pa_history_money']").val() == '') {
+            layer.msg('最低流水不能为空');
+            return false;
+        };
+        if($("input[name='pa_img']").val() == '') {
+            layer.msg('活动图片不能为空');
+            return false;
+        };
+        if($('#type').val() == 1) {
+            if($("input[name='pa_money1']").val() == '') {
+                layer.msg('赠送金额不能为空');
+                return false;
+            }
+        };
+
+        if($("input[name='pa_content']").val() == '') {
+            layer.msg('活动内容不能为空');
+            return false;
+        };
+
+
+    })
+    $('form').submit(function() {
+        $(this).ajaxSubmit({
+            dataType: 'json',
+            type: "POST",
+            success: function (msgObj) {
+                if(msgObj.ret == 1)
+                {
+                    layer.msg(msgObj.msg);
+                    setTimeout("reload()",1000);
+                }else {
+                    layer.msg(msgObj.msg);
+                }
+            },
+            error: function(e){
+                   layer.msg("获取参数失败！");
+                 },
+        });
+        return false;
+      });
+
+    </script>

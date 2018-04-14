@@ -1,0 +1,116 @@
+<div class="user-list-body">
+    <?php $this->partial("shared/usertop"); ?>
+    <div class="search-box">
+        <form action="/user/list">
+            <input type="text" placeholder="用户名" name="username" value="<?=$this->request->get('username');?>" class="input-box" />
+            <div class="date flex">
+                <span class="box flex1">
+                    <input type="date" value="<?=$this->request->get('starttime');?>" name="starttime" placeholder="请选择日期">
+                    <em><?=$this->request->get('starttime') ?: '请选择日期';?></em>
+                </span>
+                <label class="word">至</label>
+                <span class="box flex1">
+                    <input type="date" value="<?=$this->request->get('endtime');?>" name="endtime" placeholder="请选择日期">
+                    <em><?=$this->request->get('endtime') ?: '请选择日期';?></em>
+                </span>
+            </div>
+            <input type="submit" value="搜索" class="btn">
+        </form>
+    </div>
+    <div class="main-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>用户名</th>
+                    <th>用户类型</th>
+                    <th>余额</th>
+                    <th>回水级别</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($list as $user): ?>
+                <tr>
+                    <td><a href="/user/list?uId=<?=$user['u_id']?>&&log=1"><?=$user['u_name']?></a>(<?=$user['ua_memo']?>)</td>
+                    <td><?=!empty($this->di['config']['agent'][$user['ua_type']]) ? $this->di['config']['agent'][$user['ua_type']] : '-'?></td>
+                    <td><?=$user['w_money']?></td>
+                    <td><?=$user['ua_rate']?>%</td>
+                    <td><?=$user['ua_status'] == 1 ? '启用' : '关闭'?></td>
+                </tr>
+                <tr class="detail-list">
+                    <td colspan="6">
+                        <!--<button onclick="window.location.href = '/team/show?uId=<?=$user['u_id']?>'">团队总览</button>-->
+                        <?php if($log == 0){ ?>
+                        <button onclick="window.location.href = '/user/rate?uid=<?=$user['u_id']?>'">返点设定</button>
+                        <?php } ?>
+                        <button onclick="window.location.href = '/user/change?uid=<?=$user['u_id']?>'">账变记录</button>
+                        <button class="memo">备注信息</button>
+                        <div class="note-panel unsee" >
+                            <textarea  class="note-input" placeholder="请输入备注信息" value="<?=$user['ua_memo']?>"><?=$user['ua_memo']?></textarea>
+                            <div class="btn-group">
+                                <span class="cancle" >关闭</span>
+                                <span class="sure" data="<?=$user['u_id']?>">确定</span>
+                            </div>
+                        </div>
+                        <!--<button onclick="window.location.href = '/team/next?uId=<?=$user['u_id']?>'">下线报表</button>-->
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="junior-ban unsee">
+    <div class="title">
+        下属详情
+        <i class="close"></i>
+    </div>
+    <ul class="text">
+        <li class="flex">
+            <span>用户名</span>
+            <span class="flex1 nick">Soone2</span>
+        </li>
+        <li class="flex">
+            <span>用户类型</span>
+            <span class="flex1 type">代理</span>
+        </li>
+        <li class="flex">
+            <span>可用金额</span>
+            <span class="red flex1 money">49.3280</span>
+        </li>
+        <li class="flex">
+            <span>最后登录时间</span>
+            <span class="red flex1 lasttime">2017-03-31 14:58:02</span>
+        </li>
+    </ul>
+</div>
+<script>
+    $(".detail-list .memo").click(function(){
+        $(this).next().removeClass('unsee'); 
+    });
+    $(".detail-list .cancle").click(function(){
+        $(this).parent().parent().addClass('unsee');
+    });
+    
+    $(".detail-list .sure").click(function(){
+        var info = $(this).parent().prev().val();
+        var uId = $(this).attr('data');
+        $.ajax({
+                    type: "POST",
+                    url: "edit",
+                    data:{info:info,uId:uId},
+                    dataType: "json",
+                    success: function(res)
+                    {
+                        console.log(res);
+                        if(res.code == 200){
+                            $(this).parent().prev().val(res.data.ua_memo);
+                            $(this).parent().prev().text(res.data.ua_memo);
+                            alert('修改成功');
+                        }else{
+                            alert('修改失败');
+                        }
+                    }
+                    });
+    });
+</script>

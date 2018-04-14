@@ -1,0 +1,72 @@
+
+<form action="ntdoadd" id="rule">
+        <div class="act-set">
+            <div class="act-content">
+                <dl class="item">
+                    <dd class="width4">公告标题:</dd>
+                    <dt>
+                        <input type="text" class="input-txt" name="n_title" >
+                    </dt>
+                </dl>
+                <dl class="item">
+                    <dd class="width4">公告内容:</dd>
+                    <dt>
+                        <textarea class="act-contxt" name="n_content" ></textarea>
+                    </dt>
+                </dl>
+            </div>
+            <div class="divide-btn">
+                <button class="regist-btn" id="sub">确定</button>
+            </div>
+        </div>
+</form>
+<script type="text/javascript">
+
+    function reload()
+    {
+        location.href = "ntlist";
+    }
+    $(document).ready(function() {
+    $("form").validate({
+        debug: true,
+        rules: {
+            n_title: {
+                required: true
+            },
+            n_content: {
+                required: true,
+            }
+        },
+        messages: {
+            n_title: {
+                required: '公告标题不能为空'
+            },
+            n_content: {
+                required: '公告内容不能为空',
+            }
+        },
+        submitHandler: function(form) {
+
+            var data = $('form').serialize();
+            $.ajax({
+                type: 'post',
+                url: '/system/ntdoadd',
+                data: data,
+                dataType: 'json',
+                success: function(res) {
+                    if (res.ret != 1) {
+                        layer.msg(res.msg);
+                        return false;
+                    }
+                    layer.msg('添加成功');
+                    setTimeout("reload()",1000);
+                },
+                error: function() {
+                    layer.msg('服务器错误，请重新尝试');
+                },
+            });
+        }
+    });
+});
+
+</script>

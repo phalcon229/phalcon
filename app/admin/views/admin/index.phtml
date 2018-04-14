@@ -1,0 +1,115 @@
+<div class="backstage-body container">
+    <div class="top-title">
+        <i class="backstage-red"></i> <em class="tit">后台管理</em>
+    </div>
+    <div class="search-box">
+        <a class="add-btn" href = '/admin/apply'>
+            <i class="add-white"></i> 添加账号
+        </a>
+    </div>
+    <div class="table-box">
+        <table class="main-table " cellpadding="0" cellspacing="0">
+            <thead>
+                <tr>
+                    <th class="width1">ID</th>
+                    <th class="width2">用户名</th>
+                    <th>账号类型</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (empty($list)) { ?>
+                <tr class="null">
+                        <td colspan="4">暂无数据！</td>
+                </tr>
+                <?php } else { foreach ($list as $item) {
+                ?>
+                <tr>
+                    <td class="width1"><?=$item['u_id']?></td>
+                    <td class="width2"><?=$item['u_name']?></td>
+                    <td>
+                        <div class="select-box variety-s">
+                            <select class="list">
+                                <?php foreach ($glist as $value) {
+                                ?>
+                                <option value="<?=$value['pg_id'].','.$item['u_id']?>" <?php echo $value['pg_id'] == $item['ugr_rel_id'] ? 'selected="selected"' : ''  ?>><?=$value['pg_name']?></option>
+                                <?php }?>
+
+                            </select>
+                            <em class="txt on"><?=$item['ugr_name']?></em>
+                            <i class="i-arrow"></i>
+                        </div>
+                    </td>
+                    <td>
+                        <a class="operate" href = "/admin/detail?uid=<?php echo $item['u_id']; ?>">更改密码</a>
+                        <span class="detach del" id = '<?php echo $item['u_id'] ?>'>删除</span>
+                    </td>
+                </tr>
+                <?php }?>
+            </tbody>
+        </table>
+    </div>
+    <?php } ?>
+</div>
+
+<script type="text/javascript">
+
+      $('body').on('change', '.list',function(){
+        var check = $(this).find("option:selected").val();
+        var attr=check.split(",");
+        var groupid = parseInt(attr['0']);
+        var uid = parseInt(attr['1']);
+
+        $.ajax({
+                 url: "/admin/doedit",
+                 type: "POST",
+                 data: {uid:uid, groupid:groupid},
+                 dataType:'json',
+                 error: function(e){
+                   layer.msg("获取参数失败！");
+                 },
+                 success: function (msgObj) {
+
+                    if (msgObj.code == 500) {
+                        layer.msg(msgObj.msg);
+                        setTimeout(function(){
+                            window.location.href = '/admin';
+                        },1000);
+                        return false;
+                    }
+                    layer.msg('修改管理员组成功');
+                    setTimeout(function(){
+                        window.location.href = '/admin';
+                    },1000);
+
+                 }
+            });
+      })
+
+    $("body").on('click', '.del', function() {
+        if(!confirm("确定删除管理员？"))return
+        var id = $(this).attr('id');
+    $.ajax({
+                 url: "/admin/del",
+                 type: "POST",
+                 data: {uid:id},
+                 dataType:'json',
+                 error: function(e){
+                   layer.msg("获取参数失败！");
+                 },
+                 success: function (msgObj) {
+
+                    if (msgObj.code == 500) {
+                        layer.msg(msgObj.msg);
+                        return false;
+                    }
+                    layer.msg('删除管理员成功');
+                    setTimeout(function(){
+                        window.location.href = '/admin';
+                    },1000);
+
+                 }
+            });
+    });
+
+</script>

@@ -1,0 +1,72 @@
+    <div class="user-manage-body container">
+        <div class="top-title">
+        <i class="backstage-red"></i> <em class="tit"><a href = '/admin'>后台管理</a></em>
+        </div>
+    <form action="dopass" id='rule'>
+        <div class="modify-box ">
+            <p class="tit"><?=$user['u_name']?></p>
+            <div>
+                <input type="text" placeholder="请输入新密码" class="pwd" name = 'pwd' value= ''>
+            </div>
+            <div>
+                <input type="text" placeholder="请确认新密码" class="pwd" name = 'new_pwd' value = ''>
+            </div>
+                <input type="hidden"class="uid" name = 'uid' value = '<?=$user['u_id']?>'>
+            <button class="sure">确定</button>
+        </div>
+    <form>
+    </div>
+
+
+<script type="text/javascript">
+$.validator.setDefaults({
+    submitHandler: function() {
+        $('form').ajaxSubmit({
+            dataType: 'json',
+            type: "POST",
+            success: function (msgObj) {
+                    if (msgObj.code == 500) {
+                        layer.msg(msgObj.msg);
+                        return false;
+                    }
+                    layer.msg('修改密码成功');
+
+                    if(typeof(msgObj.data.url) == "undefined")
+                        window.location.href = '/admin';
+                    else
+                        window.location.href = msgObj.data.url;
+            },
+            error: function(e){
+                layer.msg("<h2>修改密码失败</h2>");
+            },
+        });
+        return false;
+        }
+});
+
+    $().ready(function() {
+    // 在键盘按下并释放及提交后验证提交表单
+      $("#rule").validate({
+          rules: {
+
+            pwd: {
+                required: true,
+                rangelength:[8,20]
+            },
+            new_pwd: {
+                required: true,
+                rangelength:[8,20]
+              },
+        },
+            messages: {
+
+              pwd: {
+                required: "请输入正确格式登录密码",
+              },
+              new_pwd: {
+                required: '请输入正确格式确认密码',
+            },
+          }
+      });
+    });
+</script>

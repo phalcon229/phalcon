@@ -1,0 +1,80 @@
+<script type="text/javascript" src="<?=$this->di['config']['baseInfo']['domain']?>/js/powerange.min.js"></script>
+<script type="text/javascript" src="<?=$this->di['config']['baseInfo']['domain']?>/js/range.js"></script>
+
+<div class="point-set-body">
+    <?php $this->partial("shared/usertop"); ?>
+    <table class="point-table">
+        <tbody>
+            <tr>
+                <td>开户账号</td>
+                <td colspan="3"><?=$user['u_name']?></td>
+            </tr>
+            <tr>
+                <td>回水等级</td>
+                <td class="red"><?=$agent['ua_rate']?>%</td>
+                <td>最高回水</td>
+                <td class="red"><?=$currentUser['ua_rate']?>%</td>
+            </tr>
+            <tr>
+                <td colspan="2">当前赔率</td>
+                <td colspan="2" class="red"><?=$rateMoney?></td>
+            </tr>
+            <tr>
+                <td>当前回水</td>
+                <td colspan="3" class="red">
+                    <div class="range-change flex">
+                        <i class="reduce"></i>
+                        <input type="text" class="js-decimal" style="display: none;" data-now="<?=$agent['ua_rate']?>" data-max="<?=$currentUser['ua_rate']?>" data-min="0.00">
+                        <i class="add"></i>
+                        <span class="va js-display-decimal rate">0.00</span>%
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="btn-center">
+        <input type="hidden" id="uid" value="<?=$user['u_id']?>">
+        <input type="submit" value="提交" class="btn">
+    </div>
+</div>
+
+<script>
+    $('input[type="submit"]').click(function() {
+        var data = {};
+        data.uid = $('#uid').val();
+        data.rate = $('.rate').html();
+
+        $('form input[type="submit"]').attr('disabled', true).val('提交中...');
+
+        $.ajax({
+            type: 'post',
+            url: '/user/rate',
+            data: data,
+            dataType: 'json',
+            success: function(res) {
+                if (res.code != 200) {
+                    alert(res.msg);
+                    return false;
+                }
+                alert('设置成功');
+                window.location.href = res.data.url;
+            },
+            error: function() {
+                alert('服务器错误，请重新尝试');
+            },
+            complete: function() {
+                $('form input[type="submit"]').attr('disabled', false).val('提交');
+            }
+        });
+    });
+
+    var range = new RangeSlider(document.querySelector('.js-decimal'), {
+        max: $('.js-decimal').data('max'),
+        min: $('.js-decimal').data('min'),
+        start: $('.js-decimal').data('now'),
+        formula: function(rate) {
+            var money = 1920 + (rate * 2) * 10;
+            return money;
+        }
+    });
+</script>

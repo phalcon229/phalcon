@@ -1,0 +1,168 @@
+<?php $this->assets->outputJs() ?>
+<div class="team-chart-body">
+        <div class="tip flex">
+            <span class="name flex1"><?php echo $uName?></span>
+            <span class="money"><i class="d"></i><?php echo $money?></span>
+            <span class="h-money unsee"><i class="d"></i>隐藏金额</span>
+        </div>
+        <div class="search-box">
+            <div class="date flex">
+                <span class="box flex1">
+                    <input type="date" value="" id="startDay" placeholder="请选择日期">
+                    <em>请选择日期</em>
+                </span>
+                <label class="word">至</label>
+                <span class="box flex1">
+                    <input type="date" value="" id="endDay" placeholder="请选择日期">
+                    <em>请选择日期</em>
+                </span>
+            </div>
+            <div class="variety-box">
+                <select class="down-list flex1" id="lotteryType">
+                    <option value="0">全部彩钟</option>
+                    <?php for($i=0;$i<count($lottery);$i++){ ?>
+                        <option value="<?php echo $i+1 ?>"><?php echo $lottery[$i] ?></option>
+                    <?php } ?>
+                </select>
+                <em>全部彩钟</em>
+                <i class="down"></i>
+            </div>
+            <input type="submit" value="搜索" class="btn">
+            <div class="options-list">
+                <span id="today" sdate="<?php echo $todayBegin ?>" edate="<?php echo $todayEnd ?>">今日</span>
+                <span id="today" sdate="<?php echo $yBegin ?>" edate="<?php echo $yEnd ?>">昨日</span>
+                <span class="on" id="today" sdate="<?php echo $tWeekFirst ?>" edate="<?php echo $tWeekLast ?>">本周</span>
+                <span id="today" sdate="<?php echo $lWeekFirst ?>" edate="<?php echo $lWeekLast ?>">上周</span>
+                <span id="today" sdate="<?php echo $tMonthFirst ?>" edate="<?php echo $tMonthLast ?>">本月</span>
+                <span id="today" sdate="<?php echo $lMonthFirst ?>" edate="<?php echo $lMonthLast ?>">上月</span>
+            </div>
+            <input type="hidden" name="place" id="place" value="0"/>
+        </div>
+        <div class="main-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>用户名</th>
+                        <th>所属组</th>
+                        <th>投注金额</th>
+                        <th>详情</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php for($i=0;$i<count($base);$i++){ ?>
+                    <tr id="tbody">
+                        <td><a><?php echo $base[$i]['ua_u_name']?></a></td>
+                        <td><?php echo $base[$i]['ua_type']?></td>
+                        <td class="red"><?php echo $othorInfo[$i]['tsd_bet_money']?></td>
+                        <td><i class="right"></i></td>
+                    </tr>
+                    <tr class="detail-list unsee">
+                        <td colspan="6">
+                            <ul class="detail clearfix">
+                                <li class="flex">
+                                    <span class="tit">代理返点</span>
+                                    <span class="va flex1" id="rebackMoney"><?php echo $othorInfo[$i]['tsd_reback_money'] ?></span>
+                                </li>
+                                <li class="flex">
+                                    <span class="tit">投注金额</span>
+                                    <span class="va flex1" id="betMoney"><?php echo $othorInfo[$i]['tsd_bet_money'] ?></span>
+                                </li>
+                                <li class="flex">
+                                    <span class="tit">派彩金额</span>
+                                    <span class="va flex1" id="bonuses"><?php echo $othorInfo[$i]['tsd_pay_bonuses'] ?></span>
+                                </li>
+                                <li class="flex">
+                                    <span class="tit">充值总额</span>
+                                    <span class="va flex1" id="recharge"><?php echo $othorInfo[$i]['tsd_recharge'] ?></span>
+                                </li>
+                                <li class="flex">
+                                    <span class="tit">提现总额</span>
+                                    <span class="va flex1" id="widraw"><?php echo $othorInfo[$i]['tsd_withdraw'] ?></span>
+                                </li>
+                                <li class="flex">
+                                    <span class="tit">总盈亏</span>
+                                    <span class="va flex1" id="earnMoney"><?php echo $othorInfo[$i]['tsd_earn_money'] ?></span>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <?php }?>
+                    <tr>
+                        <td colspan="2">总计(金额变化总额)</td>
+                        <td class="red" id="total"><?php echo $total ?></td>
+                        <td><i class="right"></i></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(".options-list span").each(function() {
+                           $(".options-list span").removeClass("on");
+                       });
+        });
+        $(function(){
+        $(".options-list span").each(function() {
+        $(this).click(function() {
+            var sdate = $(this).attr("sdate");
+            var edate = $(this).attr("edate");
+
+            var n = $('.options-list span').index($(this));
+            $("#place").val(n);
+            $("input[id='startDay']").val(sdate);
+            $("input[id='endDay']").val(edate);
+            $(".options-list span").removeClass("on");
+            $(this).addClass("on");
+//            debugger;
+        });
+    });
+     function changeTime(time) {
+        var Month = time.substring(5,7 );
+        var Day = time.substring(8,10);
+        var Year = time.substring(0,4);
+//        var clock = time.substring(time.indexOf(' ') + 1);
+        return Year + '/' + Month + '/' + Day ;
+        }
+           $('.btn').click(function(){
+               var lotteryType=$("#lotteryType option:selected").val();
+               var start=$("#startDay").val();
+                var end=$("#endDay").val();
+                var startDay=changeTime(start);
+                var endDay=changeTime(end);
+//                debugger;
+                if(startDay=="//")
+                {
+                     alert("请选择开始日期");return;
+                }
+                if(endDay=="//")
+                {
+                     alert("请选择截止日期");return;
+                }
+                if(endDay<startDay)
+                {
+                    alert("截止日期不能小于开始日期");return;
+                }
+//            $.ajax({
+//                    type: "POST",
+//                    url: "dataTeamTable",
+//                    data:{start_date:1, end_date:1,bank:1},
+//                    dataType: "json",
+//                    success: function(data){
+//                        console.log(data);
+////                                   for(var i=0;i<data.othorInfo.lenth;i++){
+////                                        $("#widraw").html(data.othorInfo[i].tsd_withdraw+'人');
+////                                        $("#recharge").html(data.othorInfo[i].tsd_withdraw+'人');
+////                                        $("#bonuses").html(data.othorInfo[i].tsd_pay_bonuses+'人');
+////                                        $("#betMoney").html(data.othorInfo[i].tsd_bet_money+'人');
+////                                        $("#rebackMoney").html(data.othorInfo[i].tsd_reback_money+'人');
+////                                        $("#earnMoney").html(data.othorInfo[i].tsd_earn_money+'人');
+////                                    }
+//
+//                                    $("#total").html(data.total);
+//                             }
+//                });
+                window.location.href='/Team/dataTable?lotteryType='+lotteryType+'&startDay='+startDay+'&endDay='+endDay;
+           });
+       });
+
+        </script>

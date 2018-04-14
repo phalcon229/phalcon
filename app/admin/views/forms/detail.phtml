@@ -1,0 +1,255 @@
+<?php
+    $bet = $js = $betdate = $js2 = $js3 = $js4 = $js5 = '';
+    if (isset($_GET['limit'])) {
+        $urlLimit = $_GET['limit'];
+        $js = '$("#limit").val('.$urlLimit.');';
+        if (!in_array($_GET['limit'], $perpage))
+            $urlLimit = current($perpage);
+    }
+    if (!empty($_GET['page'])) {
+        if (is_numeric($_GET['page'])) {
+            $js4 = '$("#page").val('.$_GET['page'].');';
+            $page = $_GET['page'];
+        }
+        else {
+            $js4 = '$("#page").val(1);';
+            $page =1;
+        }
+    }
+    if(!empty($type)) {
+        if (isset($_GET['type']) && $_GET['type'] !=0) {
+            $js= '$("#bet_type").val('.$_GET['type'].');';
+            if (!empty($type))
+                $bet = $type[$_GET['type']];
+        } else
+            $bet = current($type);
+    }
+
+    if(!empty($date)) {
+        if (isset($_GET['date'])) {
+            $js2= '$("#date").val('.$_GET['date'].');';
+            if (!empty($date))
+                $betdate = $_GET['date'];
+        } else
+            $betdate = current($date);
+    }
+?>
+<div class="chart-query-body container">
+        <div class="top-title">
+            <i class="financail-red"></i> <em class="tit">报表查询</em>
+        </div>
+    
+        <div class="search-box">
+            <div class="search-down">彩票类型:
+                <div class="select-box">
+                    <select class="list" name = "type" id="bet_type">
+                    <?php if(!empty($bet)) : foreach ($type as $key => $value) : ?>
+                        <option value="<?=$key?>"><em class="txt"><?=$value?></em></option>
+                    <?php endforeach; endif;?>
+                    </select>
+                    <em class="txt"><?=$bet?></em>
+                    <i class="i-arrow"></i>
+                </div>
+            </div>
+        <?php if(!empty($issue)){?>
+            <div class="" id='issue'>
+            当前期数:
+            <div class="select-box">
+                <select class="list" id='serial'>
+                <?php  if(!empty($date)) :  foreach ($date as $key=>$value): ?>
+                    <option value="<?=$value?>"><?=$value?></option>
+                <?php endforeach; endif;?>
+                </select>
+                <em class="txt" id="issueNum"><?=!empty($issue) ? $issue : '期'?></em>
+                <i class="i-arrow"></i>
+            </div>
+            <!--<button class="search-btn" id="sub">查询</button>-->
+        <?php }?>
+        </div>
+        <?php
+            
+            $v2 = $v3 =$v4 =$v5 =$v6 = '';
+            $v1 = 'on';
+            
+            if(isset($_GET['pame']))
+            {
+                $on = $_GET['pame'];
+                if($on ==1) {
+                    $v1 = 'on';
+                }
+                if($on ==2) {
+                    $v2 = 'on';
+                    $v1 = '';
+                }
+                if($on ==3) {
+                    $v3 = 'on';
+                    $v1 = '';
+                }
+                if($on ==4) {
+                    $v4 = 'on';
+                    $v1 = '';
+                }
+                if($on ==5) {
+                    $v5 = 'on';
+                    $v1 = '';
+                }
+                if($on ==6) {
+                    $v6 = 'on';
+                    $v1 = '';
+                }
+            }
+        ?>
+         <div class="search-box">
+            <span class="quik-btn <?=$v2?>" data-id=2 >昨日</span>
+            <span class="quik-btn <?=$v1?>" data-id=1 >今日</span>
+            <span class="quik-btn <?=$v3?>" data-id=3 >本周</span>
+            <span class="quik-btn <?=$v4?>" data-id=4 >上周</span>
+            <span class="quik-btn <?=$v5?>" data-id=5 >本月</span>
+            <span class="quik-btn <?=$v6?>" data-id=6 >上月</span>
+            <a class="output-chart" id="excel" href="javascript:">导出报表</a>
+            <?php echo date('Y-m-d',$start) ?>&nbsp至&nbsp<?php echo date('Y-m-d',$end) ?>
+        </div>
+        <div class="table-box">
+            <table class="main-table" cellpadding="0" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>用户名</th>
+                        <th>玩法</th>
+                        <th>下注时间</th>
+                        <th>订单号</th>
+                        <th>状态</th>
+                        <th>投注金额</th>
+                        <th>回水金额</th>
+                        <th>派彩金额</th>
+                        <th>盈亏</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php if (empty($info['total'])) {?>
+                   <tr class="null">
+                        <td colspan="10">暂无数据！</td>
+                    </tr>
+                    <?php } else { foreach ($info['list'] as $key=>$value) : ?>
+                    <tr id="next">
+                        <td><?=$value['u_name']?></td>
+                        <td><?=$value['bo_played_name']?></td>
+                        <td><?=date('Y-m-d,H:i:s',$value['bo_created_time'])?></td>
+                        <td><?=$value['bo_sn']?></td>
+                        <?php if($value['bo_status'] == 5){ ?>
+                        <td><?='撤销'?></td>
+                        <?php }else{ ?>
+                        <td><?=$value['bo_draw_result'] == 1?'中奖':'未中奖'?></td>
+                        <?php } ?>
+                        <td><?=$value['bo_money']?></td>
+                        <td><?=$value['bo_back_money']?></td>
+                        <td><?php echo $value['bo_bonus']?></td>
+                        <td><?php echo sprintf("%.2f",$value['bo_bonus']+$value['bo_back_money']-$value['bo_money']) ?></td>
+                    </tr>
+                       <?php  endforeach;  ?>
+                        <tr>
+                            <td>小计</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td><?php echo $sub_bet ?></td>
+                            <td><?php echo $sub_back ?></td>
+                            <td><?php echo $sub_bonus ?></td>
+                            <td><?php echo $sub_earn ?></td>
+                        </tr> 
+                        <tr>
+                            <td>总计</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td><?php echo $totalM['bo_money'] ?></td>
+                            <td><?php echo $totalM['bo_back_money'] ?></td>
+                            <td><?php echo $totalM['bo_bonus'] ?></td>
+                            <td><?php echo $totalE ?></td>
+                        </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pages">
+            <div class="posl">
+                共<em class="counts" ><?=$info['total']?></em>条 每页显示
+                <div class="select-box line-num">
+                    <select class="list" id="limit">
+                    <?php foreach ($perpage as $key => $value) : ?>
+                        <?php if(!empty($urlLimit)){ ?>
+                            <option value="<?=$key?>" <?php echo $urlLimit == $value ? 'selected="selected"' : '';?>><?=$value?></option>
+                        <?php }else{ ?>
+                            <option value="<?=$key?>"><?=$value?></option>
+                        <?php } ?>
+                    <?php endforeach ?>
+                    </select>
+                    <em class="txt"><?=!empty($urlLimit) ? $urlLimit : current($perpage); ?></em>
+                    <i class="i-arrow"></i>
+                </div>条
+            </div>
+            <div class="switch-box">
+                <a class="page-btn mr10" id="left"><i class="left"></i></a> 第
+                <div class="select-box line-num">
+                    <select class="list" id="page">
+                      <?php if(!empty($info['limit'])): for($i=1; $i <= $info['limit']; $i++ ) : ?>
+                        <option value="<?=$i?>"><?=$i?></option>
+                    <?php endfor; endif; ?>
+                    </select>
+                    <em class="txt"><?=!empty($page) ? $page: 1?></em>
+                    <i class="i-arrow"></i>
+                </div>
+                共<em id="total"><?=$info['limit']?></em>页
+                <a class="page-btn ml10" id="right"><i class="right" ></i></a>
+            </div>
+        </div>
+    <?php }?>
+    </div>
+
+<script type="text/javascript">
+    <?php echo $js; echo $js2; echo $js3; echo $js4;?>
+    var dateId = '';
+    var uid = <?=$uid ?>;
+    $(function() {
+        $('#bet_type').on('change', function(){
+            var bid = $('#bet_type').val();
+            if(dateId == '')
+            {
+                dateId = <?php echo !empty($_GET['pame'])?$_GET['pame']:1 ?>;
+            }
+            var url = '/forms/total?v=1&&type='+bid+'&&pame='+dateId+'&&uid='+uid;
+            location.href = url;
+        });
+
+        function getUrlParam(name) {
+          var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+          var r = window.location.search.substr(1).match(reg); //匹配目标参数
+          if (r != null) return unescape(r[2]);
+          return null; //返回参数值
+        }
+
+        $('#excel').on('click',function(){
+            if ($("#bet_type").val())
+                var type = $("#bet_type").val();
+            else
+                var type = 0;
+            var pame = getUrlParam('pame');
+            var uid = getUrlParam('uid');
+            var issue = $('#issueNum').html();
+            if(issue == null )
+            {
+                issue = '';
+            }
+            var url = '/forms/excel?v=4&&type='+type+'&&pame='+pame+'&&uid='+uid+'&&issue='+issue;
+            location.href = url;
+    });
+    
+    $('.quik-btn').on('click',function(){
+        var id = $(this).data('id');
+        var betId = $("#bet_type").val();
+        var url = '/forms/total?v=1&&type='+betId+'&&pame='+id+'&&uid='+uid;
+        location.href = url;
+    });
+});
+</script>

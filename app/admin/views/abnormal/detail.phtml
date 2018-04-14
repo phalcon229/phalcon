@@ -1,0 +1,342 @@
+    <?php
+    $js = $js2 = '';
+
+    if (isset($_GET['limit'])) {
+        $urlLimit = $_GET['limit'];
+        $js = '$("#limit").val('.$urlLimit.');';
+        if (!in_array($_GET['limit'], $perpage))
+            $urlLimit = current($perpage);
+    }
+    if (isset($_GET['page']))
+        $js2 = '$("#page").val('.$_GET['page'].');';
+
+    ?>
+    <div class="throw-detail-body container">
+        <div class="top-title">
+            <i class="throw-red"></i> <em class="tit"><a href = '/abnormal'>异常订单</a><em class="mlr10">/</em><i class="tip-circle"></i><?=$info[0]['bet_name']?></em>
+        </div>
+        <div class="down-list">
+            <div class="select-box date">
+                <select class="list" id = 'bet_type'>
+                    <?php foreach ($info as $values) {
+                    ?>
+                    <option value="<?=$values['bres_periods']?>" <?php echo $this->request->get('issue') == $values['bres_periods'] ? 'selected="selected"' : ''?>>
+                        <?=$values['bres_periods'];?>期</option>
+                    <?php }?>
+                </select>
+                <em class="txt"><?php echo isset($_GET['issue']) ? $_GET["issue"].'期': $values[0].'期' ?></em>
+                <i class="i-arrow"></i>
+            </div>
+        </div>
+        <div class="table-box">
+            <table class="main-table mt20" cellpadding="0" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>账号</th>
+                        <th>下注时间</th>
+                        <th>归属代理</th>
+                        <th>投注金额</th>
+                        <th>下注号码</th>
+                        <th>中奖金额</th>
+                        <th>交易号码</th>
+                        <th>奖金/返点</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if(!empty($list)){ ?>
+                        <?php foreach ($list as $item) {?>
+                        <tr>
+                            <td><?=$item['u_name']?></td>
+                            <td><?php echo $item['bo_created_time']? date('Y-m-d H:i:s', $item['bo_created_time']) : ''; ?>
+                            </td>
+                            <td><?=$item['bo_u_name']?></td>
+                            <td><?=$item['bo_money']?></td>
+                            <td>
+                                <span class="bett-size red">
+                            <?=$game['rule_type'][$item['br_type']]?>：<i class="circle mr5"><?=$game['rule_base_type'][$item['br_base_type']]?></i>
+                                </span>
+                            </td>
+                            <td><?=$item['bo_bonus']?></td>
+                            <td><?=$item['bo_sn']?></td>
+                            <td><?=$item['bo_first_odds']?>/<?=$item['bo_odds']?>
+                            </td>
+                            <td>
+                            <?php if($item['bo_status'] == 1){?>
+                                <a class="operate lottery" data = "<?=$item['bo_id']?>" >开奖</a>
+                                <span class="divide-line"></span>
+                                <a class="operate back" data = "<?=$item['bo_id']?>">退款</a>
+                            <?php }?>
+                            </td>
+                        </tr>
+                        <?php }?>
+                    <?php }?>
+                    <?php if (empty($list)){?>
+                    <tr class="null">
+                        <td colspan="12">暂无数据！</td>
+                    </tr>
+                    <?php }?>
+                </tbody>
+            </table>
+        </div>
+        <div class="all-count">
+            <em class="period"><?=$_GET['issue'];?></em>期开奖
+            <div class="win-list mlr15">
+                <?php if(strlen($result) > 0){
+                    $data = explode(',', $result);
+                    foreach ($data as $value) {
+                ?>
+                <span class="ball"><?=$value?></span>
+                <?php } }?>
+            </div>
+            <a class="win-btn bg-agreen mr15 alllottery" >整期开奖</a>
+            <a class="win-btn bg-red allback" >整期退款</a>
+            <a class="win-btn bg-agreen mr15 setAbnor" >程序补开</a>
+            <a class="win-btn bg-agreen mr15 setnoopen" >官方未开奖</a>
+        </div>
+        <?php if($total > 0){?>
+        <div class="pages">
+            <div class="posl">
+                共<em class="counts"><?=$total?></em>条 每页显示
+                <div class="select-box line-num">
+                    <select class="list" id="limit">
+                    <?php foreach ($perpage as $key => $value) : ?>
+                        <option value="<?=$key?>"><?=$value?></option>
+                    <?php endforeach ?>
+                    </select>
+                    <em class="txt"><?=!empty($urlLimit) ? $urlLimit : current($perpage)?></em>
+                    <i class="i-arrow"></i>
+                </div>条
+            </div>
+            <div class="switch-box">
+                <a class="page-btn mr10" id="left"><i class="left"></i></a> 第
+                <div class="select-box line-num">
+                    <select class="list" id="page">
+                      <?php if(!empty($limit)): for($i=1; $i <= $limit; $i++ ) : ?>
+                        <option value="<?=$i?>"><?=$i?></option>
+                    <?php endfor; endif;?>
+                    </select>
+                    <em class="txt"><?=!empty($_GET['page']) ? $_GET['page']: 1?></em>
+                    <i class="i-arrow"></i>
+                </div>
+                共<em id="total"><?=$limit?></em>页
+                <a class="page-btn ml10" id="right"><i class="right" ></i></a>
+            </div>
+        </div>
+        <?php }?>
+        <div class="mask unsee" >
+            <div class="pop-panel">
+                <span class="close">
+                <i></i>关闭
+            </span>
+                <div class="pop-tit">
+                    <em><?=$_GET['issue'];?>期</em>开奖结果
+                </div>
+
+                <ul class="set-ball">
+                <?php if(strlen($result) > 0){
+                    $datas = explode(',', $result);
+                    foreach ($datas as $values) {
+                ?>
+                    <li class="item">
+                        <span class="ball-val"><?=$values?></span>
+                        <input type="text" class="input-size" name = 'lottery[]' value=''>
+                    </li>
+                <?php } }else{
+                    for ($i=0; $i < $betnum ; $i++) {
+                    ?>
+                    <li class="item">
+                        <span class="ball-val">?</span>
+                        <input type="text" class="input-size" name = 'lottery[]' value=''>
+                    </li>
+                <?php } }?>
+                </ul>
+                <a class="sure editresult">确定修改</a>
+            </div>
+        </div>
+    </div>
+
+<script type="text/javascript">
+<?php echo $js; echo $js2?>
+    $('#bet_type').on('change', function(){
+        var issue = $('#bet_type').val();
+        var betid = '<?=$_GET['betid']?>';
+        var url = '/abnormal/detail?betid='+betid+'&issue='+issue;
+        location.href = url;
+    });
+
+    $('.alllottery').on('click', function(){
+        $('div').find('.mask').removeClass('unsee')
+    });
+
+    $('body').on('click', '.close', function(){
+        $('div').find('.mask').addClass('unsee')
+    });
+
+    $('.editresult').on('click', function(){
+
+         var attr = '<?=$betnum?>';
+        var lottery = [];
+        $("input[name='lottery[]']").each(function() {
+            if($(this).val().length == 0 || isNaN($(this).val())){
+                layer.msg('不能输入空值或不是数字')
+                return false;
+            }
+            lottery.push(parseInt($(this).val()));
+        });
+
+        if(lottery.length == attr && attr > 0){
+            var id ='<?=$_GET['betid']?>';
+            var issue ='<?=$_GET['issue']?>';
+            $.ajax({
+                     url: "/abnormal/doedit",
+                     type: "POST",
+                     data: {lottery:lottery, betid:id, issue:issue},
+                     dataType:'json',
+                     error: function(e){
+                       layer.msg("获取参数失败！");
+                     },
+                     success: function (msgObj) {
+
+                        if (msgObj.code == 500) {
+                            layer.msg(msgObj.msg);
+                            return false;
+                        }
+                        layer.msg('修改整期开奖成功');
+                        setTimeout("reload()",1000);
+                     }
+                });
+        }
+
+    })
+
+    $("body").on('click', '.allback', function() {
+        if(!confirm("确定整期进行退款？"))return
+        var betid ='<?=$_GET['betid']?>';
+        var issue ='<?=$_GET['issue']?>';
+
+    $.ajax({
+                 url: "/abnormal/allback",
+                 type: "POST",
+                 data: {betid:betid, issue:issue},
+                 dataType:'json',
+                 error: function(e){
+                   layer.msg("获取参数失败！");
+                 },
+                 success: function (msgObj) {
+
+                    if (msgObj.code == 500) {
+                        layer.msg(msgObj.msg);
+                        return false;
+                    }
+                    layer.msg('整期退款成功');
+                    setTimeout("reload()",1000);
+                 }
+            });
+    });
+
+    $("body").on('click', '.setAbnor', function() {
+        if(!confirm("确定设置为程序补开？"))return
+        var betid ='<?=$_GET['betid']?>';
+        var issue ='<?=$_GET['issue']?>';
+
+    $.ajax({
+                 url: "/abnormal/setabnor",
+                 type: "POST",
+                 data: {betid:betid, issue:issue,type:1},
+                 dataType:'json',
+                 error: function(e){
+                   layer.msg("获取参数失败！");
+                 },
+                 success: function (msgObj) {
+
+                    if (msgObj.code == 500) {
+                        layer.msg(msgObj.msg);
+                        return false;
+                    }
+                    layer.msg('成功设置为程序补开');
+                    setTimeout("reload()",1000);
+                 }
+            });
+    });
+
+    $("body").on('click', '.setnoopen', function() {
+        if(!confirm("确定设置官方未开奖？"))return
+        var betid ='<?=$_GET['betid']?>';
+        var issue ='<?=$_GET['issue']?>';
+
+    $.ajax({
+                 url: "/abnormal/setabnor",
+                 type: "POST",
+                 data: {betid:betid, issue:issue,type:3},
+                 dataType:'json',
+                 error: function(e){
+                   layer.msg("获取参数失败！");
+                 },
+                 success: function (msgObj) {
+
+                    if (msgObj.code == 500) {
+                        layer.msg(msgObj.msg);
+                        return false;
+                    }
+                    layer.msg('成功设置为官方未开奖');
+                    setTimeout("reload()",1000);
+                 }
+            });
+    });
+
+    $("body").on('click', '.lottery', function() {
+        if(!confirm("确定对此用户开奖？"))return
+        var boid = $(this).attr('data');
+
+    $.ajax({
+                 url: "/abnormal/lottery",
+                 type: "POST",
+                 data: {boid:boid},
+                 dataType:'json',
+                 error: function(e){
+                   layer.msg("获取参数失败！");
+                 },
+                 success: function (msgObj) {
+
+                    if (msgObj.code == 500) {
+                        layer.msg(msgObj.msg);
+                        return false;
+                    }
+                    layer.msg('开奖成功');
+                    setTimeout("reload()",1000);
+                 }
+            });
+    });
+
+    $("body").on('click', '.back', function() {
+        if(!confirm("确定对此用户退款？"))return
+        var boid = $(this).attr('data');
+
+    $.ajax({
+                 url: "/abnormal/back",
+                 type: "POST",
+                 data: {boid:boid},
+                 dataType:'json',
+                 error: function(e){
+                   layer.msg("获取参数失败！");
+                 },
+                 success: function (msgObj) {
+
+                    if (msgObj.code == 500) {
+                        layer.msg(msgObj.msg);
+                        return false;
+                    }
+                    layer.msg('退款成功');
+                    setTimeout("reload()",1000);
+                 }
+            });
+    });
+
+    function reload()
+    {
+        var url = '<?=substr($_SERVER["QUERY_STRING"], stripos($_SERVER["QUERY_STRING"], "/"))?>';
+        window.location.href = url;
+    }
+
+</script>

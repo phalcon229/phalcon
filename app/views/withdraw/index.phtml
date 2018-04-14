@@ -1,0 +1,283 @@
+<div class="withdrawal-home-body">
+        <?php $this->partial("shared/usertop"); ?>
+    <form>
+        <ul class="input-panel">
+        <?php if(!empty($bank)){ ?>
+            <input type="hidden" id="hasBank" value="1">
+        <?php }else{ ?>
+            <input type="hidden" id="hasBank" value="0">
+        <?php } ?>
+        <?php if(!empty($bank)){ ?>
+            <li class="item flex">
+                <label>提现账号</label>
+                <span class="flex1">
+                    <select class="flex1" id="bank" name="bank">
+                        <option value="">请选择账号</option>
+                        <?php foreach ($bank as $key=>$value) { ?>
+                        <option value="<?php echo $bank[$key]['ubc_id'] ?>"><?php echo $bank[$key]['ubc_number'] ?></option>
+                        <?php } ?>
+                    </select>
+                    <em>请选择账号</em>
+                    <i class="down"></i>
+                    </span>
+            </li>
+            <?php }else{ ?>
+                <li class="item flex">
+                    <label>提现账号</label>
+                    <span class="flex1 vc">
+                      <a class="btn-default btn-size-s" id='addbank'>去绑定</a>
+                    </span>
+                </li>
+            <?php } ?>
+            <li class="item flex" id="forMoney">
+                <label>提现金额</label>
+                <input class="flex1" id="money" name="money" type="tel" placeholder="请输入提款金额" />
+            </li>
+            <li class="item flex">
+                <label>金额大写</label>
+                <span class="flex1 on" id="bigMoney">
+                       零元
+                </span>
+            </li>
+            <li class="item flex">
+                <label>扣手续费</label>
+                <span class="flex1 on">
+                           <?php echo $msg?>
+                </span>
+            </li>
+            <li class="item flex">
+                <label>资金密码</label>
+                <?php if(!empty($wPwd)){ ?>
+                <input type="hidden" id="hasWpwd" value="1">
+                <?php }else{ ?>
+                <input type="hidden" id="hasWpwd" value="0">
+                <?php } ?>
+                <input class="flex1" type="password" name="moneyPwd" id="moneyPwd" placeholder="请输入资金密码" />
+            </li>
+        </ul>
+        <div class="clearfix mt10 plr12">
+            <a class="fr text-link" >忘记资金密码</a>
+        </div>
+        <div class="tip-txt">
+            <p>单笔提现上限:<i class="red"><?php echo (int)$limit[1]['sc_value'] ?>元</i></p>
+            <p>单笔提现下限:<i class="red"><?php echo (int)$limit[0]['sc_value'] ?>元</i></p>
+            <!--<p>每日最高提款:<i class="red"><?php echo $limit[1]['sc_value'] ?></i>消费充值本金之差大于等于<i class="red">0</i>方可提款</p>-->
+            <p>提现需达投注量:<i class="red"><?php echo (int)$consume ?>元</i></p>
+            <p>已达投注量:<i class="red"><?php echo (int)$spent ?>元</i></p>
+            <p>是否能提现:<?php echo $whether ?></p>
+            </br></br>
+            <center><p>如有问题请联系客服</p></center>
+        </div>
+        <div class="btn-center">
+            <input type="submit" value="立即提款" class="btn">
+        </div>
+    </form>
+    <?php if(empty($wPwd)){ ?>
+    <div class="mask unsee"  id = "addinfo" >
+        <div class="qr-pop">
+
+        <i class="qr-close" id ="closeinfo"></i>
+        <div class="qr-tip">请补充您的账户信息</div>
+        <div class="text-center">
+            <a href="/user/base?info=3" class="qr-btn qr-sure">去完善资料</a>
+        </div>
+        </div>
+        </div>
+    <?php } ?>
+    <script>
+        function show(hasWpwd)
+        {
+            if(hasWpwd==0)
+            {
+                $('#addinfo').removeClass('unsee');
+                return;
+            }
+        }
+        var moneyTop = <?php echo $limit[1]['sc_value'] ?>;
+        var moneyLow = <?php echo $limit[0]['sc_value'] ?>;
+        
+        $(document).ready(function () {
+            var hasWpwd = $('#hasWpwd') .val();
+            show(hasWpwd);
+            $('#addbank').click(function(){
+                window.location.href = '/bank/add';
+            });
+            $('#closeinfo').click(function(){
+                window.location.href = '/';
+            });
+
+            $('#closebankinfo').click(function(){
+                window.location.href = '/';
+            });
+
+            $("#money").keyup(function () {
+                           var money=$('#money').val();
+                           var bigMoney=nameToChinese(money);
+                           $("#bigMoney").html(bigMoney);
+                        });
+                    });
+        $(document).ready(function() {
+            $("form").validate({
+                debug: true,
+                rules: {
+                    bank: {
+                        required: true,
+
+                    },
+                    money: {
+                        required: true,
+                        digits: true,
+                        min: <?php echo $limit[0]['sc_value'] ?>,
+                        max: <?php echo $limit[1]['sc_value'] ?>
+                    },
+                    moneyPwd: {
+                        required: true,
+                    }
+                },
+                messages: {
+                    money: {
+                        digits: '请输入整数金额',
+                        min: '提现下限<?php echo $limit[0]['sc_value'] ?>元',
+                        max: '提现上限<?php echo $limit[1]['sc_value'] ?>元',
+                    }
+                },
+            submitHandler: function(form) {
+
+                var money = $("#money").val();
+                var moneyPwd = $('#moneyPwd').val();
+                var can = <?php echo $can; ?>;
+                var diff = <?php echo $diff; ?>;
+                if(can == 0)
+                {
+                   alert('未达到提现所需投注量，还差投注额：'+diff+'元。');return false;
+                }
+                if(parseInt(money)<parseInt(moneyLow))
+                {
+                    alert('提现金额不能小于出款下限');return false;
+                }
+                if(parseInt(money)>parseInt(moneyTop))
+                {
+                    alert('提现金额不能大于出款上限');return false;
+                }
+                var data = {bank:$("#bank option:selected").val(), money:money, moneyPwd:moneyPwd};
+
+                $('form input[type="submit"]').attr('disabled', true).val('申请中...');
+                $.ajax({
+                    type: 'post',
+                    url: 'fresh',
+                    data: data,
+                    dataType: 'json',
+                    success: function(res) {
+                        if (res.code == 500) {
+                            alert(res.msg);
+                            return false;
+                        }
+                        else if (res.code == 499) {
+                            alert(res.msg);
+                            $('input[name="moneyPwd"]').val('').focus();
+                            return false;
+                        }
+                        else if(res.code == 200)
+                        {
+                            alert('提现申请成功');
+                            window.location.href = '/wallet/show';
+                        }
+                    },
+                    complete: function() {
+                        $('form input[type="submit"]').attr('disabled', false).val('申请');
+
+                    }
+                });
+            }
+            });
+        });
+        function nameToChinese(Num) {
+            for (i = Num.length - 1; i >= 0; i--) {
+                Num = Num.replace(",", "")//替换tomoney()中的“,”
+                Num = Num.replace(" ", "")//替换tomoney()中的空格
+            }
+            Num = Num.replace("￥", "")//替换掉可能出现的￥字符
+            // if (isNaN(Num)) { //验证输入的字符是否为数字
+            //     alert("请检查小写金额是否正确");
+            //     return;
+            // }
+            //---字符处理完毕，开始转换，转换采用前后两部分分别转换---//
+            part = String(Num).split(".");
+            newchar = "";
+            //小数点前进行转化
+            for (i = part[0].length - 1; i >= 0; i--) {
+                if (part[0].length > 10) { alert("位数过大，无法计算"); return ""; } //若数量超过拾亿单位，提示
+                tmpnewchar = ""
+                perchar = part[0].charAt(i);
+                switch (perchar) {
+                    case "0": tmpnewchar = "零" + tmpnewchar; break;
+                    case "1": tmpnewchar = "壹" + tmpnewchar; break;
+                    case "2": tmpnewchar = "贰" + tmpnewchar; break;
+                    case "3": tmpnewchar = "叁" + tmpnewchar; break;
+                    case "4": tmpnewchar = "肆" + tmpnewchar; break;
+                    case "5": tmpnewchar = "伍" + tmpnewchar; break;
+                    case "6": tmpnewchar = "陆" + tmpnewchar; break;
+                    case "7": tmpnewchar = "柒" + tmpnewchar; break;
+                    case "8": tmpnewchar = "捌" + tmpnewchar; break;
+                    case "9": tmpnewchar = "玖" + tmpnewchar; break;
+                }
+                switch (part[0].length - i - 1) {
+                    case 0: tmpnewchar = tmpnewchar + "元"; break;
+                    case 1: if (perchar != 0) tmpnewchar = tmpnewchar + "拾"; break;
+                    case 2: if (perchar != 0) tmpnewchar = tmpnewchar + "佰"; break;
+                    case 3: if (perchar != 0) tmpnewchar = tmpnewchar + "仟"; break;
+                    case 4: tmpnewchar = tmpnewchar + "万"; break;
+                    case 5: if (perchar != 0) tmpnewchar = tmpnewchar + "拾"; break;
+                    case 6: if (perchar != 0) tmpnewchar = tmpnewchar + "佰"; break;
+                    case 7: if (perchar != 0) tmpnewchar = tmpnewchar + "仟"; break;
+                    case 8: tmpnewchar = tmpnewchar + "亿"; break;
+                    case 9: tmpnewchar = tmpnewchar + "拾"; break;
+                }
+                newchar = tmpnewchar + newchar;
+            }
+            //小数点之后进行转化
+            if (Num.indexOf(".") != -1) {
+                if (part[1].length > 2) {
+                    alert("小数点之后只能保留两位,系统将自动截断");
+                    part[1] = part[1].substr(0, 2)
+                }
+                for (i = 0; i < part[1].length; i++) {
+                    tmpnewchar = ""
+                    perchar = part[1].charAt(i)
+                    switch (perchar) {
+                        case "0": tmpnewchar = "零" + tmpnewchar; break;
+                        case "1": tmpnewchar = "壹" + tmpnewchar; break;
+                        case "2": tmpnewchar = "贰" + tmpnewchar; break;
+                        case "3": tmpnewchar = "叁" + tmpnewchar; break;
+                        case "4": tmpnewchar = "肆" + tmpnewchar; break;
+                        case "5": tmpnewchar = "伍" + tmpnewchar; break;
+                        case "6": tmpnewchar = "陆" + tmpnewchar; break;
+                        case "7": tmpnewchar = "柒" + tmpnewchar; break;
+                        case "8": tmpnewchar = "捌" + tmpnewchar; break;
+                        case "9": tmpnewchar = "玖" + tmpnewchar; break;
+                    }
+                    if (i == 0) tmpnewchar = tmpnewchar + "角";
+                    if (i == 1) tmpnewchar = tmpnewchar + "分";
+                    newchar = newchar + tmpnewchar;
+                }
+            }
+            //替换所有无用汉字
+            while (newchar.search("零零") != -1)
+                newchar = newchar.replace("零零", "零");
+            newchar = newchar.replace("零亿", "亿");
+            newchar = newchar.replace("亿万", "亿");
+            newchar = newchar.replace("零万", "万");
+            newchar = newchar.replace("零元", "元");
+            newchar = newchar.replace("零角", "");
+            newchar = newchar.replace("零分", "");
+
+            if (newchar.charAt(newchar.length - 1) == "元" || newchar.charAt(newchar.length - 1) == "角")
+                newchar = newchar + "整"
+            return newchar;
+        }
+
+        $('.text-link').on('click',function(){
+            window.location.href = '/user/base?forget=1';
+        })
+
+    </script>

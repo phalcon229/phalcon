@@ -1,0 +1,175 @@
+<?php //var_dump($last);exit;?>
+
+    <div class="down-list">
+        <em class="nper" style="margin-right: 15px;">第<?=$next[0]['bres_periods']?>期</em>
+        距封盘
+        <em class="orange countdown"></em>
+        <em class="profit-loss">今天盈亏:<i class="ml5"><?=sprintf('%.1f',$earn)?></i></em>
+        <em class="profit-loss">今日本彩种总投注:<i class="ml5"><?=$perbet?></i></em>
+        <em class="profit-loss">今日全部彩种总投注:<i class="ml5"><?=$allbet?></i></em>
+        <div class="win-nper mr15">
+            <em class="win-tit mr10">第<?=$lastExpect?>期开奖</em>
+        <?php foreach ($result as $v) : ?>
+            <span class="<?=$this->di['config']['style'][$this->request->get('bet')?:key($bets)]?> <?= empty($color) ? '' : !empty($this->di['config']['color'][$v]) ? $this->di['config']['color'][$v] :''; ?>"><?=$v?></span>
+        <?php endforeach; ?>
+        </div>
+        <a class="reload">刷新</a>
+        <em>刷新频率</em>
+        <div class="select-box seconds">
+            <select class="list" name="second">
+            <?php foreach ($time as $value): ?>
+                <option value="<?=$value?>" <?=$this->request->get('time') == $value ? 'selected="selected"' : '' ; ?>><?=$value?>秒</option>
+            <?php endforeach; ?>
+            </select>
+            <em class="txt"><?=$this->request->get('time') ?: current($time)?>秒</em>
+            <i class="i-arrow"></i>
+        </div>
+<!--        &nbsp&nbsp&nbsp
+        在线人数&nbsp<span><?php echo $online ?></span>-->
+    </div>
+    <div class="few-table">
+    <?php
+        $i = 0;
+        foreach ($rules as $type => $baseTypes) :
+        if($i%4 == 0) :
+    ?>
+        <div class="row-table">
+    <?php endif; ?>
+
+            <table class="bett-ball">
+                <thead>
+                    <tr>
+                        <th>号</th>
+                        <th colspan="3">赔率</th>
+                        <th>注额</th>
+                        <th>亏额</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                        <td colspan="6">
+                            <?=$game['rule_type'][$type]?>
+                        </td>
+                    </tr>
+                <?php foreach ($baseTypes as $k => $v) : ?>
+                    <tr data-id="<?=$v['br_id']?>">
+                        <td>
+                            <?=$game['rule_base_type'][$v['br_base_type']]?>
+                        </td>
+                        <td class="td-add" data-id="1">
+                            <i class="i-add"></i>
+                        </td>
+                        <td class="val" data-val="<?=$v['br_bonus']?>">
+                            <input type="text" class="changeval" disabled="true" value="<?=floatval($v['br_bonus'])?>">
+                        </td>
+                        <td class="td-reduce" data-id="2">
+                            <i class="i-reduce"></i>
+                        </td>
+                        <td>
+                            <span class="<?=empty($v['bo_money']) ? 'line': '' ?>"><?=$v['bo_money'] ?></span>
+                        </td>
+                        <td>
+                            <span class="line"></span>
+                        </td>
+                    </tr>
+                <?php
+                    endforeach;
+                    $i++;
+                ?>
+                </tbody>
+            </table>
+    <?php if ($i % 4 == 0) :?>
+        </div>
+    <?php
+        endif;
+        endforeach ;
+    ?>
+    </div>
+
+
+<script type="text/javascript">
+    $('#bet').on('change',function(){
+        var betId = $(this).val();
+        var url = '/order/index?bet='+betId;
+        location.href = url;
+    });
+
+    $('.bett-ball').on('click', '.a-save', function(){
+        var opTr = $(this).parent().parent();//操作栏的tr
+        var tr = opTr.prev();//更改数值的tr
+        var id = tr.attr('data-id');//获取对应tr数值
+        var bonus = tr.find('.changeval').val();//获取对应tr的值
+
+        $.ajax({
+            url: '/order/setbonus',
+            type: 'POST',
+            data: {id:id, bonus:bonus},
+            dataType: 'json',
+            error: function()
+            {
+                layer.msg('没有权限或服务器连接超时!');
+            },
+            success: function(msgObj)
+            {
+                if(msgObj.ret == 1)
+                {
+                    tr.find('.changeval').attr('value', bonus);
+                    layer.msg(msgObj.msg);
+                    location.reload();
+                }
+                else
+                {
+                    layer.msg(msgObj.msg);
+                }
+                opTr.detach();//删除操作条
+            }
+        });
+    });
+
+    $('.down-list').on('click', '.reload', function(){
+        location.reload();
+    });
+
+    var second = parseInt($('select[name="second"]').val());
+    var url = location.href;
+    var tag = (url.indexOf('?') > -1) ? '&' : '?';
+    var bet = "<?=$this->request->get('bet')?: ''?>";
+
+    $('select[name="second"]').on('change',function(){
+        href = '/order/index?bet=' + bet + '&time=' + $(this).val();
+        location.href = href;
+    });
+
+    var send = setInterval("ajaxQuery()", second * 1000);
+
+    function ajaxQuery()
+    {
+        location.reload();
+    }
+
+    //更改数值时停止计时器
+    $('.val .changeval').on('change',function(){
+        clearInterval(send);
+    });
+
+    //根据封盘时间进行计算显示倒计时
+    var closeTime= new Date("<?=$stopTime?>");
+    $(function() {
+        $('.countdown').countdown({
+          date: closeTime,
+          render: function(data) {
+            if (data.millisec == 0) {
+                $(this.el).text("已封单");
+                return;
+            }
+            var hours = data.hours ? this.leadingZeros(data.hours, 2) + ':' : '';
+            $(this.el).text(hours + this.leadingZeros(data.min, 2) + ':' + this.leadingZeros(data.sec, 2));
+          },
+          onEnd: function() {
+
+          }
+        })
+    });
+</script>
+<script type="text/javascript" src="/js/jquery.countdown.min.js"></script>

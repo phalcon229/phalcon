@@ -1,0 +1,22 @@
+<div class="active-body">
+    <?php $this->partial("shared/usertop"); ?>
+    <?php if(empty($activityInfo)){ ?>
+        <div class="state-null">
+            <i class="flag-icon"></i>
+            <p class="null-tit">暂无任何优惠活动</p>
+        </div>
+    <?php } ?>
+        <ul class="active-list">
+            <?php for($i=0; $i<count($activityInfo); $i++) { ?>
+            <li class="item">
+                <a href="/activity/detail?paId=<?php echo $activityInfo[$i]['pa_id'] ?>">
+                    <img src="<?php echo $activityInfo[$i]['pa_img'] ?>">
+                    <div class="tic flex vc">
+                        <span class="flex1"><?php echo $activityInfo[$i]['pa_title'] ?></span>
+                        <em class="right orange"><?php echo $activityInfo[$i]['if_end'] ?></em>
+                    </div>
+                </a>
+            </li>
+            <?php } ?>
+        </ul>
+</div>

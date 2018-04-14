@@ -1,0 +1,43 @@
+<div class="game-body">
+
+<?php $this->partial("shared/usertop"); ?>
+
+<div class="number-lump">
+    <div class="main-table">
+        <table>
+            <thead>
+                <tr>
+                    <th><em class="chk allchk on"></em></th>
+                    <th>期号</th>
+                    <th>赔率</th>
+                    <th>当前投入</th>
+                    <th>累计投入</th>
+                    <th>盈利</th>
+                    <th>盈利率</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="7" class="null">没有任何资料</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="context">
+        <p>总注数:<em class="red track-perid">5</em>注，追号总金额:<em class="red track-total">0</em>元，追号期数上限:<em class="red" id="trackMax"><?=$trackMax;?></em>期</p>
+        <p>中奖后停止追号<em class="chk rel on" id="win_stop"></em></p>
+        <p>追号期数:
+            <input type="text" class="in-box m" id="track-nums" value="<?=$trackMax <= 5 ? $trackMax : 5; ?>">期
+        </p>
+        <p>起始倍数:
+            <input type="text" class="in-box m" id="track-start-times" value="1">,
+            隔<input type="text" class="in-box m" id="track-per-perid" value="1">期×
+            <input type="text" class="in-box m" id="track-per-times" value="1">倍</p>
+    </div>
+    <div class="abtn">
+        <a class="create" id="track-plan">生成追号方案</a>
+        <a class="zsure sub" data-track="1">确定投注</a>
+    </div>
+</div>
+
+</div>

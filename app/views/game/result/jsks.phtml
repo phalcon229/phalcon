@@ -1,0 +1,39 @@
+
+    <?php
+            $dx = [1 => '大', 2 => '小'];
+            $ds = [1 => '双', 2 => '单'];
+            foreach ($lists as $l):
+                $memo = !empty($l['bres_memo']) ? json_decode($l['bres_memo'], true) : [];
+                if (empty($l['bres_result'])) {
+                    $nums = array_fill(0, 3, '?');
+                } else {
+                    $nums = explode(',', $l['bres_result']);
+                }
+        ?>
+    <li class="item flex">
+        <div class="flex1">
+            <p class="tit"><?=$l['bres_periods'];?></p>
+            <dl class="prize-data flex">
+                <dd class="text flex1">
+                    <?php foreach ($nums as $i => $n): $ruleIdx = $i+2;?>
+                    <span>
+                        <i class="circle"><?=$n;?></i>
+                    </span>
+                    <?php endforeach; ?>
+                </dd>
+            </dl>
+        </div>
+        <div class="sum">
+            <p class="all-sum">总和</p>
+            <?php if (empty($l['bres_result'])) { ?>
+                <i></i>
+                <em class="red"></em>
+                <em class="red"></em>
+            <?php }else{ ?>
+                <i><?=$memo['zh']?></i>
+                <em class="<?=$memo['dx'] == 1 ? 'red' : '';?>"><?=$dx[$memo['dx']]?></em>
+                <em class="<?=$memo['ds'] == 1 ? 'red' : '';?>"><?=$ds[$memo['ds']]?></em>
+            <?php } ?>
+        </div>
+    </li>
+    <?php endforeach; ?>

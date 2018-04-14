@@ -1,0 +1,82 @@
+    <div class="user-manage-body container">
+        <div class="top-title">
+            <i class="user-red"></i> <em class="tit"><a href = '/user'>用户管理-<?=$user['u_name']?></a></em>
+        </div>
+    <form action="dopass" id='rule'>
+        <div class="modify-box ">
+            <p class="tit">登录密码</p>
+            <div>
+                <input type="text" placeholder="请输入新登录密码" class="pwd" name = 'pwd' value= '' id='pwd'>
+            </div>
+            <div>
+                <input type="text" placeholder="请确认新登录密码" class="pwd" name = 'new_pwd' value = ''>
+            </div>
+            <p class="tit">资金密码</p>
+            <div>
+                <input type="text" placeholder="请输入新资金密码" class="pwd" name = 'zpwd' value= '' id='zpwd'>
+            </div>
+            <div>
+                <input type="text" placeholder="请确认新资金密码" class="pwd" name = 'new_zpwd' value = ''>
+            </div>
+                <input type="hidden"class="uid" name = 'uid' value = '<?=$user['u_id']?>'>
+            <button class="sure">确定</button>
+        </div>
+    <form>
+    </div>
+
+
+<script type="text/javascript">
+
+$.validator.setDefaults({
+    submitHandler: function() {
+        $('form').ajaxSubmit({
+            dataType: 'json',
+            type: "POST",
+            success: function (msgObj) {
+                    if (msgObj.code == 500) {
+                        layer.msg(msgObj.msg);
+                        return false;
+                    }
+                    layer.msg(msgObj.data);
+                    setTimeout(function(){
+                        window.location.href = '/user';
+                    },1000);
+            },
+            error: function(e){
+                layer.msg("<h2>修改密码失败</h2>");
+            },
+        });
+        return false;
+        }
+});
+
+    $().ready(function() {
+    // 在键盘按下并释放及提交后验证提交表单
+      $("#rule").validate({
+          rules: {
+            pwd: {
+                rangelength:[8,20]
+            },
+            new_pwd: {
+                rangelength:[8,20],
+                equalTo:"#pwd"
+              },
+            zpwd: {
+                rangelength:[8,20]
+            },
+            new_zpwd: {
+                rangelength:[8,20],
+                equalTo:"#zpwd"
+              },
+        },
+            messages: {
+              pwd: {
+                required: "请输入正确格式登录密码",
+              },
+              new_pwd: {
+                required: '请输入正确格式确认密码',
+            },
+          }
+      });
+    });
+</script>

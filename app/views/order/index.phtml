@@ -1,0 +1,314 @@
+<div class="order-manage-body">
+    <?php $this->partial("shared/usertop"); ?>
+        <ul class="head-bar flex" id="orderType">
+            <li class="item flex1 on" ><span data-type="1">订单查询</span></li>
+            <li class="item flex1" ><span data-type="2">追号查询<input type="hidden" value="<?php echo $type?>" id="zhui" /></span></li>
+            <li class="item flex1" ><span data-type="3">订单撤销</span></li>
+        </ul>
+        <div class="select-title-black">
+            <span>
+                    <select class="select-p" id="lotteryType">
+                        <option value="0">全部彩种</option>
+                        <?php for($i = 0; $i < count($lottery); $i++) { ?>
+                        <option value="<?php echo $lottery[$i]['bet_id'] ?>"><?php echo $lottery[$i]['bet_name'] ?></option>
+                        <?php } ?>
+                    </select>
+                    <em>全部彩种</em>
+                </span>
+        </div>
+        <div class="search-box">
+            <div class="date flex">
+                <span class="box flex1">                
+                    <input type="date" value="" id="startDay" placeholder="请选择日期" />
+                    <em>请选择日期</em>
+                </span>
+                <label class="word">至</label>
+                <span class="box flex1">
+                    <input type="date" value="" id="endDay" placeholder="请选择日期" />
+                      <em>请选择日期</em>
+                </span>
+            </div>
+            <!--<input type="text" placeholder="交易编号" id="serialNum" class="input-box" />-->
+            <input type="submit" value="搜索" class="btn">
+            <div class="options-list">
+                <span  sdate="<?php echo $todayBegin ?>" edate="<?php echo $todayEnd ?>">今日</span>
+                <span  sdate="<?php echo $yBegin ?>" edate=   "<?php echo $yBegin ?>">昨日</span>
+                <span class="on" id="today" sdate="<?php echo $tWeekFirst ?>" edate="<?php echo $tWeekLast ?>">本周</span>
+                <span  sdate="<?php echo $lWeekFirst ?>" edate="<?php echo $lWeekLast ?>">上周</span>
+                <span  sdate="<?php echo $tMonthFirst ?>" edate="<?php echo $tMonthLast ?>">本月</span>
+                <span  sdate="<?php echo $lMonthFirst ?>" edate="<?php echo $lMonthLast ?>">上月</span>
+            </div>
+        </div>
+        <div class="main-table " id="detailList">
+            <table>
+                <thead>
+                    <tr>
+                        <th>彩种玩法</th>
+                        <th>期号/下注时间</th>
+                        <th>状态</th>
+                        <th>投注金额</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="orderList">
+                    <?php if(!empty($orderInfo)){ ?>
+                    <?php for($i = 0; $i < count($orderInfo); $i++) { ?>
+                    <tr>    
+                        <td><?php echo $orderInfo[$i]['bet_name'] ?><em class="next"><?php echo $orderInfo[$i]['bo_played_name'] ?></em></td>
+                        <td><?php echo $orderInfo[$i]['bo_issue'] ?><em class="next"><?php echo $orderInfo[$i]['bo_created_time'] ?></em></td>
+                        <?php if($orderInfo[$i]['bo_status']==5){ ?>
+                        <td class="light">已撤销</td>
+                        <?php }else{ ?>
+                        <td class="orange"><?php echo $orderInfo[$i]['bo_draw_result'] ?></td>
+                        <?php } ?>
+                        <td class="red"><?php echo $orderInfo[$i]['bo_money'] ?></td>
+                        <td><a href="/order/detail?boId=<?php echo $orderInfo[$i]['bo_id'] ?>&betId=<?php echo $orderInfo[$i]['bet_id']?>&nper=<?php echo $orderInfo[$i]['bo_issue']?>" id="detail">详情</a></td>
+                    </tr>
+                    <?php } ?>
+                    <?php }else{?>
+                    <tr>
+                        <td colspan="5" class="null">没有任何资料</td>
+                    </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
+        </div>
+       
+</div>
+<script>
+    var lotteryType = $("#lotteryType option:selected").val();
+    var serialNum = '';
+    var type = '';
+    $(document).ready(function(){
+        type = $('#zhui').val();
+        if(type==1)
+        {
+            $("#orderType li").each(function() {
+                $("#orderType li").removeClass("on");
+            });
+            $('#zhui').parent().parent().addClass("on");
+        }
+    });
+    $(function(){
+        $("#orderType li span").each(function() {
+            $(this).click(function() {
+            var orderTpye = $(this).attr('data-type');
+            if(orderTpye == 1)
+            {
+                window.location.href = '/order/reportdetail';
+            }
+            else if(orderTpye == 2)
+            {
+                window.location.href = '/order/index?zh=1';
+            }
+            else
+            {
+               window.location.href = '/order/cancel'; 
+            }
+            
+            });
+        });
+    });
+    $(function(){
+        $("#serialNum").keyup(function () { 
+            serialNum = $("#serialNum").val();
+        });   
+        $("#lotteryType").change(function () { 
+            lotteryType = $("#lotteryType option:selected").val();
+        });
+        $(".options-list span").each(function() {
+        $(this).click(function() {
+            var sDate = $(this).attr("sdate");
+            var eDate = $(this).attr("edate");
+            $(".options-list span").removeClass("on");
+            $(this).addClass("on");
+            $.ajax({
+                    type: "POST",
+                    url: "/order/dataFresh",
+                    data:{startDay:sDate, endDay:eDate,serialNum:serialNum,lotteryType:lotteryType,type:type},
+                    dataType: "json",
+                    success: function(data){
+                                var str = '';
+                                if(data.code == '200'){                                 
+                                    $.each(data.data.orderInfo,function(i,n){
+                                        var insert = '';
+                                        if(data.data.orderInfo[i]['bo_status']==5)
+                                        {
+                                            insert = '<td class="light">已撤销</td>'
+                                        }else
+                                        {
+                                           insert = '<td class="orange">'+data.data.orderInfo[i]['bo_draw_result']+'</td>' 
+                                        }
+                                        str = str+'<tr>'+
+                                                    '<td>'+data.data.orderInfo[i]['bet_name']+'<em class="next">'+data.data.orderInfo[i]['bo_played_name']+'</a></td>'+
+                                                    '<td>'+data.data.orderInfo[i]['bo_issue']+'<em class="next">'+data.data.orderInfo[i]['bo_created_time']+'</a></td>'+insert+
+                                                    '<td class="red">'+data.data.orderInfo[i]['bo_money']+'</td>'+
+                                                    '<td><a id="detail" href="/order/detail?boId='+data.data.orderInfo[i]['bo_id']+'&betId='+data.data.orderInfo[i]['bet_id']+'&nper='+data.data.orderInfo[i]['bo_issue']+'">详情</a></td>'+
+                                                '</tr>';
+                                    });
+                                    $("#orderList").html(str);
+//                                    $(document).ready(function(){
+//                                        $('#startDay').click(function(){
+//                                            $(".options-list span").removeClass("on");
+//                                        });
+//                                        $('#endDay').click(function(){
+//                                           $(".options-list span").removeClass("on");
+//                                        });              
+//                                    });
+//                                       $(function(){
+//                                        $(".options-list span").each(function() {
+//                                        $(this).click(function() {
+//                                            var sDate = $(this).attr("sdate");
+//                                            var eDate = $(this).attr("edate");
+//                                            $(".options-list span").removeClass("on");
+//                                            $(this).addClass("on");
+//                                        });
+//                                    });
+//                                });
+
+                            }
+                            else{
+                                alert('无数据');
+                                    str = str+'<tr>'+
+                                                    '<td colspan="5" class="null">没有任何资料</td>'+
+                                             '</tr>';
+                                        $("#orderList").html(str);
+                            }
+                        }
+                });
+        });
+    });
+    });
+    function changeTime(time) {
+        var Month = time.substring(5,7 );
+        var Day = time.substring(8,10);     
+        var Year = time.substring(0,4);
+        return Year + '/' + Month + '/' + Day ;
+    }
+        $('.btn').click(function(){
+                $("#serialNum").keyup(function () { 
+                    serialNum = $("#serialNum").val();
+                });
+                lotteryType = $("#lotteryType option:selected").val();
+                var start = $("#startDay").val();
+                var end = $("#endDay").val();
+                var startDay = changeTime(start);
+                var endDay = changeTime(end);
+                if(serialNum =='' ){
+                    if(startDay !== "//")
+                    {
+                         alert("请选择开始日期");return;
+                    }
+                    if(endDay == "//")
+                    {
+                         alert("请选择截止日期");return;
+                    }
+                    if(endDay < startDay)
+                    {
+                        alert("截止日期不能小于开始日期");return;
+                    }
+                }
+            $.ajax({
+                    type: "POST",
+                    url: "/order/dataFresh",
+                    data:{startDay:startDay, endDay:endDay,serialNum:serialNum,lotteryType:lotteryType,type:type},
+                    dataType: "json",
+                    success: function(data){
+                                var str = '';
+                                if(data.code == '200'){
+                                    $.each(data.data.orderInfo,function(i,n){
+                                        var insert = '';
+                                        if(data.data.orderInfo[i]['bo_status']==5)
+                                        {
+                                            insert = '<td class="light">已撤销</td>'
+                                        }else
+                                        {
+                                           insert = '<td class="orange">'+data.data.orderInfo[i]['bo_draw_result']+'</td>' 
+                                        }
+                                        str = str+'<tr>'+
+                                                    '<td>'+data.data.orderInfo[i]['bet_name']+'<em class="next">'+data.data.orderInfo[i]['bo_played_name']+'</a></td>'+
+                                                    '<td>'+data.data.orderInfo[i]['bo_issue']+'<em class="next">'+data.data.orderInfo[i]['bo_created_time']+'</a></td>'+insert+
+                                                    '<td class="red">'+data.data.orderInfo[i]['bo_money']+'</td>'+
+                                                    '<td><a id="detail" href="/order/detail?boId='+data.data.orderInfo[i]['bo_id']+'&betId='+data.data.orderInfo[i]['bet_id']+'&nper='+data.data.orderInfo[i]['bo_issue']+'">详情</a></td>'+
+                                                '</tr>';
+                                    });
+                                    $("#orderList").html(str);
+                                    $(document).ready(function(){
+                                        $('#startDay').click(function(){
+                                            $(".options-list span").removeClass("on");
+                                        });
+                                        $('#endDay').click(function(){
+                                           $(".options-list span").removeClass("on");
+                                        });              
+                                    });
+//                                       $(function(){
+//                                        $(".options-list span").each(function() {
+//                                        $(this).click(function() {
+//                                            var sdate = $(this).attr("sdate");
+//                                            var edate = $(this).attr("edate");
+//                                            var n = $('.options-list span').index($(this));
+//                                            $("#place").val(n);
+//                                            $("input[id='startDay']").val(sdate);
+//                                            $("input[id='endDay']").val(edate);
+//                                            $(".options-list span").removeClass("on");
+//                                            $(this).addClass("on");
+//                                        });
+//                                    });
+//                                });
+
+                            }
+                            else{
+                                alert('无数据');
+                                    str = str+'<tr>'+
+                                                    '<td colspan="5" class="null">没有任何资料</td>'+
+                                             '</tr>';
+                                    $("#orderList").html(str);
+                            }
+                        }
+                });
+           });
+               $(function(){ 
+        $("#lotteryType").change(function () { 
+            lotteryType = $("#lotteryType option:selected").val();
+            serialNum = $("#serialNum").val();
+            var sDate = $("#today").attr("sdate");
+            var eDate = $("#today").attr("edate");
+             $.ajax({
+                    type: "POST",
+                    url: "/order/dataFresh",
+                    data:{startDay:sDate, endDay:eDate,serialNum:serialNum,lotteryType:lotteryType,type:type},
+                    dataType: "json",
+                    success: function(data){
+                                var str = '';
+                                if(data.code == '500')
+                                {
+                                    str = str+'<tr>'+
+                                                    '<td colspan="5" class="null">没有任何资料</td>'+
+                                             '</tr>';
+                                    $("#orderList").html(str);
+                                }
+                                if(data.code == '200'){
+                                    
+                                    $.each(data.data.orderInfo,function(i,n){
+                                        var insert = '';
+                                        if(data.data.orderInfo[i]['bo_status']==5)
+                                        {
+                                            insert = '<td class="light">已撤销</td>'
+                                        }else
+                                        {
+                                           insert = '<td class="orange">'+data.data.orderInfo[i]['bo_draw_result']+'</td>' 
+                                        }
+                                        str = str+'<tr>'+
+                                                    '<td>'+data.data.orderInfo[i]['bet_name']+'<em class="next">'+data.data.orderInfo[i]['bo_played_name']+'</a></td>'+
+                                                    '<td>'+data.data.orderInfo[i]['bo_issue']+'<em class="next">'+data.data.orderInfo[i]['bo_created_time']+'</a></td>'+insert+
+                                                    '<td class="red">'+data.data.orderInfo[i]['bo_money']+'</td>'+
+                                                    '<td><a id="detail" href="/order/detail?boId='+data.data.orderInfo[i]['bo_id']+'&&betId='+data.data.orderInfo[i]['bet_id']+'&&nper='+data.data.orderInfo[i]['bo_issue']+'">详情</a></td>'+
+                                                '</tr>';
+                                    });
+                                    $("#orderList").html(str);
+                            }
+                        }
+                });
+        });
+});
+</script>

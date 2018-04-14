@@ -1,0 +1,180 @@
+
+        <?php $this->partial("shared/usertop"); ?>
+        <div class="history-t main-table">
+            <div class="select-title-black">
+                <span>                    
+                    <select class="select-p">
+                        <option value="0">全部</option>
+                        <?php if($type == 1){ unset($recordType[11]);}?>
+                        <?php foreach($recordType as $key=>$val) { ?>
+                        <option value="<?php echo $key ?>"><?php echo $val?></option>
+                        <?php }?>
+                    </select>
+                    <em>全部</em>
+                </span>
+            </div>
+            <table>
+                <tbody id="table">
+                    <?php for($i=0;$i<count($info);$i++){ ?>
+                    <tr>
+                        <td><?php echo $info[$i]['uwr_created_time']?></td>
+                        <td class="red"><?php echo $info[$i]['uwr_money']?></td>
+                        <td><?php echo $info[$i]['uwr_Type']?></td>
+                        <td class="view" data-uid="<?php echo $info[$i]['uwr_id']?>"><a>详情></a></td>
+                        <input type="hidden" id="total" value="<?php echo $num?>"> 
+                    </tr>
+                    <?php }?>
+                </tbody>
+            </table>
+            <ul class="history-list clearfix">
+                <li>小计:<i class="red" id="num"><?php echo $subtotal ?>笔</i></li>
+                <li>交易额度:<i class="red" id="numMoney"><?php echo  $subtotalMoney?></i></li>
+                <li>总计:<i class="red" id="subtotal"><?php echo $num ?>笔</i></li>
+                <li>交易额度:<i class="red" id="subtotalMoney"><?php echo $numMoney ?></i></li>
+                <input type="hidden" name="" id="subTo" value="<?php echo $subtotal ?>"> 
+                <input type="hidden" name="" id="subMon" value="<?php echo  $subtotalMoney?>"> 
+            </ul>
+            <div class="btn-center">
+                <input type="hidden" id="istotal" value="<?php echo $num ?>"> 
+                <?php if($num > 10){ ?>
+                <input type="submit" value="加载更多" class="btn">
+                <?php } ?>
+            </div>
+        </div>
+        <div class="junior-ban unsee">
+            <div class="title">
+                交易记录
+                <i class="close"></i>
+            </div>
+            <ul class="text">
+                <li class="flex">
+                    <span>日期</span>
+                    <span class="flex1" id="recordTime">2017-03-04 12:31:16</span>
+                </li>
+                <li class="flex">
+                    <span>类型</span>
+                    <span class="flex1" id="recordType">彩票派彩</span>
+                </li>
+                <li class="flex">
+                    <span>交易额</span>
+                    <span class="red flex1" id="recordMoney">49.3280</span>
+                </li>
+                <li class="flex">
+                    <span>备注</span>
+                    <span class="flex1" id="recordNote">20170324039</span>
+                </li>
+            </ul>
+        </div>
+    <script type="text/javascript">
+    var num = 1;
+    $(function(){
+            $('.btn').click(function(){
+            $(this).attr('disabled', true).val('加载中...');
+            var that = this;
+            var total= $("#istotal").val();
+            var subN = $("#subTo").val();
+            var subM = $("#subMon").val();
+            var nowNum=0;
+            nowNum=num*10;
+            num+=1;
+            if(eval(total)<=eval(nowNum))
+            {
+                $('.btn').hide();return;
+            }
+            var type=$('.select-p option:selected').val();
+            $.ajax({
+                    type: "POST",
+                    url: "addMore",
+                    data:{type:type,num:num,subN:subN,subM:subM},
+                    dataType: "json",
+                    success: function(data){
+                        var str='';
+                        $.each(data.data.info,function(index, n)
+                        {
+                            str=str+'<tr><td>'+data.data.info[index].uwr_created_time+'</td><td class="red">'+data.data.info[index].uwr_money+'</td><td>'+data.data.info[index].uwr_Type+'</td><td class="view" data-uid="'+data.data.info[index].uwr_id+'"><a>详情></a></td><input type="hidden" id="total" value="'+data.data.num+'"></tr>';
+                        });  
+                        var total = data.data.num;
+                        var nowNum=0;
+                        nowNum=num*10;
+                        if(eval(total)<eval(nowNum))
+                        {
+                            $('.btn').hide();
+                        }
+                        $("#table").append(str);
+                        $("#num").html(data.data.subtotal+'笔');    
+                        $("#numMoney").html(data.data.subtotalMoney); 
+                        $("#subTo").val(data.data.subtotal);
+                        $("#subMon").val(data.data.subtotalMoney);
+                        $("#subtotal").html(data.data.num+'笔'); 
+                        $("#subtotalMoney").html(data.data.numMoney);
+                        $(that).attr('disabled', false).val('加载更多');
+                    }
+                });
+            });
+        });
+         $(document).ready(function () {
+             $(".select-p").change(function () {
+                num = 1;   
+                var type=$('.select-p option:selected').val();
+                $.ajax({
+                    type: "POST",
+                    url: "fresh",
+                    data:{type:type},
+                    dataType: "json",
+                    success: function(data)
+                    {
+                        if(data.code ==200){
+                        var str='';
+                        $.each(data.data.info,function(index, n)
+                        {
+                            str=str+'<tr><td>'+data.data.info[index].uwr_created_time+'</td><td class="red">'+data.data.info[index].uwr_money+'</td><td>'+data.data.info[index].uwr_Type+'</td><td class="view" data-uid="'+data.data.info[index].uwr_id+'"><a>详情></a></td><input type="hidden" id="total" value="'+data.data.num+'"></tr>';
+                        });
+                        $("#table").html(str);
+                        if(data.data.num < 10)
+                        {
+                            $(".btn").hide();
+                        }
+                        else
+                        {
+                            $(".btn").show();
+                        }
+                        $("#num").html(data.data.subtotal+'笔');    
+                        $("#numMoney").html(data.data.subtotalMoney); 
+                        $("#subTo").val(data.data.subtotal);
+                        $("#subMon").val(data.data.subtotalMoney);
+                        $("#subtotal").html(data.data.num+'笔'); 
+                        $("#subtotalMoney").html(data.data.numMoney); 
+                }
+                else{
+                    alert(data.msg);
+                    str = '<tr></tr>';
+                    $("#table").html(str);
+                    $("#num").html(0+'笔');    
+                    $("#numMoney").html(0.0000); 
+                    $("#subtotal").html(0+'笔'); 
+                    $("#subtotalMoney").html(0.0000);
+                    $(".btn").hide();
+                }
+            }
+        });
+     });
+ });
+        $(document).on("click", ".view", function(){
+            var uid = $(this).data('uid');
+        $.getJSON('/wallet/ajaxDetail', {uid: uid}, function(e) {
+            if (e.status != 1) {
+                alert(e.msg);
+                return;
+            }
+            $('.mask').removeClass('unsee');
+            $('#back').removeClass('unsee');
+            $('#recordTime').html(e.detail[0]['uwr_created_time']);
+            $('#recordType').html(e.detail[0]['uwr_Type']);
+            $('#recordMoney').html(e.detail[0]['uwr_money']);
+            $('#recordNote').html(e.detail[0]['uwr_memo']);
+
+            $('.junior-ban').removeClass('unsee');
+
+        });
+        }); 
+    </script>

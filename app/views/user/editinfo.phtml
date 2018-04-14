@@ -1,0 +1,191 @@
+<div class="forgot-body" id="tab2">
+        <div class="container">
+            <div class="content">
+                <?php if($type == 2): ?>
+                    <div class="forgot-content">
+                        <div class="row flex">
+                            <input type="password" name="new" placeholder="输入新密码" class="flex1" value="" id='pwd'>
+                        </div>
+                        <div class="row flex">
+                            <input type="password" name="c_new" placeholder="确认新密码" class="flex1" value="">
+                        </div>
+                    </div>
+                <?php endif; ?>
+                <?php if($type == 4): ?>
+                        <div class="forgot-content">
+                        <div class="row flex">
+                            <input type="text" name="mobi" placeholder="输入手机号码" class="flex1" value="">
+                        </div>
+                        <div class="row flex">
+                            <input type="text" placeholder="请输入短信验证码" name="mobicap" class="flex1">
+                            <input type="button" value="获取验证码" class="chk-code">
+                        </div>
+                    </div>
+                    <div class="pwd-pop unsee">
+                    <div class="row flex">
+                        <input type="text" placeholder="请输入图片验证码" name="imgcode" class="flex1">
+                        <span class="chk-img">
+                            <img src="/auth/captcha"/ onclick="this.src='/auth/captcha?'+Math.random();">
+                        </span>
+                    </div>
+                    <div>
+                        <button class="f-btn f-cancel">取消</button>
+                        <button class="f-btn f-sure all">确定</button>
+                    </div>
+                </div>
+                <?php endif; ?>
+                <?php if($type == 5): ?>
+                    <div class="forgot-content">
+                    <div class="row flex">
+                        <input type="text" name="wx" placeholder="请输入新微信号" class="flex1" value="">
+                    </div>
+                    </div>
+                <?php endif; ?>
+                 <input type='hidden' value="<?=$type?>" name="type">
+                 <input type='hidden' value="<?=$url?>" name="url">
+                 <button class="btn" id="sub" >提交</button>
+        </div>
+</div>
+
+<script>
+$('#sub').on('click',function(){
+    var data = {};
+    var url = $('input[name="url"]').val();
+    if(url == 1)
+        var u = '/withdraw/index';
+    else if (url == 2)
+        var u = '/bank/add';
+    else
+        var u = '/user/base';
+     data.type = $('input[name="type"]').val();
+    if(data.type == 2) {
+        data.pass = $('input[name="new"]').val();
+        data.cpass  = $('input[name="new"]').val();
+        if (data.pass.length < 8 || data.pass.length > 16) {
+            alert('密码长度在8－16个字符');
+            return
+        }
+        if(data.pass != data.cpass) {
+            alert('两次密码不一致');
+            return
+        }
+    } else if(data.type == 4) {
+        data.mobi = $('input[name="mobi"]').val();
+        data.mobicap = $('input[name="mobicap"]').val();
+        if(data.mobi == '') {
+            alert('请输入手机号');
+            return
+        }
+        if(data.mobicap == '') {
+            alert('请输入验证码');
+            return
+        }
+    } else {
+        data.wx = $('input[name="wx"]').val();
+        if(data.wx == '') {
+            alert('请输入新微信账号');
+            return
+        }
+    }
+    $('#sub').attr('disabled',true).html('...');
+     $.ajax({
+            type: 'post',
+            url: '/user/doeditinfo',
+            data: {data:data},
+            dataType: 'json',
+            success: function(res) {
+            if(res.code == 200)
+            {
+                alert('修改成功');
+                window.location.href = u;
+            } else if(res.code ==501) {
+                alert(res.msg);
+                window.location.href = u;
+            } else {
+                alert(res.msg);
+                return false;
+            }
+        },
+        error: function() {
+            alert('服务器错误，请重新尝试');
+        },
+        complete:function(){
+                $('#sub').attr('disabled',false).html('提交');
+            }
+        });
+})
+
+    $('.chk-code').on('click',function(){
+        var mobi = $('input[name="mobi"]').val();
+        if (mobi == '') {
+         alert('手机号不能为空');
+         return ;
+        }
+        $('.pwd-pop').removeClass('unsee');
+        $('.mask').removeClass('unsee');
+    });
+
+    $('body').on('click','.f-cancel',function(){
+        window.location.reload();
+    });
+
+    $('body').on('click', '.all',function(){
+        var imgcap = $('input[name="imgcode"]').val();
+        if (imgcap == '') {
+         alert('验证码不能为空');
+         return ;
+     };
+     var mobi = $('input[name="mobi"]').val();
+        if (mobi == '') {
+         alert('手机号不能为空');
+         return ;
+     };
+     var type = 6;
+     $('.all').attr('disabled',true).html('发送中...');
+     $.ajax({
+            type: 'post',
+            url: '/user/mobicap',
+            data: {imgcap:imgcap, mobi:mobi, type: type},
+            dataType: 'json',
+            success: function(res) {
+                if(res.code ==200)
+                {
+                    $('.chk-img img').trigger('click');
+                    $('.mask').addClass('unsee');
+                    $('.pwd-pop').addClass('unsee');
+                    $('.chk-code').attr('disabled',true);
+                    var time = 60;
+                    $('.chk-code').val('获取中('+time+'s)');
+                    var s = setInterval(function() {
+                        time--;
+                        if (time == 0) {
+                            clearInterval(s);
+                            $('.chk-code').val('重新获取');
+                            $('.chk-code').attr('disabled',false);
+                            return;
+                        }
+                    $('.chk-code').val('获取中('+time+'s)');
+                    }, 1000);
+                } else if (res.code == 501) {
+                    alert(res.msg);
+                    $('.chk-img img').trigger('click');
+                    $('input[name="imgcode"]').val("").focus();
+                    return false;
+                }  else {
+                    alert(res.msg);
+                    $('.chk-img img').trigger('click');
+                    $('.pwd-pop').addClass('unsee');
+                    $('.mask').addClass('unsee');
+                    return false;
+                }
+            },
+            error: function() {
+                alert('服务器错误，请重新尝试');
+            },
+            complete:function(){
+                $('input[name="imgcode"]').val('');
+                $('.all').attr('disabled',false).html('确定');
+            }
+        });
+    });
+</script>

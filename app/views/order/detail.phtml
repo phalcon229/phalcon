@@ -1,0 +1,145 @@
+<div class="bett-detail-body">
+    <?php $this->partial("shared/usertop"); ?>
+    <?php if(!empty($detail)){ ?>
+    
+    <table class="bett-detail">
+            <tbody>
+                <tr>
+                    <td>
+                        <span class="tit">账号</span>
+                        <span class="va"><?php echo $uName ?></span>
+                    </td>
+                    <td>
+                        <span class="tit">彩种</span>
+                        <span class="va"><?php echo $detail[0]['bet_name'] ?></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="tit">交易编号</span>
+                        <span class="va"><?php echo $detail[0]['bo_sn'] ?></span>
+                    </td>
+                    <td>
+                        <span class="tit">玩法</span>
+                        <span class="va"><?php echo $detail[0]['bo_played_name'] ?></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="tit">注数</span>
+                        <span class="va">1</span>
+                    </td>
+                    <td>
+                        <span class="tit">下注时间</span>
+                        <span class="va"><?php echo $detail[0]['bo_created_time'] ?></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="tit">投注金额</span>
+                        <span class="va"><?php echo $detail[0]['bo_money'] ?></span>
+                    </td>
+                    <td>
+                        <span class="tit">期号</span>
+                        <span class="va"><?php echo $detail[0]['bo_issue'] ?></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="tit">开奖号码</span>
+                        <span class="va"><?php echo $res[0]['bres_result'] ?></span>
+                    </td>
+                    <td>
+                        <span class="tit">中奖金额</span>
+                        <span class="va"><?php echo $detail[0]['bo_bonus'] ?></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="tit">返水点数/金额</span>
+                        <span class="va ml-big"><em class="inblock"><?php echo $detail[0]['bo_back'] ?></em>/<em class="inblock"><?php echo $detail[0]['bo_back_money'] ?></em></span>
+                    </td>
+                    <td>
+                        <span class="tit">状态</span>
+                        <span class="va"><?php echo $detail[0]['bo_draw_result'] ?></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="tit">实际金额</span>
+                        <span class="va"><?php echo $detail[0]['bo_bonus']+$detail[0]['bo_back_money']-$detail[0]['bo_money'] ?></span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>  
+        <div class="bett-txt">
+            <p class="tit">投注号码</p>
+            <?php if(in_array($detail[0]['bet_id'],[14,15,16,17,18,19,20])){ ?>
+            <div class="content"><?php echo $detail[0]['br_type'] ?>(<?php echo explode('-', $detail[0]['bo_content'])[1] ?>/<?php echo $detail[0]['bo_odds'] ?>)</div>
+            <?php }else{ ?>
+                <div class="content"><?php echo $detail[0]['br_type'] ?>(<?php echo $detail[0]['br_base_type'] ?>/<?php echo $detail[0]['bo_odds'] ?>)</div>
+            <?php } ?>
+        </div>
+    <?php }else{ ?>
+        <ul class="data-list clearfix">
+            <li class="item flex">
+                <span class="tit">账号</span>
+                <span class="va flex1"><?php echo $uName ?></span>
+            </li>
+            <li class="item flex">
+                <span class="tit">彩种</span>
+                <span class="va flex1">？</span>
+            </li>
+            <li class="item flex">
+                <span class="tit">交易编号</span>
+                <span class="va flex1">？</span>
+            </li>
+            <li class="item flex">
+                <span class="tit">倍数模式</span>
+                <span class="va flex1">？</span>
+            </li>
+            <li class="item flex">
+                <span class="tit">玩法</span>
+                <span class="va flex1">？</span>
+            </li>
+            <li class="item flex">
+                <span class="tit">注数</span>
+                <span class="va flex1">?</span>
+            </li>
+            <li class="item flex">
+                <span class="tit">下注时间</span>
+                <span class="va flex1">?</span>
+            </li>
+            <li class="item flex">
+                <span class="tit">位置</span>
+            </li>
+            <li class="item flex">
+                <span class="tit">投注金额</span>
+                <span class="va flex1">?</span>
+            </li>
+            <li class="item flex">
+                <span class="tit">期号</span>
+                <span class="va flex1">?</span>
+            </li>
+            <li class="item flex">
+                <span class="tit">开奖号码</span>
+                <span class="va flex1">?</span>
+            </li>
+            <li class="item flex">
+                <span class="tit">中奖金额</span>
+                <span class="va flex1">?</span>
+            </li>
+            <li class="item flex">
+                <span class="tit">奖金/返点</span>
+                <span class="va flex1">?/?</span>
+            </li>
+            <li class="item flex">
+                <span class="tit">状态</span>
+                <span class="va flex1">?</span>
+            </li>
+        </ul>
+        <div class="bett-txt">
+            <p class="tit">投注号码</p>
+            <div class="content">?(?/?)</div>
+        </div>
+    <?php } ?>

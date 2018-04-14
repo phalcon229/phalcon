@@ -1,0 +1,84 @@
+<form action="" id="">
+    <div class="login-regist-body">
+    <div class="bannar">
+            <img src="../img/login-bg.png" />
+        </div>
+        <div class="main">
+            <div class="row">
+                <input type="text" name="username" placeholder="请输入账号" />
+            </div>
+            <div class="row">
+                <input type="password" name="pwd" id="pwd" placeholder="请输入密码" />
+            </div>
+            <div class="row">
+                <input type="password" name="confirm" placeholder="请确认密码" />
+            </div>
+            <div class="row check flex">
+                <input type="text" name="captcha" placeholder="请输入验证码" class="flex1" />
+                <span class="check-img">
+                    <img src="/auth/captcha"/ onclick="this.src='/auth/captcha?'+Math.random();">
+                </span>
+            </div>
+            <input type="hidden" name="c" value="<?=$c?>" />
+            <input type="hidden" name="aid" value="<?=intval($this->request->getQuery('aid')) ?: '';?>">
+            <input type="submit" value="注册" class="btn" />
+        </div>
+    </div>
+</form>
+
+<script>
+
+$(document).ready(function() {
+    $("form").validate({
+        debug: true,
+        rules: {
+            username: {
+                required: true,
+                rangelength: [4, 15]
+            },
+            pwd: {
+                required: true,
+                rangelength: [8, 15]
+            },
+            confirm: {
+                required: true,
+                equalTo: "#pwd"
+            }
+        },
+        messages: {
+            confirm: {
+                equalTo: '两次密码输入不一致'
+            }
+        },
+        submitHandler: function(form) {
+            $('form input[type="submit"]').attr('disabled', true).val('注册中...');
+            var data = $('form').serialize();
+            $.ajax({
+                type: 'post',
+                url: '/auth/reg',
+                data: data,
+                dataType: 'json',
+                success: function(res) {
+                    if (res.code == 501) {
+                        alert(res.msg);
+                        $('.check-img img').trigger('click');
+                        $('input[name="captcha"]').val("").focus();
+                        return false;
+                    } else if (res.code != 200) {
+                        alert(res.msg);
+                        return false;
+                    }
+                    alert('注册成功');
+                    window.location.href = res.data.url;
+                },
+                error: function() {
+                    alert('服务器错误，请重新尝试');
+                },
+                complete: function() {
+                    $('form input[type="submit"]').attr('disabled', false).val('注册');
+                }
+            });
+        }
+    });
+});
+</script>

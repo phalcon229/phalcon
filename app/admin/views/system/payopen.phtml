@@ -1,0 +1,54 @@
+        <div class="table-box">
+            <table class="main-table" cellpadding="0" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th align="center">支付方式</th>
+                        <th align="left">当前状态</th>
+                        <th align="left"> 支付操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                   <?php if(empty($payType)) {?>
+                   <tr class="null">
+                        <td colspan="3">暂无数据！</td>
+                    </tr>
+                <?php } else {foreach ($payType as $key=>$value) : ?>
+                    <tr>
+                        <td align="center"><?=$value?> </td>
+                        <td align="left"><?=$rpay[$key] == 1 ? '开启' : '关闭' ?></td>
+                        <td align="left">
+                        <a class="<?=$rpay[$key] == 1 ? 'detach del change' : 'operate change'?>" data-id="<?=$key?>" data-status="<?=$rpay[$key]?>"><?=$rpay[$key] == 1 ? '关闭' : '开启' ?></a>
+                        </td>
+                    </tr>
+                <?php endforeach;  ?>
+                </tbody>
+            </table>
+        </div>
+        <?php } ?>
+        <script type="text/javascript">
+        function reload()
+        {
+            window.location.reload()
+        }
+        $('.change').on('click',function(){
+            var key = $(this).data('id');
+            var status = $(this).data('status');
+            $.ajax({
+            type: 'post',
+            url: '/system/changepaystatus',
+            data: {key:key,status:status},
+            dataType: 'json',
+            success: function(res) {
+                if (res.ret != 1) {
+                    layer.msg(res.msg);
+                    return false;
+                }
+                layer.msg('操作成功');
+                setTimeout("reload()",1000);
+            },
+            error: function() {
+                layer.msg('服务器错误，请重新尝试');
+            },
+        });
+        })
+        </script>

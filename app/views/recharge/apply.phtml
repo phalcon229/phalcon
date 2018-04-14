@@ -1,0 +1,97 @@
+<?php $this->assets->outputJs() ?>
+<div class="union-result-body">
+        <div class="tip flex">
+            <span class="name flex1"><?php echo $uName ?></span>
+            <span class="money"><i class="d"></i><?php echo $money ?></span>
+            <span class="h-money unsee"><i class="d"></i>隐藏金额</span>
+        </div>
+        <div class="result-tit">
+            充值申请提交成功，请在24小时内完成支付
+        </div>
+    <form action="" id="">
+        <ul class="input-panel union-panel">
+            <li class="item flex">
+                <label>充值银行</label>
+                <span class="flex1 on">
+                    中国工商银行       
+                </span>
+            </li>
+            <li class="item flex">
+                <label>存取户名</label>
+                <span class="flex1 on">
+                    请咨询在线客服       
+                </span>
+            </li>
+            <p class="bank-tit">
+                温馨提醒：为了您的资金安全，请各位会员在每次入款前向客服索取最新 入款银行帐号，如每次入款之前没有向客服索取最新入款银行帐号，怒不 负责，转账成功后请提交订单，谢谢您的支付
+            </p>
+            <li class="item flex">
+                <label>收款账户</label>
+                <span class="flex1 on">
+                    <a class="connet">联系客服</a>
+                </span>
+            </li>
+            <p class="bank-tit txt-r">
+                完成提交入款后，请向在线客服索取银行账号
+            </p>
+            <li class="item flex">
+                <label>充值金额</label>
+                <span class="flex1 red" id="money">
+                    <?php echo $moneyR ?>
+                </span>
+            </li>
+            <input type="hidden" name="acMoney" id="acMoney" class='acMoney' value="<?php echo $acMoney ?>"/>
+            <input type="hidden" name="payType" id="payType" class='payType' value="<?php echo $payType ?>"/>
+            <li class="item flex">
+                <label>汇款申请单号</label>
+                <span class="flex1 red" id="orderNum">
+                    <?php echo $orderNum ?>       
+                </span>
+            </li>
+            <li class="item flex">
+                <label>入款人姓名</label>
+                <input class="flex1" type="text" name="name" id="name" placeholder="请输入入款人姓名" />
+            </li>
+        </ul>
+        <div class="btn-center">
+            <input type="submit" value="提交" class="btn">
+        </div>
+    </form>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $("form").validate({
+            debug: true,
+            rules: {
+                name: {
+                    required: true
+                }
+            },
+        submitHandler: function(form) {
+            var name=$("#name").val();
+            var money=$("#money").html();
+            var orderNum=$("#orderNum").html();
+            var acMoney=$("#acMoney").val();
+            var payType=$("#payType").val();
+            $('form input[type="submit"]').attr('disabled', true).val('提交中...');
+            var data ={name:name,money:money,orderNum:orderNum,acMoney:acMoney,payType:payType};
+            $.ajax({
+                type: 'post',
+                url: '/Recharge/addAjax',
+                data: data,
+                dataType: 'json',
+                success: function(res) {
+                    if (res.code == 500) {
+                        alert(res.msg);
+                        return false;
+                    }
+                    alert('提交成功');
+                    window.location.href = res.data.url;//需要处理
+                },
+                complete: function() {
+                    $('form input[type="submit"]').attr('disabled', false).val('提交');
+                }
+            });
+        }
+        });
+    });
+    </script>

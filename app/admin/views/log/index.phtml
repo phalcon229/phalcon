@@ -1,0 +1,103 @@
+ <div class="log-body container">
+        <div class="top-title">
+            <i class="log-red"></i> <em class="tit">操作日志</em>
+        </div>
+        <div class="search-box">
+            <form method="get" action="/log/index">
+                <div class="search-down ml15">
+                    用户名:
+                    <input type="text" class="user m1" name="name" value="<?=$this->request->get('name')?>"> 时间:
+                    <input type="text" class="user m1" name="startTime" id="start_time" value="<?=$this->request->get('startTime')?>">~ <input type="text" class="user m1" name="endTime" id="end_time" value="<?=$this->request->get('endTime')?>"> 用户类型:
+                    <div class="select-box">
+                        <select class="list" name="role">
+                        <?php foreach ($groups as $k => $g) : ?>
+                            <option value="<?=$k?>" <?=$this->request->get('role') ? 'selected="selected"': '';?>><?=$g?></option>
+                        <?php endforeach ; ?>
+                        </select>
+                        <em class="txt"><?=$this->request->get('role')? $groups[$this->request->get('role')]: current($groups);?></em>
+                        <i class="i-arrow"></i>
+                    </div>
+                    <button type="submit" class="search-btn">查询</button>
+                </div>
+            </form>
+        </div>
+        <div class="table-box">
+            <table class="main-table" cellpadding="0" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>用户名</th>
+                        <th>用户类型</th>
+                        <th>操作时间</th>
+                        <th>操作记录</th>
+                        <th>IP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php if (empty($lists)) { ?>
+                    <tr class="null">
+                        <td colspan="6">暂无数据！</td>
+                    </tr>
+                 <?php   } else{ foreach ($lists as $list) : ?>
+                    <tr>
+                        <td><?=$list['al_id'];?></td>
+                        <td><?=$list['al_u_name'];?></td>
+                        <td><?=$groups[$list['al_pg_id']];?></td>
+                        <td><?=!empty($list['al_logtime']) ? date('Y-m-d H:i:s', $list['al_logtime']): '';?></td>
+                        <td><?=$list['al_content'];?></td>
+                        <td><?=$list['al_logip']? long2ip($list['al_logip']) : ''; ?></td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+        <?php if ($total) : ?>
+        <div class="pages">
+            <div class="posl">
+                共<em class="counts"><?=$total?></em>条 每页显示
+                <div class="select-box line-num">
+                    <select class="list" id="limit">
+                    <?php foreach ($numsPage as $value) : ?>
+                        <option value="<?=$value?>" <?=$nums == $value ? 'selected="selected"' : ''?>><?=$value?></option>
+                    <?php endforeach; ?>
+                    </select>
+                    <em class="txt"><?=$nums?></em>
+                    <i class="i-arrow"></i>
+                </div>条
+            </div>
+            <div class="switch-box">
+                <a class="page-btn mr10" id="left"><i class="left"></i></a> 第
+                <div class="select-box line-num">
+                    <select class="list" id="page">
+                    <?php for($i = 1; $i <= ceil($total / $nums); $i++) :?>
+                        <option value="<?=$i?>"  <?=$this->request->get('page') == $i ? 'selected="selected"' : '';?>><?=$i?></option>
+                    <?php endfor;?>
+                    </select>
+                    <em class="txt"><?=!empty($this->request->get('page')) ? $this->request->get('page'): 1?></em>
+                    <i class="i-arrow"></i>
+                </div>
+                共<em id="total"><?=ceil($total/$nums)?></em>页
+                <a class="page-btn ml10" id="right"><i class="right"></i></a>
+            </div>
+        </div>
+    <?php endif; } ?>
+
+    </div>
+
+<script type="text/javascript">
+     $('#start_time').cxCalendar({
+        type: 'datetime',
+        format:'YYYY-MM-DD HH:m'
+    }, function(api){
+        startTime = api.getDate();
+    });
+     $('#end_time').cxCalendar({
+        type: 'datetime',
+        format:'YYYY-MM-DD HH:m'
+    }, function(api){
+        endTime = api.getDate();
+    });
+    var name = $('input[name="name"]').val();
+    var role = $('select[name="role"]').val();
+
+</script>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
+        <?php $this->assets->outputJs() ?>
+        <?php $this->assets->outputCss() ?>
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <div class="container"></br></br>
+             <div style="margin-bottom:10px;">
+            <a href="javascript:;" id="aToday">今天</a>
+            <a href="javascript:;" id="aRecent3Days">最近3天</a>
+            <span class="vs">|</span>
+            <a href="javascript:;" id="aRecent7Days">最近一周</a>
+            <a href="javascript:;" id="aRecent14Days">最近14天</a>
+            <span class="vs">|</span>
+            <a href="javascript:;" id="aRecent30Days">最近一月</a>
+             <input type="input" id="month_picker" name="month_picker" class="form-control" />
+             </div>
+              <div class="form-group">
+					<div class="form-group">采种
+                                    <select class="ui-mar-r10" name="bankname" id="bankname">
+                                            <option value="">请选择采种</option>
+<!--                                            <option disabled="">----------</option>-->
+<!--                                            <option value="中国农业银行">中国农业银行</option>
+                                            <option value="中国银行">中国银行</option>
+                                            <option value="交通银行">交通银行</option>
+                                            <option value="中国建设银行">中国建设银行</option>
+                                            <option value="中国工商银行">中国工商银行</option>
+                                            <option value="中国邮政储蓄银行">中国邮政储蓄银行</option>
+                                            <option value="招商银行">招商银行</option>
+                                            <option value="浦发银行">浦发银行</option>
+                                            <option value="中国光大银行">中国光大银行</option>
+                                            <option value="中信银行">中信银行</option>
+                                            <option value="平安银行">平安银行</option>
+                                            <option value="中国民生银行">中国民生银行</option>
+                                            <option value="华夏银行">华夏银行</option>
+                                            <option value="广发银行">广发银行</option>
+                                            <option value="北京银行">北京银行</option>
+                                            <option value="上海银行">上海银行</option>
+                                            <option value="北京农商银行">北京农商银行</option>
+                                            <option value="兴业银行">兴业银行</option>
+                                            <option value="上海农商银行">上海农商银行</option>-->
+                                            <?php for($i=0;$i<count($lottery);$i++){ ?>
+                                                <option value="<?php echo $i ?>"><?php echo $lottery[$i] ?></option>
+                                            <?php } ?>
+                                            </select></br></br>
+                                </div>
+				</div>
+              <!--<a href="javascript:;" id="js_searchBtn" class="btn-success">查询</a>-->
+              <button type="button" id="js_searchBtn" class="btn btn-success">查询</button>
+	<div class="row clearfix">
+		<div class="col-md-12 column">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>
+							用户名
+						</th>
+						<th>
+							所属组
+						</th>
+						<th>
+							投注总额
+						</th>
+						<th>
+							代理返点
+						</th>
+                        <th>
+							实际投注总额
+						</th>
+                                                <th>
+							派彩总额
+						</th>
+                                                <th>
+							充值总额
+						</th>
+                                                <th>
+							体现总额
+						</th>
+                                                <th>
+							总盈亏
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+				<?php for ($i = 0; $i < count($info); $i++){ ?>
+					<tr>
+						<td>
+                                                    <?php echo $name[$i]['u_name'] ?>
+						</td>
+						<td>
+                                                    <?php echo $type[$i]['group'] ?>
+						</td>
+						<td>
+                                                    <?php echo $info[$i]['tsd_bet_money'] ?>
+						</td>
+						<td>
+                                                    <?php echo $info[$i]['tsd_reback_money'] ?>
+						</td>
+                                                <td>
+                                                    <?php echo $info[$i]['tsd_bet_money']+$info[$i]['tsd_reback_money'] ?>
+						</td>
+						<td>
+                                                     <?php echo $info[$i]['tsd_pay_bonuses'] ?>
+						</td>
+                                                <td>
+                                                     <?php echo $info[$i]['tsd_recharge'] ?>
+						</td>
+                                                <td>
+                                                    <?php echo $info[$i]['tsd_withdraw'] ?>
+						</td>
+                                                <td>
+                                                    <?php echo $info[$i]['tsd_earn_money'] ?>
+						</td>
+					</tr>
+
+				<?php } ?>
+				</tbody>
+			</table>
+		</div>
+	</div>
+        </div>
+        <script type="text/javascript">
+        var myDate = new Date();
+        var month = parseInt(myDate.getMonth()) + 1;
+        var toDay = myDate.getFullYear() + '-' + month + '-' + myDate.getDate();
+        var dateRange = new pickerDateRange('month_picker', {
+            startDate: toDay,
+            endDate: toDay,
+            defaultText: ' 至 ',
+            theme: 'ta'
+        });
+
+        $(function(){
+           $('.btn-success').click(function(){
+            var month_picker = $("#month_picker").val();
+            var arr = month_picker.split(" 至 ");
+//            debugger;
+            var start_date = arr[0];
+            var end_date = arr[1];
+            var bank = $('#bankname option:selected') .val();
+//             debugger;
+            $.ajax({
+                    type: "POST",
+                    url: "dataTeamTable",
+                    data:{start_date:start_date, end_date:1,bank:bank},
+                    dataType: "json",
+                    success: function(data){
+                             }
+                });
+           });
+       });
+
+        </script>
+    </body>
+</html>

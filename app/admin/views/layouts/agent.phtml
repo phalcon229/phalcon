@@ -1,0 +1,27 @@
+    <div class="agent-manage-body container">
+        <div class="top-title">
+            <i class="agent-red"></i> <em class="tit" id='agent'>代理管理<em class="mlr10">/</em>团队总览</em>
+        </div>
+        <div class="home-bar">
+<!--            <a class="item-tit <?=$name == 'index' ? 'on' : '';?>" data-id="1" href="/agent/index">
+                    团队总览
+            </a>-->
+            <a class="item-tit <?=$name == 'index' ? 'on' : '';?>" data-id="4" href="/agent/index">
+                    团队报表
+            </a>
+            <a class="item-tit <?=strstr($name, 'link') ? 'on' : '';?>" data-id="3" href="/agent/link">
+                    推广链接生成
+            </a>
+            <a class="item-tit <?=strstr($name, 'tz') ? 'on' : '';?>" data-id="3" href="/agent/tz">
+                    用户投注
+            </a>
+            
+        </div>
+
+        <?php echo $this->view->getContent(); ?>
+    </div>
+<script type="text/javascript">
+$('#agent').html('代理管理<em class="mlr10">/</em>'+ $('.item-tit.on').text());
+</script>
+
+

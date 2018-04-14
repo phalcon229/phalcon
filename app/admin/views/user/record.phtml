@@ -1,0 +1,118 @@
+<div class="user-manage-body container">
+        <div class="top-title">
+            <i class="financail-red"></i> <em class="tit"><?=$name?>的出入账记录</em>
+        </div>
+        <div class="search-box">
+        <form type='get'>
+            <div class="search-down ml15">
+                类型:<div class="select-box"><select class="list" name="type">
+                    <option value="0">所有类型</option>
+                    <?php foreach($uwrType as $k => $v) : ?>
+                        <option value="<?=$k?>" <?=$k == $this->request->get('type') ? 'selected' :''?>><?=$v?></option>
+                    <?php endforeach;?>
+                </select>
+                    <em class="txt"><?=$this->request->get('type') ? $uwrType[$this->request->get('type')] : '所有类型'?></em>
+                    <i class="i-arrow"></i>
+                </div>
+                日期范围:
+                    <input type="text" class="user m1" name="startTime" id="start_time" value="<?=$this->request->get('startTime')?>">
+                    <i class="date-icon"></i>
+                <label class="connet-line"></label>
+                    <input type="text" class="user m1" name="endTime" id="end_time" value="<?=$this->request->get('endTime')?>">
+                    <i class="date-icon"></i>
+                <input type='hidden' name="uId" value="<?=$this->request->get('uId');?>">
+                <button type="submit" class="search-btn">查询</button>
+            </div>
+            </form>
+        </div>
+
+        <div class="table-box">
+            <table class="main-table" cellpadding="0" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>用户名</th>
+                        <th>出账金额</th>
+                        <th>入账金额</th>
+                        <th>类型</th>
+                        <th>时间</th>
+                        <th>余额</th>
+                        <th>备注</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php if (!empty($lists)) : foreach ($lists as $value) : ?>
+                    <tr>
+                        <td><?=$value['uwr_id']?></td>
+                        <td><?=$name?></td>
+                        <td><?=$value['uwr_money'] < 0 ? $value['uwr_money'] : '';?></td>
+                        <td><?=$value['uwr_money'] > 0 ? $value['uwr_money'] : '';?></td>
+                        <td><?=array_key_exists($value['uwr_type'], $uwrType) ? $uwrType[$value['uwr_type']] : '';
+                        ?></td>
+                        <td><?=$value['uwr_created_time'] ? date('Y-m-d H:i:s', $value['uwr_created_time']): '';?></td>
+                        <td><?=$value['uwr_balance']?></td>
+                        <td><?=!is_null(json_decode($value['uwr_memo'])) ?  (is_array(json_decode($value['uwr_memo'], TRUE))? '订单：' . json_decode($value['uwr_memo'], TRUE)['bo_sn'] : $value['uwr_memo']) : $value['uwr_memo']?></td>
+                        <td></td>
+                    </tr>
+                <?php endforeach; ?>
+                    <tr>
+                        <td>小计</td>
+                        <td></td>
+                        <td><?=$out ?></td>
+                        <td><?=$in ?></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="pages">
+            <div class="posl">
+                共<em class="counts"><?=$total?></em>条 每页显示
+                <div class="select-box line-num">
+                    <select class="list"  id="limit">
+                    <?php foreach ($numsPage as $value) : ?>
+                        <option value="<?=$value?>" <?=$nums == $value ? 'selected="selected"' : ''?>><?=$value?></option>
+                    <?php endforeach; ?>
+                    </select>
+                    <em class="txt"><?=$nums?></em>
+                    <i class="i-arrow"></i>
+                </div>条
+            </div>
+            <div class="switch-box">
+                <a class="page-btn mr10" id="left"><i class="left"></i></a> 第
+                <div class="select-box line-num">
+                    <select class="list" id='page'>
+                    <?php for($i = 1; $i <= $limit; $i++) :?>
+                        <option value="<?=$i?>"  <?=$this->request->get('page') == $i ? 'selected="selected"' : '';?>><?=$i?></option>
+                    <?php endfor;?>
+                    </select>
+                    <em class="txt"><?=!empty($this->request->get('page')) ? $this->request->get('page'): 1?></em>
+                    <i class="i-arrow"></i>
+                </div>
+                共<em id='total'><?=$limit?></em>页
+                <a class="page-btn ml10" id="right"><i class="right"></i></a>
+            </div>
+        </div>
+        <?php else : ?>
+            <tr class="null">
+                <td colspan="18">暂无数据！</td>
+            </tr>
+        <?php endif; ?>
+    </div>
+<script type="text/javascript">
+     $('#start_time').cxCalendar({
+        type: 'datetime',
+        format:'YYYY-MM-DD HH:m'
+    }, function(api){
+        startTime = api.getDate();
+    });
+     $('#end_time').cxCalendar({
+        type: 'datetime',
+        format:'YYYY-MM-DD HH:m'
+    }, function(api){
+        endTime = api.getDate();
+    });
+</script>

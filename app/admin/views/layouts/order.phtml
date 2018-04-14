@@ -1,0 +1,28 @@
+    <div class="actual-pk10-body container">
+    <div class="top-title">
+        <i class="actual-red"></i><em class="tit"> 实时订单</em>
+        <div class="select-box pos">
+            <select id='bet' class="list">
+            <?php foreach ($bets as $k => $bet) : ?>
+                <option value="<?=$k;?>" <?=$this->request->get('bet') == $k ? 'selected="selected"' : '' ?>><?=$bet;?></option>
+            <?php endforeach;?>
+            </select>
+            <em class="txt"><?=$this->request->get('bet') ? !empty($bets[$this->request->get('bet')]) ? $bets[$this->request->get('bet')] : current($bets) : current($bets)?></em>
+            <i class="i-arrow"></i>
+        </div>
+    </div>
+    <div class="home-bar">
+        <a href='/order/index?bet=<?=!empty($_GET['bet']) ? $_GET['bet']: key($bets)?>'><span class="item-tit <?=($name == 'index' )? 'on' : ''?>">
+                总盘口数据
+        </span></a>
+        <a href='/order/list?bet=<?=!empty($_GET['bet']) ? $_GET['bet']: key($bets)?>'><span class="item-tit <?=$name == 'list' ? 'on' : ''?>">
+                投注列表
+        </span></a>
+        <a href='/search/index'><span class="item-tit ">
+                订单查询
+        </span></a>
+    </div>
+        <?php echo $this->view->getContent(); ?>
+    </div>
+
+

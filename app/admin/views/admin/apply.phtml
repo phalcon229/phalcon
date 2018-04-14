@@ -1,0 +1,109 @@
+<div class="backstage-body container">
+    <div class="top-title">
+        <i class="backstage-red"></i> <em class="tit"><a href = '/admin'>角色管理</a></em>
+    </div>
+    <form action="doadd" id='rule'>
+    <div class="regist-content ">
+        <div class="regist-box">
+            <div class="item">
+                <label class="tit">用户类型:</label>
+                <div class="select-box variety-b">
+                    <select class="list" name = 'group'>
+                        <?php foreach ($glist as $value) {
+                        ?>
+                        <option value="<?=$value['pg_id']?>" <?php echo $value['pg_id'] == 1 ? 'selected="selected"' : ''?> ><?=$value['pg_name']?></option>
+                        <?php }?>
+                    </select>
+                    <em class="txt on"><?=$value['pg_name']?></em>
+                    <i class="i-arrow"></i>
+                </div>
+            </div>
+            <div class="item">
+                <label class="tit">用户账号:</label>
+                <input type="text" class="info" name = 'u_name' value =''>
+                <label class="error">请输入账号,账号只能是数字和字母，长度3-15位
+                </label>
+            </div>
+            <div class="item">
+                <label class="tit">登录密码:</label>
+                <input type="text" class="info"  name = 'pwd' value =''>
+                <label class="error">
+                    密码由数字和字母组成8-20个字符且必须包括数字和字母
+                </label>
+            </div>
+            <div class="item">
+                <label class="tit">确认密码:</label>
+                <input type="text" class="info"  name = 'new_pwd' value =''>
+                <label class="error">
+                    再次输入密码
+                </label>
+            </div>
+        </div>
+        <div class="divide-btn">
+            <button class="regist-btn">添加</button>
+        </div>
+    </div>
+    </form>
+</div>
+
+    <script type="text/javascript">
+    function reload()
+    {
+        location.href = 'admin';
+    }
+
+$.validator.setDefaults({
+    submitHandler: function() {
+        $('form').ajaxSubmit({
+            dataType: 'json',
+            type: "POST",
+            success: function (msgObj) {
+                    if (msgObj.code == 500) {
+                        layer.msg(msgObj.msg);
+                        return false;
+                    }
+                    layer.msg('添加管理员成功');
+                    setTimeout(function(){
+                        window.location.href = '/admin';
+                    },1000);
+            },
+            error: function(e){
+                layer.msg("<h2>添加管理员失败</h2>");
+            },
+        });
+        return false;
+        }
+});
+
+    $().ready(function() {
+    // 在键盘按下并释放及提交后验证提交表单
+      $("#rule").validate({
+          rules: {
+
+            u_name: {
+                required: true,
+                rangelength:[3,15]
+              },
+            pwd: {
+                required: true,
+                rangelength:[8,20]
+            },
+            new_pwd: {
+                required: true,
+                rangelength:[8,20]
+              },
+        },
+            messages: {
+              u_name: {
+                required: "请输入用户帐号",
+              },
+              pwd: {
+                required: "请输入正确格式登录密码",
+              },
+              new_pwd: {
+                required: '请输入正确格式确认密码',
+            },
+          }
+      });
+    });
+</script>

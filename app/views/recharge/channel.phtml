@@ -1,0 +1,251 @@
+<div class="recharge-detail-body">
+    <?php $this->partial("shared/usertop"); ?>
+        <ul class="input-panel union-panel">
+            <li class="item flex">
+                <label>金额限制</label>
+                <span class="flex1 on">
+                    最低<i class="red">0.00</i>               
+                    最高<i class="red">0.00</i>               
+                    </span>
+            </li>
+            <li class="item flex">
+                <label>入款方式</label>
+                <span class="flex1 on" id="payType">
+                银行充值       
+                </span>
+            </li>
+            <li class="item flex">
+                <label>充值金额</label>
+                <input class="flex1" type="text" id="money" placeholder="请输入金额" />
+            </li>
+            <li class="item flex">
+                <label>金额大写</label>
+                <span class="flex1 on" id="bigMoney">
+                贰仟伍佰陆拾壹元       
+                </span>
+            </li>
+        </ul>
+        <p class="title">请选择充值方式</p>
+        <ul class="pay-way">
+            <li class="item flex">
+                <i class="wallet-pay"></i>
+                <span class="flex1">
+                支付宝
+                    <i class="checkbox"></i>
+                </span>
+            </li>
+            <li class="item flex">
+                <i class="wx"></i>
+                <span class="flex1">
+                微信支付
+                    <i class="checkbox on"></i>
+                </span>
+            </li>
+            <li class="item flex">
+                <i class="union"></i>
+                <span class="flex1">
+                网银汇款
+                    <i class="checkbox"></i>
+                </span>
+            </li>
+        </ul>
+        <input type="hidden" name="place" id="place" class='place' value="1"/>
+        <input type="hidden" name="orderNum" id="orderNum" class='orderNum' value="<?php echo $orderNum?>"/>
+        <p class="title txt-r">实际充值金额:<i class="red" id="actual">0.00元</i></p>
+        <div class="btn-center">
+            <input type="submit" value="下一步" class="btn">
+        </div>
+        <script>
+            $(document).ready(function () {
+//                var serial=$('.place').val();
+//                var money=$('#money').val();
+//                if(serial=='0')
+//                {
+//                    var actualM=(money*1.0).toFixed(2)+'元';
+//                }
+//                else if(serial=='1')
+//                {
+//                    var actualM=(money*1.1).toFixed(2)+'元';
+//                }
+//                if(serial=='2')
+//                {
+//                    var actualM=(money*1.2).toFixed(2)+'元';
+//                }
+
+            $("#money").keyup(function () {
+                           var money=$('#money').val();
+                           var bigMoney=nameToChinese(money);
+                           var n=$('.place').val();
+                           if(n == '0')
+                           {
+                               var actualM=(money*1.0).toFixed(2);
+                           }
+                           else if(n == '1')
+                           {
+                               var actualM = (money*1.1).toFixed(2);
+                           }
+                           else
+                           {
+                               var actualM = (money*1.2).toFixed(2);
+                           }
+                           
+                           $("#bigMoney").html(bigMoney);
+                           $("#actual").html(actualM);
+                        });
+                    });
+             
+        $(function(){
+//            var actualMoney=$('#money').val();debugger;
+            $(".pay-way span i").each(function() {
+            $(this).click(function() {
+                var n = $('.pay-way span i').index($(this));
+                $(".pay-way span i").removeClass("on");
+                $(this).addClass("on");
+                $(".place").val(n);
+                if(n=='0'){
+                    var actualGlobal=$('#money').val();
+                    var actualM=(actualGlobal*1.0).toFixed(2);
+                    $("#payType").html("支付宝");
+                    $("#actual").html(actualM);
+                }
+                else if(n=='1')
+                {
+                    var actualGlobal=$('#money').val();
+                    var actualM=(actualGlobal*1.1).toFixed(2);
+                    $("#payType").html("微信支付");
+                    $("#actual").html(actualM);
+                }
+                else
+                {
+                    var actualGlobal=$('#money').val();
+                    var actualM=(actualGlobal*1.2).toFixed(2);
+                    $("#payType").html("网银汇款");
+                    $("#actual").html(actualM);
+                }
+            });
+        });
+    });
+            $(function(){
+            $('.btn').click(function(){
+//            var type=$('.select-p option:selected').val();
+            var serial=$('.place').val();
+            var money=$("#money").val();
+            var acMoney=$("#actual").html();
+            var orderNum=$("#orderNum").val();
+//            debugger;
+            if(money=='')
+            {
+                alert("请输入金额");return;
+            }
+            if(serial=='0')
+            {
+                window.location.href="/Recharge/code?money="+money;return;
+                alert("支付宝支付完成处理");
+            }
+            else if(serial=='1')
+            {
+                window.location.href="/Recharge/code?money="+money;return;
+                alert("微信支付完成处理");
+            }
+            if(serial=='2')
+            {
+                window.location.href="/Recharge/apply?money="+money+'&orderNum='+orderNum+'&acMoney='+acMoney+'&serial='+serial;
+            }
+            $.ajax({
+                    type: "POST",
+                    url: "showAjax",
+                    data:{serial:serial,acMoney:acMoney},
+                    dataType: "json",
+                    success: function(data){
+                        console.log(data);              
+                             }
+                });
+            });
+        });
+        
+         function nameToChinese(Num) {
+            for (i = Num.length - 1; i >= 0; i--) {
+                Num = Num.replace(",", "")//替换tomoney()中的“,”
+                Num = Num.replace(" ", "")//替换tomoney()中的空格
+            }
+            Num = Num.replace("￥", "")//替换掉可能出现的￥字符
+            if (isNaN(Num)) { //验证输入的字符是否为数字
+                alert("请检查小写金额是否正确");
+                return;
+            }
+            //---字符处理完毕，开始转换，转换采用前后两部分分别转换---//
+            part = String(Num).split(".");
+            newchar = "";
+            //小数点前进行转化
+            for (i = part[0].length - 1; i >= 0; i--) {
+                if (part[0].length > 10) { alert("位数过大，无法计算"); return ""; } //若数量超过拾亿单位，提示
+                tmpnewchar = ""
+                perchar = part[0].charAt(i);
+                switch (perchar) {
+                    case "0": tmpnewchar = "零" + tmpnewchar; break;
+                    case "1": tmpnewchar = "壹" + tmpnewchar; break;
+                    case "2": tmpnewchar = "贰" + tmpnewchar; break;
+                    case "3": tmpnewchar = "叁" + tmpnewchar; break;
+                    case "4": tmpnewchar = "肆" + tmpnewchar; break;
+                    case "5": tmpnewchar = "伍" + tmpnewchar; break;
+                    case "6": tmpnewchar = "陆" + tmpnewchar; break;
+                    case "7": tmpnewchar = "柒" + tmpnewchar; break;
+                    case "8": tmpnewchar = "捌" + tmpnewchar; break;
+                    case "9": tmpnewchar = "玖" + tmpnewchar; break;
+                }
+                switch (part[0].length - i - 1) {
+                    case 0: tmpnewchar = tmpnewchar + "元"; break;
+                    case 1: if (perchar != 0) tmpnewchar = tmpnewchar + "拾"; break;
+                    case 2: if (perchar != 0) tmpnewchar = tmpnewchar + "佰"; break;
+                    case 3: if (perchar != 0) tmpnewchar = tmpnewchar + "仟"; break;
+                    case 4: tmpnewchar = tmpnewchar + "万"; break;
+                    case 5: if (perchar != 0) tmpnewchar = tmpnewchar + "拾"; break;
+                    case 6: if (perchar != 0) tmpnewchar = tmpnewchar + "佰"; break;
+                    case 7: if (perchar != 0) tmpnewchar = tmpnewchar + "仟"; break;
+                    case 8: tmpnewchar = tmpnewchar + "亿"; break;
+                    case 9: tmpnewchar = tmpnewchar + "拾"; break;
+                }
+                newchar = tmpnewchar + newchar;
+            }
+            //小数点之后进行转化
+            if (Num.indexOf(".") != -1) {
+                if (part[1].length > 2) {
+                    alert("小数点之后只能保留两位,系统将自动截段");
+                    part[1] = part[1].substr(0, 2)
+                }
+                for (i = 0; i < part[1].length; i++) {
+                    tmpnewchar = ""
+                    perchar = part[1].charAt(i)
+                    switch (perchar) {
+                        case "0": tmpnewchar = "零" + tmpnewchar; break;
+                        case "1": tmpnewchar = "壹" + tmpnewchar; break;
+                        case "2": tmpnewchar = "贰" + tmpnewchar; break;
+                        case "3": tmpnewchar = "叁" + tmpnewchar; break;
+                        case "4": tmpnewchar = "肆" + tmpnewchar; break;
+                        case "5": tmpnewchar = "伍" + tmpnewchar; break;
+                        case "6": tmpnewchar = "陆" + tmpnewchar; break;
+                        case "7": tmpnewchar = "柒" + tmpnewchar; break;
+                        case "8": tmpnewchar = "捌" + tmpnewchar; break;
+                        case "9": tmpnewchar = "玖" + tmpnewchar; break;
+                    }
+                    if (i == 0) tmpnewchar = tmpnewchar + "角";
+                    if (i == 1) tmpnewchar = tmpnewchar + "分";
+                    newchar = newchar + tmpnewchar;
+                }
+            }
+            //替换所有无用汉字
+            while (newchar.search("零零") != -1)
+                newchar = newchar.replace("零零", "零");
+            newchar = newchar.replace("零亿", "亿");
+            newchar = newchar.replace("亿万", "亿");
+            newchar = newchar.replace("零万", "万");
+            newchar = newchar.replace("零元", "元");
+            newchar = newchar.replace("零角", "");
+            newchar = newchar.replace("零分", "");
+
+            if (newchar.charAt(newchar.length - 1) == "元" || newchar.charAt(newchar.length - 1) == "角")
+                newchar = newchar + "整"
+          //  document.write(newchar);
+            return newchar;
+        }
+        </script>

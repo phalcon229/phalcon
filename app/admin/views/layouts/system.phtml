@@ -1,0 +1,107 @@
+<?php
+    $title = $on1 = $on2 = $on3 = $on4 = $on5 = $on6 = $on7 = $on8 = '';
+    switch ($name) {
+        case 'index':
+            $on1 = "on";
+            $title = '彩票设置';
+            break;
+
+        case 'aclist':
+            $on2 = "on";
+            $title = '活动设置';
+            break;
+
+        case 'acadd':
+            $on2 = "on";
+            $title = '活动设置';
+            break;
+
+        case 'acedit':
+            $on2 = "on";
+            $title = '活动设置';
+            break;
+
+        case 'ntlist':
+            $on3 = "on";
+            $title = '公告设置';
+            break;
+
+        case 'ntadd':
+            $on3 = "on";
+            $title = '公告设置';
+            break;
+
+        case 'ntedit':
+            $on3 = "on";
+            $title = '公告设置';
+            break;
+
+        case 'bannerlist':
+            $on4 = "on";
+            $title = '轮播图设置';
+            break;
+
+        case 'bnadd':
+            $on4 = "on";
+            $title = '轮播图设置';
+            break;
+
+        case 'bnedit':
+          $on4 = "on";
+          $title = '轮播图设置';
+           break;
+
+        case 'base':
+          $on5 = "on";
+          $title = '基础设置';
+           break;
+
+        case 'paylist':
+            $on6 = "on";
+            $title = '支付设置';
+            break;
+
+        case 'payopen':
+            $on7 = "on";
+            $title = '支付开关';
+            break;
+
+        case 'wxcustomerservice':
+            $on8 = "on";
+            $title = '微信客服';
+            break;
+    }
+?>
+<div class="system-body container">
+        <div class="top-title">
+            <i class="system-red"></i><em class="tit">系统设置<em class="mlr10">/</em><?=$title?></em>
+        </div>
+        <div class="home-bar">
+            <a class="item-tit <?=$on1?>" data-id="1" href="/system/index">
+                    彩票设置
+            </a>
+            <a class="item-tit <?=$on2?>" data-id="2" href="/system/aclist">
+                    活动设置
+            </a>
+            <a class="item-tit <?=$on3?>" data-id="3" href="/system/ntlist">
+                    公告设置
+            </a>
+            <a class="item-tit <?=$on4?>" data-id="4" href="/system/bannerlist">
+                    轮播图设置
+            </a>
+            <a class="item-tit <?=$on5?>" data-id="5" href="/system/base">
+                    基础设置
+            </a>
+            <a class="item-tit <?=$on6?>" data-id="6" href="/system/paylist">
+                    支付设置
+            </a>
+             <a class="item-tit <?=$on7?>" data-id="7" href="/system/payopen">
+                    支付开关
+            </a>
+            <a class="item-tit <?=$on8?>" data-id="8" href="/system/wxcustomerservice">
+                    微信客服
+            </a>
+        </div>
+         <?php echo $this->view->getContent(); ?>
+</div>
+<input type="hidden" value="<?=$name?>" id="name">

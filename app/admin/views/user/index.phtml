@@ -1,0 +1,606 @@
+    <?php
+    $js = $js2 = '';
+
+    if (isset($_GET['limit'])) {
+        $urlLimit = $_GET['limit'];
+        $js = '$("#limit").val('.$urlLimit.');';
+        if (!in_array($_GET['limit'], $perpage))
+            $urlLimit = current($perpage);
+    }
+    if (!empty($_GET['page'])) {
+        if (is_numeric($_GET['page'])) {
+            $js2 = '$("#page").val('.$_GET['page'].');';
+            $page = $_GET['page'];
+        }
+        else {
+            $js2 = '$("#page").val(1);';
+            $page =1;
+        }
+    }
+
+
+?>
+    <div class="user-manage-body container">
+        <div class="top-title">
+            <i class="user-red"></i> <em class="tit">用户管理</em>
+        </div>
+        <form action="" method="get">
+        <div class="search-box">
+            <div class="box fl">
+                <input type="text" class="input-panel" name = 'value' value= '<?php echo $this->request->get('value'); ?>'>
+                <div class="select-box right-box">
+                    <select class="list" name= 'condition'>
+                        <option  value="1" <?php echo $this->request->get('condition') == 1 ? 'selected="selected"' : ''  ?>>用户名</option>
+                        <option value="3" <?php echo $this->request->get('condition') == 3 ? 'selected="selected"' : ''  ?>>上级代理ID</option>
+                        <option value="7" <?php echo $this->request->get('condition') == 7 ? 'selected="selected"' : ''  ?>>用户ID</option> 
+                        <option value="9" <?php echo $this->request->get('condition') == 9 ? 'selected="selected"' : ''  ?>>余额排序</option> 
+                    </select>
+                    <em class="txt"><?php echo isset($_GET['condition']) ? ($_GET['condition'] == 1 ? '用户名' : ($_GET['condition'] == 3?'上级代理ID': ($_GET['condition'] == 7?'用户ID':'余额排序' ) ) ): '用户名' ?></em>
+                    <i class="i-arrow"></i>
+                </div>
+            </div>
+            <button class="search-btn fl">查询</button>
+        </div>
+        </form>
+        <?php if($condition!==9 && $condition !== 11){ ?>
+        <div class="table-box">
+            <table class="main-table " cellpadding="0" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>用户名</th>
+                        <th>会员类型</th>
+                        <th>是否微信注册</th>
+<!--                         <th>手机号码</th> -->
+<!--                         <th>电子邮箱</th> -->
+                        <th><a href="/user/index?value=&condition=9" title="点击排序">余额<icon class="sort_icon"></icon></a></th>
+                        <th>钱包状态</th>
+                        <th>允许登录</th>
+                        <th>用户返点</th>
+                        <th>银行账号</th>
+                        <th>归属代理</th>
+                        <th>最后登录IP</th>
+                        <th>最后登录时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php if (empty($total)) { ?>
+                <tr class="null">
+                        <td colspan="13">暂无数据！</td>
+                  </tr>
+                <?php } else {
+                    foreach ($list as $item) {
+                ?>
+                    <tr>
+                        <td><?=$item['u_id']; ?></td>
+                        <td><?=$item['u_name']; ?><p class="nickName mt5">(<?=$item['u_nick']; ?>)</p><span class="btn-update mt5 unsee" uid = "<?php echo $item['u_id']; ?>" >编辑</span></td>
+                        <td><?php switch ($item['u_type']) {
+                            case '1':
+                              echo '会员';
+                              break;
+                            case '3':
+                              echo '代理';
+                              break;
+                          }
+                          ?></td>
+<!--                         <td><?=$item['u_mobile']; ?></td> -->
+<!--                         <td><?=$item['u_email']; ?></td> -->
+                        <td><?=$item['u_wx_unionid']=='0'?'否':'是'; ?></td>
+                        <td><em class="w-money"><?=$item['w_money']; ?></em><a class="w-btn update-money unsee" data-id='<?=$item['u_id'] ?>'>编辑</a></td>
+                        <td>
+                            <em class="<?=$item['w_status'] == 1 ? '': 'red';?>"><?=$item['w_status'] == 1 ? '正常': '冻结';?></em>
+                            <a class="w-btn opwall unsee <?=$item['w_status'] == 3 ? 'passmoney': 'stopmoney';?> <?=$item['w_status'] == 1 ? 'forbid': '';?>" data-id='<?=$item['u_id'] ?>'><?=$item['w_status'] == 3 ? '解冻': '冻结';?></a>
+                        </td>
+                        <td><em class="<?=$item['u_status'] == 1 ? '' : 'red';?>"><?=$item['u_status'] == 1 ? '是' : '否';?></em> <a class="w-btn oplogin unsee <?=$item['u_status'] == 1 ? 'forbid' : '';?> <?=$item['u_status'] == 3 ? 'pass': ' stop';?>"  data-id ='<?=$item['u_id'] ?>'><?=$item['u_status'] == 1 ? '禁止' : '允许';?> </a></td>
+                        <td>
+                            <em class="point-va" data-max="<?=$maxrate?>"><input class="rate" style="border:1px solid #e7e7e7;text-align: center;width: 72%;padding:3px" data-value="<?=$item['ua_rate'];?>" value="<?=$item['ua_rate'];?>" >%</em>
+                            <a class="w-btn save-rate unsee" data-id='<?=$item['u_id'] ?>'>保存</a>
+                        </td>
+                        <td><?=empty($item['ubc_id']) ? '-' : '<a href="JavaScript:void(0)" class="operate account-list" data-id='.$item['u_id'] .'>查看详细</a>'?>  </td>
+                        <td><a style="color:#45a6d9" href="/user/index?value=<?=$item['ua_u_name']?>&condition=1" ><?=$item['ua_u_name']?></a></td>
+                        <td><?=$item['u_last_ip']? long2ip($item['u_last_ip']) : ''; ?></td>
+                        <td><?=$item['u_last_time']? date('Y-m-d H:i:s', $item['u_last_time']) : ''; ?></td>
+                        <td>
+                            <a class="operate" href = "/user/detail?uid=<?php echo $item['u_id']; ?>">变更密码</a>
+                            <span class="divide-line"></span>
+                            <a class="operate" href = "/search/index?uid=<?php echo $item['u_id']; ?>">投注记录</a>
+                            <span class="divide-line"></span>
+                            <a class="operate" href = "/user/record?uId=<?php echo $item['u_id']; ?>">帐变记录</a>
+                        </td>
+                    </tr>
+                <?php } }?>
+                </tbody>
+            </table>
+        </div>
+<?php }else{ ?>
+    <div class="table-box">
+            <table class="main-table " cellpadding="0" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>用户名</th>
+                        <th>会员类型</th>
+                        <th>是否微信注册</th>
+                        <th>
+                            <?php if(!empty($_GET['condition']) && $_GET['condition']==11){ ?>
+                            <a href="/user/index?value=&condition=9" title="点击排序">余额<icon class="sort_icon on"></icon></a>
+                            <?php } if(!empty($_GET['condition']) && $_GET['condition']==9){ ?>
+                            <a href="/user/index?value=&condition=11" title="点击排序">余额<icon class="sort_icon"></icon></a>
+                            <?php } ?>
+                        </th>
+                        <th>历史充值</th>
+                        <th>历史提现</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php if (empty($total)) { ?>
+                <tr class="null">
+                        <td colspan="13">暂无数据！</td>
+                  </tr>
+                <?php } else {
+                    foreach ($list as $item) {
+                ?>
+                    <tr>
+                        <td><?=$item['u_id']; ?></td>
+                        <td><?=$item['u_name']; ?><p class="nickName mt5">(<?=$item['u_nick']; ?>)</p></td>
+                        <td><?php switch ($item['u_type']) {
+                            case '1':
+                              echo '会员';
+                              break;
+                            case '3':
+                              echo '代理';
+                              break;
+                          }
+                          ?></td>
+                        <td><?=$item['u_wx_unionid']=='0'?'否':'是'; ?></td>
+                        <td><em class="w-money"><?=$item['w_money']; ?></em></td>
+                        <td><em class="w-money"><?=$item['w_history_recharge']; ?></em></td>
+                        <td><em class="w-money"><?=$item['w_history_withdraw']; ?></em></td>
+                    </tr>
+                <?php }} ?>
+                </tbody>
+            </table>
+        </div>
+    <?php } ?>
+        <div class="pages">
+            <div class="posl">
+                共<em class="counts"><?=$total?></em>条 每页显示
+                <div class="select-box line-num">
+                    <select class="list" id="limit">
+                    <?php foreach ($perpage as $key => $value) : ?>
+                        <option value="<?=$key?>"><?=$value?></option>
+                    <?php endforeach ?>
+                    </select>
+                    <em class="txt"><?=!empty($urlLimit) ? $urlLimit : current($perpage)?></em>
+                    <i class="i-arrow"></i>
+                </div>条
+            </div>
+            <div class="switch-box">
+                <a class="page-btn mr10" id="left"><i class="left"></i></a> 第
+                <div class="select-box line-num">
+                    <select class="list" id="page">
+                      <?php if(!empty($limit)): for($i=1; $i <= $limit; $i++ ) : ?>
+                        <option value="<?=$i?>"><?=$i?></option>
+                    <?php endfor; endif;?>
+                    </select>
+                    <em class="txt"><?=!empty($page) ? $page : 1?></em>
+                    <i class="i-arrow"></i>
+                </div>
+                共<em id="total"><?=$limit?></em>页
+                <a class="page-btn ml10" id="right"><i class="right" ></i></a>
+            </div>
+        </div>
+        <?=$this->view->getContent(); ?>
+    </div>
+    
+        <div class="mask mon unsee">
+            <form class="form-horizontal center-panel" id="moneyForm"  role="form">
+            <div class="pop-panel">
+                <span class="close">
+                    <i></i>关闭
+                </span>
+                <p class="pop-title">编辑余额</p>
+                <div class="pop-body">
+                    <div class="form-group bd">
+                        <label class="col-1">账户余额</label>
+                        <div class="col-2 plr form-right">
+                            <label class="control-label fwnormal"></label>元
+                        </div>
+                    </div>
+                    <div class="form-group bd">
+                        <label class="col-1">充值\提现</label>
+                        <div class="col-2 plr form-right">
+                            <input type="radio" name="state" checked="" value='1'> <label class="switch-text">充值</label>
+                            <input type="radio" name="state" value='3'> <label class="switch-text">提现</label>
+                        </div>
+                    </div>
+                    <div class="form-group bd">
+                        <label class="col-1">金额</label>
+                        <div class="col-2 plr form-right">
+                            <input name="money" class="form-control" type="text" placeholder="请精确到小数点的后两位" required="true" aria-required="true" autocomplete="off">
+                            <label class="percent">元</label>
+                            <span class="help-block"><i class="fa-circle">!</i><label class="tit">修改后余额为元</label></span>
+                        </div>
+                    </div>
+                    <div class="form-group bd">
+                        <label class="col-1">修改原因</label>
+                        <div class="col-2 plr form-right">
+                            <textarea name="reason" class="re-content" required="true" aria-required="true"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="btn-group text-center">
+                            <button class="btn btn-success mr20" id="save-money" type="submit">保存</button>
+                            <button class="btn btn-default cancel" type="button">取消</button>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            </form>
+                
+            <!-- /.modal-dialog -->
+        </div>
+        <div class="user-manage-body container" id="usermemo">
+    
+        </div>
+        <div id="bankinfo"></div>
+<script type="text/javascript">
+    <?php echo $js; echo $js2?>
+    $("body").on('click', '.stop', function() {
+        if(!confirm("确定禁止用户登录？"))return
+        var id = $(this).data('id');
+        $.ajax({
+                 url: "/user/stop",
+                 type: "POST",
+                 data: {uid:id},
+                 dataType:'json',
+                 error: function(e){
+                   layer.msg("获取参数失败！");
+                 },
+                 success: function (msgObj) {
+
+                    if (msgObj.code == 500) {
+                        layer.msg(msgObj.msg);
+                        return false;
+                    }
+                    layer.msg('禁止用户成功');
+                    setTimeout("reload()",1000);
+                 }
+            });
+    });
+    $("body").on('click', '.pass', function() {
+        if(!confirm("确定解除禁止用户？"))return
+        var id = $(this).data('id');
+        $.ajax({
+                 url: "/user/passes",
+                 type: "POST",
+                 data: {uid:id},
+                 dataType:'json',
+                 error: function(e){
+                   layer.msg("获取参数失败！");
+                 },
+                 success: function (msgObj) {
+
+                    if (msgObj.code == 500) {
+                        layer.msg(msgObj.msg);
+                        return false;
+                    }
+                    layer.msg('解除禁止用户成功');
+                    setTimeout("reload()",1000);
+
+                 }
+            });
+    });
+
+    $("body").on('click', '.stopmoney', function() {
+        if(!confirm("确定冻结钱包？"))return
+        var id = $(this).data('id');
+        $.ajax({
+                 url: "/user/stopmoney",
+                 type: "POST",
+                 data: {uid:id},
+                 dataType:'json',
+                 error: function(e){
+                   layer.msg("获取参数失败！");
+                 },
+                 success: function (msgObj) {
+
+                    if (msgObj.code == 500) {
+                        layer.msg(msgObj.msg);
+                        return false;
+                    }
+                    layer.msg('冻结钱包成功');
+                    setTimeout("reload()",1000);
+
+                 }
+            });
+    });
+    $("body").on('click', '.passmoney', function() {
+        if(!confirm("确定解除钱包冻结？"))return
+        var id = $(this).data('id');
+        $.ajax({
+                 url: "/user/passmoney",
+                 type: "POST",
+                 data: {uid:id},
+                 dataType:'json',
+                 error: function(e){
+                   layer.msg("获取参数失败！");
+                 },
+                 success: function (msgObj) {
+
+                    if (msgObj.code == 500) {
+                        layer.msg(msgObj.msg);
+                        return false;
+                    }
+                    layer.msg('解除钱包冻结成功');
+                    setTimeout("reload()",1000);
+
+                 }
+            });
+    });
+
+    function reload()
+    {
+        var url = '<?=substr($_SERVER["QUERY_STRING"], stripos($_SERVER["QUERY_STRING"], "/"))?>';
+        window.location.href = url;
+    }
+
+    $('.save-rate').on('click', function(){
+        var uid = $(this).data('id');
+        var position = $(this).parent().find('.rate');
+        var rate = position.val();
+        var oldRate = position.data('value');
+
+        $.ajax({
+            url: '/user/setRate',
+            type: 'POST',
+            data: {id:uid, rate:rate},
+            dataType: 'json',
+            error:function(e)
+            {
+              layer.msg("没有权限或服务器连接超时!");
+            },
+            success:function (msgObj) {
+                if (msgObj.ret == 1)
+                {
+                    layer.msg(msgObj.msg);
+                }
+                else
+                {
+                    layer.msg(msgObj.msg);
+                    position.val(oldRate);
+                }
+            }
+        });
+    });
+
+     $("body").on('click', '.memo', function() {
+        $(this).parent().parent().addClass('unsee');
+     })
+
+    $("body").on('click', '.btn-update', function() {
+        var uid = $(this).attr('uid');
+        $.ajax({
+            url: '/user/editmemo',
+            type: 'POST',
+            data: {uId:uid},
+            dataType: 'json',
+            error:function(e)
+            {
+              layer.msg("没有权限或服务器连接超时!");
+            },
+            success:function (res) {
+                if(res.code == 500)
+                {
+                    layer.msg("服务器错误!");
+                }
+                else
+                {
+                    var str =  '<div class="mask  ">'+
+                                '<div class="pop-panel modify-panel ">'+
+                                      '<span class="close memo">'+
+                                      '<i></i>关闭'+
+                                      '</span>'+
+                                      '<div class="pop-tit s">'+
+                                          '修改<em>'+res.data.u_name+'</em>的昵称'+
+                                      '</div>'+
+                                      '<div class="modify-box">'+
+                                          '<div>'+
+                                              '<input type="text" placeholder="请确认昵称" id="memocont" data-uid='+res.data.uId+' class="pwd">'+
+                                          '</div>'+
+                                          '<a class="sure" >确定修改</a>'+
+                                      '</div>'+
+                                  '</div>'+
+                                '</div>';
+                    $('#usermemo').html(str);
+                }
+            }
+        });
+    })
+    $("body").on('click', '.sure', function() {
+        var info = $('#memocont').val();
+        var uid = $('#memocont').attr('data-uid');
+        $.ajax({
+            url: '/user/doeditmemo',
+            type: 'POST',
+            data: {uId:uid, info:info},
+            dataType: 'json',
+            // error:function(e)
+            // {
+            //   layer.msg("没有权限或服务器连接超时!");
+            // },
+            success:function (res) {
+                if(res.code == 500)
+                {
+                    layer.msg("服务器错误!");
+                }
+                else
+                {
+                    layer.msg("修改成功!");
+                    $('.memo').parent().parent().addClass('unsee');
+                    window.location.href='/user/index';
+                }
+            }
+        });
+    })
+    //操作用户余额
+    $("body").on('click', '.update-money', function() {
+        $('.mon').removeClass('unsee');
+        //取消屏蔽弹窗
+        $('.cancel').on('click', function(){
+            $('.mon').addClass('unsee');
+        });
+
+        $('.close').on('click', function(){
+            $('.mon').addClass('unsee');
+        });
+
+        var id = $(this).data('id');
+
+        $('.pop-body').append('<div><input name="id" value="'+id+'" type="hidden"></div>');
+
+        var fwnormal = parseFloat($(this).parent().find('.w-money').html()).toFixed(4);
+        var money = 0.0000;
+        $('.fwnormal').html(fwnormal);
+
+
+        $('.help-block .tit').html('修改后余额为' + accAdd(fwnormal, money) + '元');
+        //选择方式金额判断
+        $('input:radio[name="state"]').on('click', function(){
+            var type = $(this).val();
+            var money = parseFloat($('input[name="money"]').val()) ? parseFloat($('input[name="money"]').val()) : 0;
+            var balance = parseFloat(fwnormal);
+            if (type == 3 && (money > fwnormal))
+            {
+                $('.help-block .tit').html('提现金额超过可用余额');
+                return false;
+            }
+            if (type == 1)
+                balance = accAdd(fwnormal, money);
+            else if (type == 3)
+                balance = accSub(fwnormal, money);
+
+            $('.help-block .tit').html('修改后余额为' + balance + '元');
+        });
+        //编辑金额数据判断
+        $('input[name="money"]').on('keyup', function(){
+            var type = parseInt($('input:radio[name="state"]:checked').val());
+            var money = parseFloat($(this).val()) ? parseFloat($(this).val()) : 0;
+            var balance = parseFloat(fwnormal);
+            if (money.toFixed(0).length > 10)
+            {
+                $('.help-block .tit').html('金额过大');
+                return false;
+            }
+
+            if (type == 3 && (money > fwnormal))
+            {
+                $('.help-block .tit').html('提现金额超过可用余额');
+                return false;
+            }
+            if (type == 1)
+                balance = accAdd(fwnormal, money);
+            else if (type == 3)
+                balance = accSub(fwnormal, money);
+
+            $('.help-block .tit').html('修改后余额为' + balance + '元');
+        });
+    });
+
+    //ajax请求操作用户余额
+    $.validator.setDefaults({
+        submitHandler: function() {
+            var money = parseFloat($('input[name="money"]').val());
+            var fwnormal = parseFloat($('.fwnormal').text());
+            var type = parseInt($('input:radio[name="state"]:checked').val());
+
+            if (type == 3 && (money > fwnormal))
+            {
+                layer.msg('提现金额超过可用余额');
+                return false;
+            }
+
+            if (money.toFixed(0).length > 10)
+            {
+                layer.msg('金额过大');
+                return false;
+            }
+
+            $('#save-money').attr('disabled', true).html('保存中...');
+            $('#moneyForm').ajaxSubmit({
+                dataType: 'json',
+                type: "POST",
+                url : "/user/updateMoney",
+                success: function (res) {
+                    if (res.code == 200) {
+                        layer.msg(res.data);
+                        setTimeout("reload()",1000);
+                    }
+                    else {
+                        layer.msg(res.msg);
+                    }
+
+                },
+                error: function(e){
+                    layer.msg('error','服务器错误,请联系技术人员');
+                },
+                complete: function() {
+                    $('#save-money').attr('disabled', false).html('保存');
+                }
+            });
+         }
+     });
+    //数据验证
+    $("#moneyForm").validate({
+        rules: {
+            money: {
+                required : true,
+                number: true,
+                range:[0,1000000000]
+            },
+            reason: {
+                required:true
+            }
+        },
+        messages: {
+              money: {
+                required: "请输入金额",
+                number : "输入格式错误",
+                range: "金额过大"
+              },
+              reason : {
+                 required: "请输入修改原因",
+              }
+          },
+      });
+
+    //查看用户银行帐号
+    $('.account-list').on('click', function(){
+        var uid = $(this).data('id');
+
+        $.ajax({
+            url: '/user/bankaccount',
+            type: 'POST',
+            data: {id:uid},
+            dataType: 'html',
+            error:function(e)
+            {
+              layer.msg("没有权限或服务器连接超时!");
+            },
+            success:function (msgObj) {
+                $('#bankinfo').append(msgObj);
+            }
+        });
+    });
+
+    $('tr').bind('mouseenter',function(){
+          $(this).find('.opwall, .oplogin, .ptop, .save-rate').removeClass('unsee');
+          $(this).find('.opwall, .oplogin, .ptop, .update-money, .btn-update ').removeClass('unsee');
+    });
+    $('tr').bind('mouseleave',function(){
+          $(this).find('.opwall, .oplogin, .ptop, .save-rate').addClass('unsee');
+          $(this).find('.opwall, .oplogin, .ptop, .update-money, .btn-update ').addClass('unsee');
+    });
+</script>

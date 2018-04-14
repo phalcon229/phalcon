@@ -1,0 +1,1322 @@
+<div class="home-body">
+    <div class="home-tit">
+        <i class="audio"></i>
+        <div class="context">
+            <?php for($i=0; $i<count($noticeInfo); $i++){ ?>
+            <?php echo ($i+1).'.';echo $noticeInfo[$i]['n_content'] ?>
+            <?php } ?>
+        </div>
+    </div>
+    <div class="bx-wrapper">
+            <div class="bx-viewport">
+                <ul class="bxslider">
+                    <?php for($i=0; $i<count($bannerInfo); $i++) { ?>
+                        <li><a href="<?php if (strpos($bannerInfo[$i]['ib_url'], 'activity/detail?paId=') == 'false') echo '/'.$bannerInfo[$i]['ib_url']; else echo $bannerInfo[$i]['ib_url'] ?>"><img src="<?php echo '/'.$bannerInfo[$i]['ib_img'] ?>" /></a></li>
+                    <?php } ?>
+                </ul>
+            </div>
+    </div>
+    <div class="tap-h flex">
+        <a href="/recharge/index" class="item flex1"><i class="con recharge-h"></i>充值</a>
+        <?php if($type == 3) {?>
+        <a href="/agent/link" class="item flex1"><i class="con commission-h"></i>赚取佣金</a>
+        <?php } ?>
+        <!--<a href="http://dazhongcai.vip/" class="item flex1"><i class="con commission-h"></i>赚取佣金</a>-->
+        <a href="/withdraw/index" class="item flex1"><i class="con withdrawal-h"></i>提现</a>
+    </div>
+    <div class="home-game clearfix">
+        <div class="home-box fl">
+            <div class="play-h"><i class="con credit-h"></i>信用玩法<i class="arrow-h"></i></div>
+                <ul class="project-h " >
+                    <div id="listres" >
+                    <?php if(!empty($res)){ ?>
+                        <?php for($i = 0; $i < count($res); $i++){ ?>
+                        <a href="/game/info/<?php echo $res[$i]['bet_id'] ?>">
+                            <li class="item flex">
+                                <img src="/<?php echo $img[$res[$i]['bet_id']] ?>" />
+                                <div class="flex1">
+                                    <p class="cm first-c"><?php echo $res[$i]['bet_name'] ?></p>
+                                        <p class="cm second-c"><i class="time-icon"></i><span class="countdown<?php echo $res[$i]['bet_id'] ?>"></span></p>
+
+                                            <a href="javascript:;<?php echo $res[$i]['bet_id'] ?>" data = "<?php echo $res[$i]['bet_id'] ?>" class="pop-btn">玩法说明</a>
+
+                                </div>
+                            </li>
+                        </a>
+                        <?php } ?>
+                        <li class="item add" data-id="0">
+                            <i class="add-icon"></i>
+                            <p class="third-c" >选择显示彩种</p>
+                        </li>
+                    <?php } else { ?>
+                    <li class="item" data-id="1">
+                        <p style='text-align: center;padding-top:28px' >该玩法未开放彩种</p>
+                    </li>
+                    <?php } ;?>
+                    </div>
+
+                </ul>
+                </div>
+
+            <div class="home-box fl">
+                <div class="play-h"><i class="con official-h"></i>官方玩法<i class="arrow-h"></i></div>
+                <ul class="project-h">
+                    <div id="listresG" >
+                    <?php if(!empty($resG)){ ?>
+                    <?php for($i = 0; $i < count($resG); $i++){ ?>
+                    <a href="/game/official/<?php echo $resG[$i]['bet_id'] ?>">
+                    <li class="item flex">
+                        <img src="/<?php echo $img[$resG[$i]['bet_id']] ?>" />
+                        <div class="flex1">
+                            <p class="cm first-c"><?php echo $resG[$i]['bet_name'] ?></p>
+                            <p class="cm second-c"><i class="time-icon"></i><span class="countdown<?php echo $resG[$i]['bet_id'] ?>"></span></p>
+
+                                <a href="javascript:;<?php echo $resG[$i]['bet_id'] ?>" data = "<?php echo $resG[$i]['bet_id'] ?>" class="pop-btn">玩法说明</a>
+
+                        </div>
+                    </li>
+                    </a>
+                    <?php } ?>
+                    <li class="item add" data-id="1">
+                        <i class="add-icon"></i>
+                        <p class="third-c" >选择显示彩种</p>
+                    </li>
+                    <?php  } else { ?>
+                    <li class="item" data-id="1">
+                        <p style='text-align: center;padding-top:28px' >该玩法未开放彩种</p>
+                    </li>
+                    <?php } ;?>
+                    </div>
+
+                </ul>
+            </div>
+        </div>
+        <div class="junior-ban unsee">
+            <div class="title">
+                选择显示彩种
+                <i class="close"></i>
+            </div>
+            <!--<div id="addres">-->
+            <div class="h-auto" >
+                <ul class="project-h" id="addres">
+                <?php if(!empty($add)){ ?>
+                    <?php for($i = 0; $i < count($add); $i++){ ?>
+                        <li class="item flex">
+                            <img src="/<?php echo $img[$add[$i]['bet_id']] ?>" />
+                            <div class="flex1">
+                                <p class="cm first-c"><?php echo $add[$i]['bet_name'] ?></p>
+                                <p class="cm second-c"><?php echo $add[$i]['bet_title'] ?></p>
+                            </div>
+                            <span class="add-btn" betId="<?php echo $add[$i]['bet_id'] ?>">添加</span>
+                        </li>
+                    <?php } }?>
+                </ul>
+
+                <ul class="project-h" id="delres">
+                <?php if(!empty($del)){ ?>
+                    <?php for($i = 0; $i < count($del); $i++){ ?>
+                        <li class="item flex">
+                            <img src="/<?php echo $img[$del[$i]['bet_id']] ?>" />
+                            <div class="flex1">
+                                <p class="cm first-c"><?php echo $del[$i]['bet_name'] ?></p>
+                                <p class="cm second-c"><?php echo $del[$i]['bet_title'] ?></p>
+                            </div>
+                            <span class="del-btn" betId="<?php echo $del[$i]['bet_id'] ?>">删除</span>
+                        </li>
+                    <?php } } ?>
+                </ul>
+            </div>
+        </div>
+        <div class="junior-ban unsee">
+            <div class="title">
+                选择显示彩种
+                <i class="close"></i>
+            </div>
+            <!--<div id="addres">-->
+            <div class="h-auto" >
+                <ul class="project-h" id="addresG">
+                <?php if(!empty($addG)){ ?>
+                    <?php for($i = 0; $i < count($addG); $i++){ ?>
+                        <li class="item flex">
+                            <img src="/<?php echo $img[$addG[$i]['bet_id']] ?>" />
+                            <div class="flex1">
+                                <p class="cm first-c"><?php echo $addG[$i]['bet_name'] ?></p>
+                                <p class="cm second-c"><?php echo $addG[$i]['bet_title'] ?></p>
+                            </div>
+                            <span class="add-btn" betId="<?php echo $addG[$i]['bet_id'] ?>">添加</span>
+                        </li>
+                    <?php } }?>
+                </ul>
+
+                <ul class="project-h" id="delresG">
+                <?php if(!empty($delG)){ ?>
+                    <?php for($i = 0; $i < count($delG); $i++){ ?>
+                        <li class="item flex">
+                            <img src="/<?php echo $img[$delG[$i]['bet_id']] ?>" />
+                            <div class="flex1">
+                                <p class="cm first-c"><?php echo $delG[$i]['bet_name'] ?></p>
+                                <p class="cm second-c"><?php echo $delG[$i]['bet_title'] ?></p>
+                            </div>
+                            <span class="del-btn" betId="<?php echo $delG[$i]['bet_id'] ?>">删除</span>
+                        </li>
+                    <?php } } ?>
+                </ul>
+            </div>
+        </div>
+
+        <div id="smdiv" >
+        <div class="junior-ban unsee" id = "sm1">
+            <div class="title">
+                重庆时时彩-玩法说明
+                <i class="close"></i>
+            </div>
+            <div class="h-auto">
+                <div class="newbie-main">
+                    <div class="newbie-context">
+                        <p class="text">
+                            <span>●总和单双大小：</span>
+                            <span> 单双：</span>
+                            <sapn> 根据相应单项投注的第一球特 ~ 第五球特开出的球号数字总和值是双数为总和双，数字总和值是单数为总和单。 </sapn>
+                            <span>大小：</span>
+                            <span> 根据相应单项投注的第一球特 ~ 第五球特开出的球号大于或等于23为特码大，小于或等于22为特码小。</span>
+                        </p>
+                        <p class="tit">
+                            ※ 第一球~第五球
+                        </p>
+                        <p class="text">
+                            <span>
+                                ●第一球特~第五球特：
+                            </span>
+                            <span>
+                                第一球特、第二球特、第三球特、第四球特、第五球特：指下注的每一球特与开出之号码其开奖顺序及开奖号码相同，视为中奖，如第一球开出号码8，下注第一球为8者视为中奖，其馀情形视为不中奖。
+                            </span>
+                        </p>
+                        <p class="text">
+                            <span>●单双大小：</span>
+                            <span>根据相应单项投注第一球特 ~ 第五球特开出的球号，判断胜负。</span>
+                            <span>单双：</span>
+                            <span>根据相应单项投注的第一球特 ~ 第五球特开出的球号为双数叫特双，如2、6；特码为单数叫特单，如1、3。</span>
+                            <span>大小：</span>
+                            <span>根据相应单项投注的第一球特 ~ 第五球特开出的球号大于或等于5为特码大，小于或等于4为特码小。</span>
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+            <div class="btn-center">
+                <input type="submit" value="继续投注" id='tz1' data='1' class="btn tzbt">
+            </div>
+        </div>
+        <div class="junior-ban unsee" id = "sm2">
+            <div class="title">
+                北京28-玩法说明
+                <i class="close"></i>
+            </div>
+            <div class="h-auto">
+                <div class="newbie-main">
+                <div class="newbie-context">
+                <p class="text">
+                    <span>
+                        该游戏开奖结果来源于福利彩票北京快乐8(官网)，从早上9:00至23:55，每5分钟一期; 北京快乐8每期开奖共开出20个数字，PC蛋蛋将这20个开奖号码按照由小到大的顺序依次排列；取其1-6位开奖号码相加， 和值的末位数作为PC蛋蛋开奖第一区数值； 取其7-12位开奖号码相加，和值的末位数作为PC蛋蛋开奖第二区数值，取其13-18位开奖号码相加， 和值的末位数作为PC蛋蛋开奖第三区数值；三个区数值相加即为PC蛋蛋最终的开奖结果。
+                    </span>
+                </p>
+                <p class="tit">
+                    具体游戏规则: 以下所有投注皆含本金。
+                </p>
+                <p class="detail">
+                    <span>◎大小</span>
+                    <span>0~13为小；14~27为大</span>
+                    <span>◎大单双，小单双</span>
+                    <span>开出的号码为双数（0,2,4,6,8,10,12,14,16,18,20,22,24,26)为双；</span>
+                    <span>
+                        开出的号码为单数（1,3,5,7,9,11,13,15,17,19,21,23,25,27)为单；
+                    </span>
+                    <span>
+                        开出的号码为大号码并且是双数（14,16,18,20,22,24,26)则为大双;
+                    </span>
+                    <span>
+                        开出的号码为大号码并且是单数（15,17,19,21,23,25,27)则为大单；
+                    </span>
+                    <span>
+                        开出的号码为小号码并且是双数（0,2,4,6,8,10,12)则为小双；
+                    </span>
+                    <span>
+                        开出的号码为大号码并且是单数（1,3,5,7,9,11,13)则为小单；
+                    </span>
+                    <span>
+                        ◎极值
+                    </span>
+                    <span>
+                        开出的号码小于或等于5，即开出号码为0~5,则为极小；
+                    </span>
+                    <span>
+                        开出的号码大于或等于22，即开出号码为22~27,则为极大；
+                    </span>
+                    <span>
+                        总和特码：总和：买中具体的指定号码；（0-27）
+                    </span>
+                </p>
+            </div>
+
+
+                </div>
+            </div>
+            <div class="btn-center">
+                <input type="submit" value="继续投注"  id='tz2' data='2' class="btn tzbt">
+            </div>
+        </div>
+        <div class="junior-ban unsee" id ="sm3">
+            <div class="title">
+            幸运飞艇-玩法说明
+                <i class="close"></i>
+            </div>
+            <div class="h-auto">
+                <div class="newbie-main">
+                <div class="newbie-context">
+                <p class="tit">
+                    ※ 1～10 两面：指 单、双；大、小。
+                </p>
+                <p class="tit">
+                    ●单、双：号码为双数叫双，如4、8；号码为单数叫单，如5、9
+                </p>
+                <p class="tit">
+                    ●大、小：开出之号码大于或等于6为大，小于或等于5为小。
+                </p>
+                <p class="tit">
+                    ※ 1～5龙虎
+                </p>
+                <p class="tit">
+                    ●冠　军 龙/虎：“第一名”车号大于“第十名”车号视为【龙】中奖、反之小于视为【虎】中奖，其余情形视为不中奖。
+                </p>
+                <p class="tit">
+                    ●亚　军 龙/虎：“第二名”车号大于“第九名”车号视为【龙】中奖、反之小于视为【虎】中奖，其余情形视为不中奖。
+                </p>
+                <p class="tit">
+                    ●第三名 龙/虎：“第三名”车号大于“第八名”车号视为【龙】中奖、反之小于视为【虎】中奖，其余情形视为不中奖。
+                </p>
+                <p class="tit">
+                    ●第四名 龙/虎：“第四名”车号大于“第七名”车号视为【龙】中奖、反之小于视为【虎】中奖，其余情形视为不中奖。
+                </p>
+                <p class="tit">
+                    ●第五名 龙/虎：“第五名”车号大于“第六名”车号视为【龙】中奖、反之小于视为【虎】中奖，其余情形视为不中奖。
+                </p>
+                <p class="tit">
+                    ※ 冠军车号＋亚军车号＝冠亚和值
+                </p>
+                <p class="tit">
+                    ●冠亚和单双：“冠亚和值”为单视为投注“单”的注单视为中奖，为双视为投注“双”的注单视为中奖，其余视为不中奖。
+                </p>
+                <p class="tit">
+                    ●冠亚和大小：“冠亚和值”大于11时投注“大”的注单视为中奖，小于或等于11时投注“小”的注单视为中奖，其余视为不中奖。
+                </p>
+            </div>
+                </div>
+
+            </div>
+            <div class="btn-center">
+                <input type="submit" value="继续投注"  id='tz3' data='3' class="btn tzbt">
+            </div>
+        </div>
+        <div class="junior-ban unsee" id ="sm5">
+            <div class="title">
+            北京赛车-玩法说明
+                <i class="close"></i>
+            </div>
+            <div class="h-auto">
+                <div class="newbie-main">
+                <div class="newbie-context">
+                <p class="text">
+                    <span>
+                        该游戏的投注时间、开奖时间和开奖号码与“北京PK拾”完全同步，北京时间（GMT+8）每天白天从上午09:02开到晚上23:57，每5分钟开一次奖,每天开奖179期。
+                    </span>
+                </p>
+                <p class="tit">
+                    ※ 1～10 两面：指 单、双；大、小。
+                </p>
+                <p class="tit">
+                    ●单、双：号码为双数叫双，如4、8；号码为单数叫单，如5、9
+                </p>
+                <p class="tit">
+                    ●大、小：开出之号码大于或等于6为大，小于或等于5为小。
+                </p>
+                <p class="tit">
+                    ※ 1～5龙虎
+                </p>
+                <p class="tit">
+                    ●冠　军 龙/虎：“第一名”车号大于“第十名”车号视为【龙】中奖、反之小于视为【虎】中奖，其余情形视为不中奖。
+                </p>
+                <p class="tit">
+                    ●亚　军 龙/虎：“第二名”车号大于“第九名”车号视为【龙】中奖、反之小于视为【虎】中奖，其余情形视为不中奖。
+                </p>
+                <p class="tit">
+                    ●第三名 龙/虎：“第三名”车号大于“第八名”车号视为【龙】中奖、反之小于视为【虎】中奖，其余情形视为不中奖。
+                </p>
+                <p class="tit">
+                    ●第四名 龙/虎：“第四名”车号大于“第七名”车号视为【龙】中奖、反之小于视为【虎】中奖，其余情形视为不中奖。
+                </p>
+                <p class="tit">
+                    ●第五名 龙/虎：“第五名”车号大于“第六名”车号视为【龙】中奖、反之小于视为【虎】中奖，其余情形视为不中奖。
+                </p>
+                <p class="tit">
+                    ※ 冠军车号＋亚军车号＝冠亚和值
+                </p>
+                <p class="tit">
+                    ●冠亚和单双：“冠亚和值”为单视为投注“单”的注单视为中奖，为双视为投注“双”的注单视为中奖，其余视为不中奖。
+                </p>
+                <p class="tit">
+                    ●冠亚和大小：“冠亚和值”大于11时投注“大”的注单视为中奖，小于或等于11时投注“小”的注单视为中奖，其余视为不中奖。
+                </p>
+            </div>
+                </div>
+
+            </div>
+            <div class="btn-center">
+                <input type="submit" value="继续投注"  id='tz5' data='5' class="btn tzbt">
+            </div>
+        </div>
+        <div class="junior-ban unsee" id="sm4">
+            <div class="title">
+            广东快乐十分-玩法说明
+                <i class="close"></i>
+            </div>
+            <div class="h-auto">
+                <div class="newbie-main">
+                <div class="newbie-context">
+                <p class="text">
+                    <span>
+                        每期广东快乐十分开奖球数共八粒。每粒球除了总和玩法，其它都有单独的投注页面。广东快乐十分每天开84期，每期间隔10分钟。投注时间为8分钟，等待开奖时间为2分钟，北京时间（GMT+8）每天白天从上午09：00开到晚上23：00。
+                    </span>
+                </p>
+                <p class="tit">
+                    ※ 两面：指单、双；大、小；尾大、尾小。
+                </p>
+                <p class="tit">
+                    ●单、双：号码为双数叫双，如8、16；号码为单数叫单，如19、5。
+                </p>
+                <p class="tit">
+                    ●大、小：开出之号码大于或等于11为大，小于或等于10为小。
+                </p>
+                <p class="tit">
+                    ●尾大、尾小：开出之尾数大于或等于5为尾大，小于或等于4为尾小。
+                </p>
+                <p class="tit">
+                    ※ 总和单双
+                </p>
+                <p class="tit">
+                    ●所有8个开奖号码的数字总和值是单数为总和单，如数字总和值是31、51；所有8个开奖号码的数字总和值是双数为总和双，如数字总和是42、80；假如投注组合符合中奖结果，视为中奖，其余情形视为不中奖。
+                </p>
+                <p class="tit">
+                    ※ 总和大小
+                </p>
+                <p class="tit">
+                    ●所有8个开奖号码的数字总和值85到132为总大；所有8个开奖号码的数字总和值36到83为总分小；所有8个开奖号码的数字总和值为84打和；如开奖号码为01、20、02、08、17、09、11，数字总和是68，则总分小。假如投注组合符合中奖结果，视为中奖，其余情形视为不中奖，打和不计算结果。
+                </p>
+                <p class="tit">
+                    ※ 总尾大小
+                </p>
+                <p class="tit">
+                    ●所有8个开奖号码的数字总和数值的个位数大于或等于5为总尾大，小于或等于4为总尾小；假如投注组合符合中奖结果，视为中奖，其余情形视为不中奖。
+                </p>
+            </div>
+                </div>
+
+            </div>
+            <div class="btn-center">
+                <input type="submit" value="继续投注"  id='tz4' data='4' class="btn tzbt">
+            </div>
+        </div>
+        <div class="junior-ban unsee" id="sm6">
+            <div class="title">
+            加拿大28-玩法说明
+                <i class="close"></i>
+            </div>
+            <div class="h-auto">
+                <div class="newbie-main">
+                <div class="newbie-context ">
+                <p class="text">
+                    <span>
+                        该游戏开奖结果来源于福利彩票加拿大28(官网)，此游戏的开奖时间为每三分半钟开奖一次，每周二～周日从19：50到隔天19:00，周一从21：05到隔天19:00; 加拿大28每期开奖共开出20个数字，加拿大28将这20个开奖号码按照由小到大的顺序依次排列；取其1-6位开奖号码相加， 和值的末位数作为PC蛋蛋开奖第一区数值； 取其7-12位开奖号码相加，和值的末位数作为加拿大28开奖第二区数值，取其13-18位开奖号码相加， 和值的末位数作为加拿大28开奖第三区数值；三个区数值相加即为加拿大28最终的开奖结果。
+                    </span>
+                </p>
+                <p class="tit">
+                    具体游戏规则: 以下所有投注皆含本金。
+                </p>
+                <p class="detail">
+                    <span>◎大小</span>
+                    <span>0~13为小；14~27为大</span>
+                    <span>◎大单双，小单双</span>
+                    <span>开出的号码为双数（0,2,4,6,8,10,12,14,16,18,20,22,24,26)为双；</span>
+                    <span>
+                        开出的号码为单数（1,3,5,7,9,11,13,15,17,19,21,23,25,27)为单；
+                    </span>
+                    <span>
+                        开出的号码为大号码并且是双数（14,16,18,20,22,24,26)则为大双;
+                    </span>
+                    <span>
+                        开出的号码为大号码并且是单数（15,17,19,21,23,25,27)则为大单；
+                    </span>
+                    <span>
+                        开出的号码为小号码并且是双数（0,2,4,6,8,10,12)则为小双；
+                    </span>
+                    <span>
+                        开出的号码为大号码并且是单数（1,3,5,7,9,11,13)则为小单；
+                    </span>
+                    <span>
+                        ◎极值
+                    </span>
+                    <span>
+                        开出的号码小于或等于5，即开出号码为0~5,则为极小；
+                    </span>
+                    <span>
+                        开出的号码大于或等于22，即开出号码为22~27,则为极大；
+                    </span>
+                    <span>
+                        总和特码：总和：买中具体的指定号码；（0-27）
+                    </span>
+                </p>
+            </div>
+                </div>
+
+            </div>
+            <div class="btn-center">
+                <input type="submit" value="继续投注"  id='tz6' data='6' class="btn tzbt">
+            </div>
+        </div>
+        <div class="junior-ban unsee" id="sm10">
+            <div class="title">
+            11选5（信用玩法）-玩法说明
+                <i class="close"></i>
+            </div>
+            <div class="h-auto">
+                <div class="newbie-main">
+                <div class="newbie-context">
+                <p class="tit">
+                    该游戏的投注时间、开奖时间和开奖号码与官方完全同步，北京时间（GMT+8） (广东11选5游戏每天进行84期，开奖时间为9:00至23:00, 每隔 10分钟开奖一次)(浙江11选5游戏每天进行85期，开奖时间为8:30至22:30, 每隔 10分钟开奖一次)( 山东11选5游戏每天进行87期，开奖时间为8:35至22:55, 每隔 10分钟开奖一次)( 辽宁11选5游戏每天进行83期，开奖时间为8:50至22:30, 每隔 10分钟开奖一次)。开奖号码通过电脑体育彩票每期开奖结果通过随机数码生成器，从01-11共11个号码中按顺序自动生成5个不同号码作为当期中奖号码。
+                </p>
+                <p class="tit">
+                    ●总和单双大小：
+                </p>
+                <p class="tit">
+                   单双：根据相应单项投注的第一球特 ~ 第五球特开出的球号数字总和值是双数为总和双，数字总和值是单数为总和单。
+                </p>
+                <p class="tit">
+                   大小：根据相应单项投注的第一球特 ~ 第五球特开出的球号大于或等于31或小于等于45大，大于等于15或小于等于29为小，30 为和，退回投注金额。
+                </p>
+                <p class="tit">
+                   ※ 第一球~第五球
+                </p>
+                <p class="tit">
+                    ●第一球特~第五球特：第一球特、第二球特、第三球特、第四球特、第五球特：指下注的每一球特与开出之号码其开奖顺序及开奖号码相同，视为中奖，如第一球开出号码8，下注第一球为8者视为中奖，其馀情形视为不中奖。
+                </p>
+                <p class="tit">
+                   ●单双大小：根据相应单项投注第一球特 ~ 第五球特开出的球号，判断胜负。
+                </p>
+                <p class="tit">
+                   单双：根据相应单项投注的第一球特 ~ 第五球特开出的球号为双数叫特双，如2、6；特码为单数叫特单，如1、3。
+                </p>
+                <p class="tit">
+                   大小：根据相应单项投注的第一球特 ~ 第五球特开出的球号大于等于1或小于等于5为特码小，大于或等于6或小于等于10为特码大，11为和。
+                </p>
+            </div>
+                </div>
+
+            </div>
+            <div class="btn-center">
+                <input type="submit" value="继续投注"  id='tz10' data="10" class="btn tzbt">
+            </div>
+        </div>
+        <div class="junior-ban unsee" id="sm17">
+            <div class="title">
+            11选5（官方玩法）-玩法说明
+                <i class="close"></i>
+            </div>
+            <div class="h-auto">
+                <div class="newbie-main">
+                <div class="newbie-context">
+                <p class="tit">
+                    ●任选:
+                </p>
+                <p class="tit">
+                    任选一　竞猜第1位开奖号码。 中奖条件:任意中1码 中奖号码示例: 01
+                </p>
+                <p class="tit">
+                    任选二　竞猜开奖号码中的任意2位。中奖条件: 任意中2码 中奖号码示例: 01 02，01 03
+                </p>
+                <p class="tit">
+                    任选三　竞猜开奖号码中的任意3位。 中奖条件: 任意中3码 中奖号码示例: 01 02 03，01 02 04
+                </p>
+                <p class="tit">
+                    任选四　竞猜开奖号码中的任意4位。中奖条件: 任意中4码 中奖号码示例: 01 02 03 04，01 02 03 05
+                </p>
+                <p class="tit">
+                    任选五 选择5个号码，竞猜全部5位开奖号码。中奖条件: 不定位中5码 中奖号码示例: 01 02 03 04 05
+                </p>
+                <p class="tit">
+                    任选六 选择6个号码，竞猜全部5位开奖号码。中奖条件: 不定位中5码 中奖号码示例: 01 02 03 04 05 X
+                </p>
+                <p class="tit">
+                    任选七 选择7个号码，竞猜全部5位开奖号码。中奖条件: 不定位中5码 中奖号码示例: 01 02 03 04 05 X X
+                </p>
+                <p class="tit">
+                    任选八 选择8个号码，竞猜全部5位开奖号码。中奖条件: 不定位中5码 中奖号码示例: 01 02 03 04 05 X X X
+                </p>
+                <p class="tit">
+                    ●二星:
+                </p>
+                <p class="tit">
+                    直选(复式) 竞猜开奖号码前/后2位，且顺序一致。 中奖条件: 定位中前/后2码 中奖号码示例: 01 02 03
+                </p>
+                <p class="tit">
+                    组选(单式) 竞猜开奖号码前/后2位，顺序不限。 中奖条件: 不定位中前/后2码 中奖号码示例: 01 02，01 02
+                </p>
+                <p class="tit">
+                    ●三星:
+                </p>
+                <p class="tit">
+                    直选(复式) 竞猜开奖号码前/后3位，且顺序一致。 中奖条件: 定位中前/中/后3码 中奖号码示例: 01 02 03
+                </p>
+                <p class="tit">
+                    组选(单式) 竞猜开奖号码前/后3位，顺序不限。 中奖条件: 不定位中前/中/后3码 中奖号码示例: 01 02 03，03 02 01
+                </p>
+            </div>
+                </div>
+
+            </div>
+            <div class="btn-center">
+                <input type="submit" value="继续投注" id='tz17' data="17" class="btn tzbt">
+            </div>
+        </div>
+        <div class="junior-ban unsee" id="sm18">
+            <div class="title">
+            11选5（官方玩法）-玩法说明
+                <i class="close"></i>
+            </div>
+            <div class="h-auto">
+                <div class="newbie-main">
+                <div class="newbie-context">
+                <p class="tit">
+                    ●任选:
+                </p>
+                <p class="tit">
+                    任选一　竞猜第1位开奖号码。 中奖条件:任意中1码 中奖号码示例: 01
+                </p>
+                <p class="tit">
+                    任选二　竞猜开奖号码中的任意2位。中奖条件: 任意中2码 中奖号码示例: 01 02，01 03
+                </p>
+                <p class="tit">
+                    任选三　竞猜开奖号码中的任意3位。 中奖条件: 任意中3码 中奖号码示例: 01 02 03，01 02 04
+                </p>
+                <p class="tit">
+                    任选四　竞猜开奖号码中的任意4位。中奖条件: 任意中4码 中奖号码示例: 01 02 03 04，01 02 03 05
+                </p>
+                <p class="tit">
+                    任选五 选择5个号码，竞猜全部5位开奖号码。中奖条件: 不定位中5码 中奖号码示例: 01 02 03 04 05
+                </p>
+                <p class="tit">
+                    任选六 选择6个号码，竞猜全部5位开奖号码。中奖条件: 不定位中5码 中奖号码示例: 01 02 03 04 05 X
+                </p>
+                <p class="tit">
+                    任选七 选择7个号码，竞猜全部5位开奖号码。中奖条件: 不定位中5码 中奖号码示例: 01 02 03 04 05 X X
+                </p>
+                <p class="tit">
+                    任选八 选择8个号码，竞猜全部5位开奖号码。中奖条件: 不定位中5码 中奖号码示例: 01 02 03 04 05 X X X
+                </p>
+                <p class="tit">
+                    ●二星:
+                </p>
+                <p class="tit">
+                    直选(复式) 竞猜开奖号码前/后2位，且顺序一致。 中奖条件: 定位中前/后2码 中奖号码示例: 01 02 03
+                </p>
+                <p class="tit">
+                    组选(单式) 竞猜开奖号码前/后2位，顺序不限。 中奖条件: 不定位中前/后2码 中奖号码示例: 01 02，01 02
+                </p>
+                <p class="tit">
+                    ●三星:
+                </p>
+                <p class="tit">
+                    直选(复式) 竞猜开奖号码前/后3位，且顺序一致。 中奖条件: 定位中前/中/后3码 中奖号码示例: 01 02 03
+                </p>
+                <p class="tit">
+                    组选(单式) 竞猜开奖号码前/后3位，顺序不限。 中奖条件: 不定位中前/中/后3码 中奖号码示例: 01 02 03，03 02 01
+                </p>
+            </div>
+                </div>
+
+            </div>
+            <div class="btn-center">
+                <input type="submit" value="继续投注" id='tz18' data="18" class="btn tzbt">
+            </div>
+        </div>
+        <div class="junior-ban unsee" id="sm19">
+            <div class="title">
+            11选5（官方玩法）-玩法说明
+                <i class="close"></i>
+            </div>
+            <div class="h-auto">
+                <div class="newbie-main">
+                <div class="newbie-context">
+                <p class="tit">
+                    ●任选:
+                </p>
+                <p class="tit">
+                    任选一　竞猜第1位开奖号码。 中奖条件:任意中1码 中奖号码示例: 01
+                </p>
+                <p class="tit">
+                    任选二　竞猜开奖号码中的任意2位。中奖条件: 任意中2码 中奖号码示例: 01 02，01 03
+                </p>
+                <p class="tit">
+                    任选三　竞猜开奖号码中的任意3位。 中奖条件: 任意中3码 中奖号码示例: 01 02 03，01 02 04
+                </p>
+                <p class="tit">
+                    任选四　竞猜开奖号码中的任意4位。中奖条件: 任意中4码 中奖号码示例: 01 02 03 04，01 02 03 05
+                </p>
+                <p class="tit">
+                    任选五 选择5个号码，竞猜全部5位开奖号码。中奖条件: 不定位中5码 中奖号码示例: 01 02 03 04 05
+                </p>
+                <p class="tit">
+                    任选六 选择6个号码，竞猜全部5位开奖号码。中奖条件: 不定位中5码 中奖号码示例: 01 02 03 04 05 X
+                </p>
+                <p class="tit">
+                    任选七 选择7个号码，竞猜全部5位开奖号码。中奖条件: 不定位中5码 中奖号码示例: 01 02 03 04 05 X X
+                </p>
+                <p class="tit">
+                    任选八 选择8个号码，竞猜全部5位开奖号码。中奖条件: 不定位中5码 中奖号码示例: 01 02 03 04 05 X X X
+                </p>
+                <p class="tit">
+                    ●二星:
+                </p>
+                <p class="tit">
+                    直选(复式) 竞猜开奖号码前/后2位，且顺序一致。 中奖条件: 定位中前/后2码 中奖号码示例: 01 02 03
+                </p>
+                <p class="tit">
+                    组选(单式) 竞猜开奖号码前/后2位，顺序不限。 中奖条件: 不定位中前/后2码 中奖号码示例: 01 02，01 02
+                </p>
+                <p class="tit">
+                    ●三星:
+                </p>
+                <p class="tit">
+                    直选(复式) 竞猜开奖号码前/后3位，且顺序一致。 中奖条件: 定位中前/中/后3码 中奖号码示例: 01 02 03
+                </p>
+                <p class="tit">
+                    组选(单式) 竞猜开奖号码前/后3位，顺序不限。 中奖条件: 不定位中前/中/后3码 中奖号码示例: 01 02 03，03 02 01
+                </p>
+            </div>
+                </div>
+
+            </div>
+            <div class="btn-center">
+                <input type="submit" value="继续投注" id='tz19' data ="19" class="btn tzbt">
+            </div>
+        </div>
+        <div class="junior-ban unsee" id="sm20">
+            <div class="title">
+            11选5（官方玩法）-玩法说明
+                <i class="close"></i>
+            </div>
+            <div class="h-auto">
+                <div class="newbie-main">
+                <div class="newbie-context">
+                <p class="tit">
+                    ●任选:
+                </p>
+                <p class="tit">
+                    任选一　竞猜第1位开奖号码。 中奖条件:任意中1码 中奖号码示例: 01
+                </p>
+                <p class="tit">
+                    任选二　竞猜开奖号码中的任意2位。中奖条件: 任意中2码 中奖号码示例: 01 02，01 03
+                </p>
+                <p class="tit">
+                    任选三　竞猜开奖号码中的任意3位。 中奖条件: 任意中3码 中奖号码示例: 01 02 03，01 02 04
+                </p>
+                <p class="tit">
+                    任选四　竞猜开奖号码中的任意4位。中奖条件: 任意中4码 中奖号码示例: 01 02 03 04，01 02 03 05
+                </p>
+                <p class="tit">
+                    任选五 选择5个号码，竞猜全部5位开奖号码。中奖条件: 不定位中5码 中奖号码示例: 01 02 03 04 05
+                </p>
+                <p class="tit">
+                    任选六 选择6个号码，竞猜全部5位开奖号码。中奖条件: 不定位中5码 中奖号码示例: 01 02 03 04 05 X
+                </p>
+                <p class="tit">
+                    任选七 选择7个号码，竞猜全部5位开奖号码。中奖条件: 不定位中5码 中奖号码示例: 01 02 03 04 05 X X
+                </p>
+                <p class="tit">
+                    任选八 选择8个号码，竞猜全部5位开奖号码。中奖条件: 不定位中5码 中奖号码示例: 01 02 03 04 05 X X X
+                </p>
+                <p class="tit">
+                    ●二星:
+                </p>
+                <p class="tit">
+                    直选(复式) 竞猜开奖号码前/后2位，且顺序一致。 中奖条件: 定位中前/后2码 中奖号码示例: 01 02 03
+                </p>
+                <p class="tit">
+                    组选(单式) 竞猜开奖号码前/后2位，顺序不限。 中奖条件: 不定位中前/后2码 中奖号码示例: 01 02，01 02
+                </p>
+                <p class="tit">
+                    ●三星:
+                </p>
+                <p class="tit">
+                    直选(复式) 竞猜开奖号码前/后3位，且顺序一致。 中奖条件: 定位中前/中/后3码 中奖号码示例: 01 02 03
+                </p>
+                <p class="tit">
+                    组选(单式) 竞猜开奖号码前/后3位，顺序不限。 中奖条件: 不定位中前/中/后3码 中奖号码示例: 01 02 03，03 02 01
+                </p>
+            </div>
+                </div>
+
+            </div>
+            <div class="btn-center">
+                <input type="submit" value="继续投注" id='tz20' data="20" class="btn tzbt">
+            </div>
+        </div>
+        <div class="junior-ban unsee">
+            <div class="title">
+            快3（信用玩法）-玩法说明
+                <i class="close"></i>
+            </div>
+            <div class="h-auto">
+                <div class="newbie-main">
+                <div class="newbie-context">
+                <p class="tit">
+                    该游戏的投注时间、开奖时间和开奖号码与官方完全同步，北京时间（GMT+8）（江苏快三游戏每天进行82期，开奖时间为08:40至22:10，每隔10分钟开奖一次）（福建快三游戏每天进行78期，开奖时间为09:10至22:3，每隔10分钟开奖一次）（北京快三游戏每天进行85期，开奖时间为08:30至22:30，每隔10分钟开奖一次）。快三采用专用电子开奖设备开奖，每期随机生成3个号码，作为当期中奖号码。
+                </p>
+                <p class="tit">
+                    ●总和单双大小：
+                <p class="tit">
+                    单双：根据相应单项投注的第一球特 ~ 第三球特开出的球号数字总和值是双数为总和双，数字总和值是单数为总和单。
+                </p>
+                <p class="tit">
+                    大小：根据相应单项投注的第一球特 ~ 第三球特开出的球号大于或等于11或小于等于18为大，大于等于3或小于等于10为小。
+                </p>
+                <p class="tit">
+                   ※ 第一球~第三球
+                </p>
+                <p class="tit">
+                    ●第一球特~第三球特：第一球特、第二球特、第三球特：指下注的每一球特与开出之号码其开奖顺序及开奖号码相同，视为中奖，如第一球开出号码8，下注第一球为8者视为中奖，其馀情形视为不中奖。
+                <p class="tit">
+                   ●单双大小：根据相应单项投注第一球特 ~ 第三球特开出的球号，判断胜负。
+                </p>
+                <p class="tit">
+                   单双：根据相应单项投注的第一球特 ~ 第三球特开出的球号为双数叫特双，如2、6；特码为单数叫特单，如1、3。
+                </p>
+                <p class="tit">
+                   大小：根据相应单项投注的第一球特 ~ 第三球特开出的球号大于等于1或小于等于3为特码小，大于或等于4或小于等于6为特码大。
+                </p>
+            </div>
+                </div>
+
+            </div>
+            <div class="btn-center">
+                <input type="submit" value="继续投注" id='tz3xy' class="btn tzbt">
+            </div>
+        </div>
+            <div class="junior-ban unsee" id="sm14">
+                <div class="title">
+                快3（官方玩法）-玩法说明
+                    <i class="close"></i>
+                </div>
+                <div class="h-auto">
+                    <div class="newbie-main">
+                    <div class="newbie-context">
+                    <p class="tit">
+                        1. 快三投注是指以3个号码组合为一注彩票进行单式投注，每个投注号码为1-6共六个自然数中的任意一个，一组3个号码的组合称为一注。
+                    </p>
+                    <p class="tit">
+                        2. 三号码组合共设置"和值"、"三同号"、"二同号"、"三不同号"、"二不同号"、"三连号通选"投注方式，具体规定如下：
+                    </p>
+                    <p class="tit">
+                        （一）和值投注是指对3个号码的和值进行投注。
+                    </p>
+                    <p class="tit">
+                        （二）三同号投注是指对3个相同的号码进行投注，具体分为：
+                    </p>
+                    <p class="tit">
+                            1. 三同号通选：是指对所有相同的3个号码进行投注；
+                    </p>
+                    <p class="tit">
+                            2. 三同号单选：是指从所有相同的3个号码中任意选择一组号码进行投注。
+                    </p>
+                    <p class="tit">
+                        （三）二同号投注是指对2个指定的相同号码进行投注，具体分为：
+                    </p>
+                    <p class="tit">
+                            1. 二同号复选：是指对3个号码中2个指定的相同号码和一个任意号码进行投注；
+                    </p>
+                    <p class="tit">
+                            2. 二同号单选：是指对3个号码中2个指定的相同号码和一个指定的不同号码进行投注。
+                    </p>
+                    <p class="tit">
+                        （四）三不同号投注：是指对3个各不相同的号码进行投注。
+                    </p>
+                    <p class="tit">
+                        （五）二不同号投注：是指对3个号码中2个指定的不同号码和一个任意号码进行投注。
+                    </p>
+                    <p class="tit">
+                        （六）三连号通选投注：是指对所有3个相连的号码进行投注。
+                    </p>
+                    </p>
+                </div>
+                </div>
+            </div>
+            <div class="btn-center">
+                <input type="submit" value="继续投注" id='tz14' data="14" class="btn tzbt">
+            </div>
+        </div>
+        <div class="junior-ban unsee" id="sm15">
+                <div class="title">
+                快3（官方玩法）-玩法说明
+                    <i class="close"></i>
+                </div>
+                <div class="h-auto">
+                    <div class="newbie-main">
+                    <div class="newbie-context">
+                    <p class="tit">
+                        1. 快三投注是指以3个号码组合为一注彩票进行单式投注，每个投注号码为1-6共六个自然数中的任意一个，一组3个号码的组合称为一注。
+                    </p>
+                    <p class="tit">
+                        2. 三号码组合共设置"和值"、"三同号"、"二同号"、"三不同号"、"二不同号"、"三连号通选"投注方式，具体规定如下：
+                    </p>
+                    <p class="tit">
+                        （一）和值投注是指对3个号码的和值进行投注。
+                    </p>
+                    <p class="tit">
+                        （二）三同号投注是指对3个相同的号码进行投注，具体分为：
+                    </p>
+                    <p class="tit">
+                            1. 三同号通选：是指对所有相同的3个号码进行投注；
+                    </p>
+                    <p class="tit">
+                            2. 三同号单选：是指从所有相同的3个号码中任意选择一组号码进行投注。
+                    </p>
+                    <p class="tit">
+                        （三）二同号投注是指对2个指定的相同号码进行投注，具体分为：
+                    </p>
+                    <p class="tit">
+                            1. 二同号复选：是指对3个号码中2个指定的相同号码和一个任意号码进行投注；
+                    </p>
+                    <p class="tit">
+                            2. 二同号单选：是指对3个号码中2个指定的相同号码和一个指定的不同号码进行投注。
+                    </p>
+                    <p class="tit">
+                        （四）三不同号投注：是指对3个各不相同的号码进行投注。
+                    </p>
+                    <p class="tit">
+                        （五）二不同号投注：是指对3个号码中2个指定的不同号码和一个任意号码进行投注。
+                    </p>
+                    <p class="tit">
+                        （六）三连号通选投注：是指对所有3个相连的号码进行投注。
+                    </p>
+                    </p>
+                </div>
+                </div>
+            </div>
+            <div class="btn-center">
+                <input type="submit" value="继续投注" id='tz15' data="15" class="btn tzbt">
+            </div>
+        </div>
+        <div class="junior-ban unsee" id="sm16">
+                <div class="title">
+                快3（官方玩法）-玩法说明
+                    <i class="close"></i>
+                </div>
+                <div class="h-auto">
+                    <div class="newbie-main">
+                    <div class="newbie-context">
+                    <p class="tit">
+                        1. 快三投注是指以3个号码组合为一注彩票进行单式投注，每个投注号码为1-6共六个自然数中的任意一个，一组3个号码的组合称为一注。
+                    </p>
+                    <p class="tit">
+                        2. 三号码组合共设置"和值"、"三同号"、"二同号"、"三不同号"、"二不同号"、"三连号通选"投注方式，具体规定如下：
+                    </p>
+                    <p class="tit">
+                        （一）和值投注是指对3个号码的和值进行投注。
+                    </p>
+                    <p class="tit">
+                        （二）三同号投注是指对3个相同的号码进行投注，具体分为：
+                    </p>
+                    <p class="tit">
+                            1. 三同号通选：是指对所有相同的3个号码进行投注；
+                    </p>
+                    <p class="tit">
+                            2. 三同号单选：是指从所有相同的3个号码中任意选择一组号码进行投注。
+                    </p>
+                    <p class="tit">
+                        （三）二同号投注是指对2个指定的相同号码进行投注，具体分为：
+                    </p>
+                    <p class="tit">
+                            1. 二同号复选：是指对3个号码中2个指定的相同号码和一个任意号码进行投注；
+                    </p>
+                    <p class="tit">
+                            2. 二同号单选：是指对3个号码中2个指定的相同号码和一个指定的不同号码进行投注。
+                    </p>
+                    <p class="tit">
+                        （四）三不同号投注：是指对3个各不相同的号码进行投注。
+                    </p>
+                    <p class="tit">
+                        （五）二不同号投注：是指对3个号码中2个指定的不同号码和一个任意号码进行投注。
+                    </p>
+                    <p class="tit">
+                        （六）三连号通选投注：是指对所有3个相连的号码进行投注。
+                    </p>
+                    </p>
+                </div>
+                </div>
+            </div>
+            <div class="btn-center">
+                <input type="submit" value="继续投注" id='tz16' data="16" class="btn tzbt">
+            </div>
+        </div>
+            </div>
+
+        </div>
+        </div>
+        <?php if($this->di['session']->get('sysac')==1){ ?>
+        <div class="toolTip" id="mentionlog">
+            <i class="tool-close"></i>
+            <div class="text">有问题请加客服！</div>
+            <div class="text">如充值，提现，下注等</div>
+        </div>
+        <?php } ?>
+    </div>
+
+<script>
+    var bxSlider = $('.bxslider').bxSlider({
+        auto: true,
+        pause: 2000,
+        autoControls: false,
+    });
+    $(".tool-close").click(function() {
+        $('#mentionlog').addClass('unsee');
+        <?php
+            $activityC = $uId.'actime';
+            $this->di['session']->set('sysac', 0);
+        ?>
+    });
+    $("#listres .pop-btn").each(function() {
+        $(this).click(function() {
+            var id = $(this).attr('data');
+            var divid = '#sm'+id;
+            $(divid).removeClass('unsee');
+            $('.mask').removeClass('unsee');
+        })
+    });
+    $("#listresG .pop-btn").each(function() {
+        $(this).click(function() {
+            var id = $(this).attr('data');
+            var divid = '#sm'+id;
+            $(divid).removeClass('unsee');
+            $('.mask').removeClass('unsee');
+        })
+    });
+    $("#smdiv .tzbt").each(function() {
+    $(this).click(function() {
+        var id = $(this).attr('data');
+        if(id<=13 )
+            window.location.href="/game/info/"+id;
+        else
+            window.location.href="/game/official/"+id;
+    })
+    });
+
+    $(".close").click(function() {
+        $('#back').addClass('unsee');
+
+    });
+    $(function(){
+        getNext();
+        limit();
+        $("#addres").delegate('span',"click",function() {
+        var betId = $(this).attr("betId");
+        $.ajax({
+            type: "POST",
+            url: "/Index/addBet",
+            data:{betId:betId},
+            dataType: "json",
+            success: function(data){
+            var strlist = '';
+            var stradd = '';
+            var strdel = '';
+            if(data.code == '200'){
+                $.each(data.data.res,function(i,n){
+                    var n = data.data.res[i]['bet_id'];
+                    strlist = strlist + '<a href="/game/info/'+data.data.res[i]['bet_id']+'"><li class="item flex"><img src="/'+data.data.img[data.data.res[i]['bet_id']]+'" /><div class="flex1">'+
+                                        '<p class="cm first-c">'+data.data.res[i]['bet_name']+'</p>'+
+                                        '<p class="cm second-c"><i class="time-icon"></i><span class="countdown'+data.data.res[i]['bet_id']+'"></span></p>'+
+                                        '</div></li></a>';
+                });
+                $.each(data.data.add,function(i,n){
+                    var n = data.data.add[i]['bet_id'];
+                    stradd = stradd+'<li class="item flex"><img src="/'+data.data.img[data.data.add[i]['bet_id']]+'" /><div class="flex1">'+
+                                    '<p class="cm first-c">'+data.data.add[i]['bet_name']+'</p>'+
+                                    '<p class="cm second-c">'+data.data.add[i]['bet_name']+'</p>'+
+                                    '</div><span class="add-btn" betId="'+data.data.add[i]['bet_id']+'">添加</span></li>';
+                });
+
+                $.each(data.data.del,function(i,n){
+                    strdel = strdel+'<li class="item flex"><img src="/'+data.data.img[data.data.del[i]['bet_id']]+'" /><div class="flex1">'+
+                                    '<p class="cm first-c">'+data.data.del[i]['bet_name']+'</p>'+
+                                    '<p class="cm second-c">'+data.data.del[i]['bet_name']+'</p>'+
+                                    '</div><span class="del-btn" betId="'+data.data.del[i]['bet_id']+'">删除</span></li>';
+                });
+
+                $("#listres").html(strlist);
+                $("#addres").html(stradd);
+                $("#delres").html(strdel);
+            }
+        else{
+            alert('无数据');
+        }
+    }
+        });
+    });
+    });
+
+    $(function(){
+        $("#delres").delegate('span',"click",function() {
+        var betId = $(this).attr("betId");
+        $.ajax({
+        type: "POST",
+        url: "/Index/delBet",
+        data:{betId:betId},
+        dataType: "json",
+        success: function(data){
+                    var strlist = '';
+                    var stradd = '';
+                    var strdel = '';
+                    if(data.code == '200'){
+                        $.each(data.data.res,function(i,n){
+                            var n = data.data.res[i]['bet_id'];
+                            strlist = strlist + '<a href="/game/info/'+data.data.res[i]['bet_id']+'"><li class="item flex"><img src="/'+data.data.img[data.data.res[i]['bet_id']]+'" /><div class="flex1">'+
+                                                '<p class="cm first-c">'+data.data.res[i]['bet_name']+'</p>'+
+                                                '<p class="cm second-c"><i class="time-icon"></i><span class="countdown'+data.data.res[i]['bet_id']+'"></span></p>'+
+                                                '</div></li></a>';
+                        });
+                        $.each(data.data.add,function(i,n){
+                            var n = data.data.add[i]['bet_id'];
+                            stradd = stradd+'<li class="item flex"><img src="/'+data.data.img[data.data.add[i]['bet_id']]+'" /><div class="flex1">'+
+                                            '<p class="cm first-c">'+data.data.add[i]['bet_name']+'</p>'+
+                                            '<p class="cm second-c">'+data.data.add[i]['bet_name']+'</p>'+
+                                            '</div><span class="add-btn" betId="'+data.data.add[i]['bet_id']+'">添加</span></li>';
+                        });
+
+                        $.each(data.data.del,function(i,n){
+                            strdel = strdel+'<li class="item flex"><img src="/'+data.data.img[data.data.del[i]['bet_id']]+'" /><div class="flex1">'+
+                                            '<p class="cm first-c">'+data.data.del[i]['bet_name']+'</p>'+
+                                            '<p class="cm second-c">'+data.data.del[i]['bet_name']+'</p>'+
+                                            '</div><span class="del-btn" betId="'+data.data.del[i]['bet_id']+'">删除</span></li>';
+                        });
+
+                        $("#listres").html(strlist);
+                        $("#addres").html(stradd);
+                        $("#delres").html(strdel);
+
+                    }
+                else{
+                    alert('无数据');
+                }
+            }
+        });
+    });
+    });
+
+    $(function(){
+        $("#addresG").delegate('span',"click",function() {
+        var betId = $(this).attr("betId");
+        $.ajax({
+        type: "POST",
+        url: "/Index/addGBet",
+        data:{betId:betId},
+        dataType: "json",
+        success: function(data){
+                    var strlist = '';
+                    var stradd = '';
+                    var strdel = '';
+                    if(data.code == '200'){
+                        $.each(data.data.resG,function(i,n){
+                            var n = data.data.resG[i]['bet_id'];
+                            strlist = strlist + '<a href="/game/info/'+data.data.resG[i]['bet_id']+'"><li class="item flex"><img src="/'+data.data.img[data.data.resG[i]['bet_id']]+'" /><div class="flex1">'+
+                                                '<p class="cm first-c">'+data.data.resG[i]['bet_name']+'</p>'+
+                                                '<p class="cm second-c"><i class="time-icon"></i><span class="countdown'+data.data.resG[i]['bet_id']+'"></span></p>'+
+                                                '</div></li></a>';
+                        });
+                        $.each(data.data.addG,function(i,n){
+                            var n = data.data.addG[i]['bet_id'];
+                            stradd = stradd+'<li class="item flex"><img src="/'+data.data.img[data.data.addG[i]['bet_id']]+'" /><div class="flex1">'+
+                                            '<p class="cm first-c">'+data.data.addG[i]['bet_name']+'</p>'+
+                                            '<p class="cm second-c">'+data.data.addG[i]['bet_name']+'</p>'+
+                                            '</div><span class="add-btn" betId="'+data.data.addG[i]['bet_id']+'">添加</span></li>';
+                        });
+
+                        $.each(data.data.delG,function(i,n){
+                            strdel = strdel+'<li class="item flex"><img src="/'+data.data.img[data.data.delG[i]['bet_id']]+'" /><div class="flex1">'+
+                                            '<p class="cm first-c">'+data.data.delG[i]['bet_name']+'</p>'+
+                                            '<p class="cm second-c">'+data.data.delG[i]['bet_name']+'</p>'+
+                                            '</div><span class="del-btn" betId="'+data.data.delG[i]['bet_id']+'">删除</span></li>';
+                        });
+
+                        $("#listresG").html(strlist);
+                        $("#addresG").html(stradd);
+                        $("#delresG").html(strdel);
+                    }
+                else{
+                    alert('无数据');
+                }
+            }
+        });
+    });
+    });
+
+    $(function(){
+        $("#delresG").delegate('span',"click",function() {
+        var betId = $(this).attr("betId");
+        $.ajax({
+        type: "POST",
+        url: "/Index/delGBet",
+        data:{betId:betId},
+        dataType: "json",
+        success: function(data){
+                    var strlist = '';
+                    var stradd = '';
+                    var strdel = '';
+                    if(data.code == '200'){
+                        $.each(data.data.resG,function(i,n){
+                            var n = data.data.resG[i]['bet_id'];
+                            strlist = strlist + '<a href="/game/info/'+data.data.resG[i]['bet_id']+'"><li class="item flex"><img src="/'+data.data.img[data.data.resG[i]['bet_id']]+'" /><div class="flex1">'+
+                                                '<p class="cm first-c">'+data.data.resG[i]['bet_name']+'</p>'+
+                                                '<p class="cm second-c"><i class="time-icon"></i><span class="countdown'+data.data.resG[i]['bet_id']+'"></span></p>'+
+                                                '</div></li></a>';
+                        });
+                        $.each(data.data.addG,function(i,n){
+                            var n = data.data.addG[i]['bet_id'];
+                            stradd = stradd+'<li class="item flex"><img src="/'+data.data.img[data.data.addG[i]['bet_id']]+'" /><div class="flex1">'+
+                                            '<p class="cm first-c">'+data.data.addG[i]['bet_name']+'</p>'+
+                                            '<p class="cm second-c">'+data.data.addG[i]['bet_name']+'</p>'+
+                                            '</div><span class="add-btn" betId="'+data.data.addG[i]['bet_id']+'">添加</span></li>';
+                        });
+
+                        $.each(data.data.delG,function(i,n){
+                            strdel = strdel+'<li class="item flex"><img src="/'+data.data.img[data.data.delG[i]['bet_id']]+'" /><div class="flex1">'+
+                                            '<p class="cm first-c">'+data.data.delG[i]['bet_name']+'</p>'+
+                                            '<p class="cm second-c">'+data.data.delG[i]['bet_name']+'</p>'+
+                                            '</div><span class="del-btn" betId="'+data.data.delG[i]['bet_id']+'">删除</span></li>';
+                        });
+
+                        $("#listresG").html(strlist);
+                        $("#addresG").html(stradd);
+                        $("#delresG").html(strdel);
+
+                    }
+                else{
+                    alert('无数据');
+                }
+            }
+        });
+    });
+    });
+</script>
+<script>
+// var log = '';
+var betid = '';
+    function getNext(betid)
+    {
+        api.get('/game/nextall', {betid:betid}, function(res) {
+            if (res.code != 200) {
+                getNext()
+                return false;
+            }
+            var bet_id = new Array();
+            var closetime = new Array();
+            $.each(res.data.res, function(i, item){
+                  bet_id.push(item.bet_id);
+                  closetime.push(new Date(res.data.res[i].bres_open_time-res.data.interval)*1000);
+            });
+            $.each(bet_id, function(i, item){
+                var countname = '.countdown'+item;
+
+                if(closetime[i]<0)
+                {
+                    over(countname);
+                }
+                else
+                {
+                    var diff = (new Date()).getTime() - res.data.time*1000 ;
+                    var starttime = new Date(closetime[i] + diff);
+                    var id = '';
+                    id = setInterval(function () {
+                        var nowtime = new Date();
+                        var time = starttime - nowtime;
+                        var bet_Id = bet_id[i];
+                        var day = parseInt(time / 1000 / 60 / 60 / 24);
+                        var hour = parseInt(time / 1000 / 60 / 60 % 24);
+                        var minute = parseInt(time / 1000 / 60 % 60);
+                        var seconds = parseInt(time / 1000 % 60);
+                        $(countname).html( leadingZeros(hour) + ":" + leadingZeros(minute) + ":" + leadingZeros(seconds) );
+                        if(time<=0){
+                            // if(log<=0)
+                            // {
+                                log=1;
+                                pause(countname);
+                                clearInterval(id);
+                                setTimeout(getNext(bet_Id),3000);
+                            // }
+                            // else if(log ==2)
+                            // {
+                            //     log=0;
+                            //     clearInterval(id);
+                            //     pause(countname);
+                            //     setTimeout(getNext(bet_Id),1000);
+                            // }
+                            // else if(log ==3 )
+                            // {
+                            //     pause(countname);
+                            // }
+                            // else
+                            // {
+                            //     log = 2;
+                            //     clearInterval(id);
+                            //     pause(countname);
+                            // }
+
+                        }
+                    }, 1000);
+                }
+            });
+        });
+    }
+
+
+    function limit()
+    {
+        var count = 1;
+        setInterval(function ()
+        {
+            if (count % 200 == 0)
+            {
+                window.location.href='/';
+            }
+            count++;
+
+        }, 1000);
+    }
+    function over(classname)
+    {
+        $(classname).html('停止开奖');
+    }
+    function pause(classname)
+    {
+        $(classname).html('已封盘');
+    }
+    leadingZeros = function(num, length) {
+        length = length || 2;
+        num = String(num);
+        if (num.length > length) {
+            return num
+        }
+        return (Array(length + 1).join("0") + num).substr( - length)
+    };
+</script>
+
+<script type="text/javascript" src="<?=$this->di['config']['baseInfo']['domain']?>/js/jquery.countdown.min.js"></script>
+<?php $this->partial("shared/tabbar"); ?>
+
+

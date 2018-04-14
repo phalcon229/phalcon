@@ -1,0 +1,387 @@
+    <?php
+    $js = $js2 = '';
+    if(!empty($type)) {
+        if (isset($_GET['type'])) {
+            $js= '$("#bet_type").val('.$_GET['type'].');';
+            if (!empty($type))
+                $bet = $type[$_GET['type']];
+        } else
+            $bet = current($type);
+    }
+    ?>
+
+        <div class="search-box">
+            <div class="search-down ml15">
+                彩票品种:
+                <div class="select-box">
+                    <select class="list" id="bet_type">
+                    <?php  foreach ($type as $key => $value) : ?>
+                        <option value="<?=$key?>"><?=$value?></option>
+                    <?php endforeach; ?>
+                    </select>
+                    <em class="txt"><?=$bet?></em>
+                    <i class="i-arrow"></i>
+                </div>
+
+                彩种开关:
+                <?php $check1 = $check2 = ''; if ($info['bet_isenable'] ==1) $check1 = "checked" ; else $check2 = "checked";?>
+
+                <input type="radio"  name="bet_isenable" <?=$check1?> class="ml10" value=1 />开
+                <input type="radio"  name="bet_isenable" class="ml10" <?=$check2?> value=3 />关
+            </div>
+            <div class="set-limit mertop">
+                最高额
+                <input type="text" class="limit-box width-l" id="bet_max" value="<?=$info['bet_max']?>" />最低额
+                <input type="text" class="limit-box width-l" id="bet_min" value="<?=$info['bet_min']?>"/> 开奖球数
+                <input type="text" class="limit-box width-l" id="bet_num" value="<?=$info['bet_ball_num']?>"/>
+                <button class="search-btn" id="sbtn">保存设置</button>
+            </div>
+        </div>
+    <div class="few-table">
+        
+    <?php
+        $i = 0;
+        foreach ($betRule as $type => $baseTypes) :
+        if($i%6 == 0) :
+    ?>
+        <div class="row-table column-6">
+    <?php endif; ?>
+
+            <table class="bett-ball">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>号</th>
+                        <th colspan="3">赔率</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="6">
+                            <?=$game['rule_type'][$type]?>
+                        </td>
+                    </tr>
+                <?php foreach ($baseTypes as $k => $v) : ?>
+                    <tr data-id="<?=$v['br_id']?>">
+                        <td><input type="checkbox"/></td>
+                        <td>
+                            <?=$game['rule_base_type'][$v['br_base_type']]?>
+                        </td>
+                        <td class="td-add" data-id="1">
+                            <i class="i-add"></i>
+                        </td>
+                        <td class="val" data-val="<?=$v['br_bonus']?>" data-base="<?=$v['br_base_type']?>" data-br="<?=$v['br_id']?>">
+                            <input type="text" class="changeval"  value="<?=floatval($v['br_bonus'])?>">
+                        </td>
+                        <td class="td-reduce" data-id="2">
+                            <i class="i-reduce"></i>
+                        </td>
+                    </tr>
+                <?php
+                    endforeach;
+                    $i++;
+                ?>
+                </tbody>
+            </table>
+    <?php if ($i % 6 == 0) :?>
+        </div>
+    <?php
+        endif;
+        endforeach ;
+    ?>
+    </div>
+<div class="search-box clearbt">
+            <div class="search-down">
+                批量方式:
+                <td><input type="checkbox" id="tema"/></td>特码
+                <td><input type="checkbox" id="double"/></td>两面
+<!--                <input type="radio" name="way" class="ml10"/>
+                <input type="radio" name="way" class="ml10"/>-->
+                <div class="mt10">
+                    <label>设置选中赔率:</label>
+                    <input type="text" class="limit-box width-m" id="odds" />
+                    <button class="search-btn save-val" id="saveAll">保存赔率</button>
+                </div>
+            </div>
+        </div>
+<!--        <div class="save-box">
+            <a class="s-btn s-cancle" id="cancle">取消</a>
+            <a class="s-btn" id="sbtn">保存设置</a>
+        </div>-->
+
+
+ <script type="text/javascript">
+
+        <?php echo$js; echo $js2?>
+        function reload()
+        {
+            window.location.reload()
+        }
+
+        $('#tema').on('click', function(){
+            var check = $('#tema').is(':checked');
+            if(check)
+            {
+                var select = 1;
+            }
+            else
+            {
+                var select = 0;
+            }
+            var bet_id = $('#bet_type').val();
+            $.ajax({
+                url: '/system/fast',
+                type: 'POST',
+                data: {bet_id:bet_id, select:select},
+                dataType: 'json',
+                success: function(msgObj)
+                {
+                    if(msgObj.ret == 1)
+                    {
+                         $(".val").each(function() {
+                             var item = $(this).attr('data-br');
+                             var that = this;
+                             console.log(msgObj);
+                             $(msgObj.msg.te).each(function(i,n){
+                                 if(item == n)
+                                 {
+                                     $(that).prev().prev().prev().children().attr("checked",'checked');
+                                 }
+                             })
+                        });
+                    }
+                    else
+                    {
+                         $(".val").each(function() {
+                             var item = $(this).attr('data-br');
+                             var that = this;
+                             console.log(msgObj);
+                             $(msgObj.msg.te).each(function(i,n){
+                                 if(item == n)
+                                 {
+                                     $(that).prev().prev().prev().children().attr('checked',false);;
+                                 }
+                             })
+                        });
+                    }
+                }
+            });
+        });
+        
+        $('#double').on('click', function(){
+            var check = $('#double').is(':checked');
+            if(check)
+            {
+                var select = 1;
+            }
+            else
+            {
+                var select = 0;
+            }
+            var bet_id = $('#bet_type').val();
+            $.ajax({
+                url: '/system/fast',
+                type: 'POST',
+                data: {bet_id:bet_id, select:select},
+                dataType: 'json',
+                success: function(msgObj)
+                {
+                    if(msgObj.ret == 1)
+                    {
+                         $(".val").each(function() {
+                             var item = $(this).attr('data-br');
+                             var that = this;
+                             $(msgObj.msg.double).each(function(i,n){
+                                 if(item == n)
+                                 {
+                                     $(that).prev().prev().prev().children().attr("checked",'checked');
+                                 }
+                             })
+                        });
+                    }
+                    else
+                    {
+                         $(".val").each(function() {
+                             var item = $(this).attr('data-br');
+                             var that = this;
+                             $(msgObj.msg.double).each(function(i,n){
+                                 if(item == n)
+                                 {
+                                     $(that).prev().prev().prev().children().attr('checked',false);;
+                                 }
+                             })
+                        });
+                    }
+                }
+            });
+        });
+        
+        
+        var rule = [];
+        $('#saveAll').on('click', function(){
+            
+            $(".val").each(function() {
+                var item = $(this).prev().prev().prev().children().attr("checked");
+                if(item == 'checked')
+                {
+                    var val = $(this).attr('data-br');
+                    rule.push(val);
+                }    
+            });
+            if(rule.length < 1)
+            {
+                layer.msg('没有可改变的项');return;
+            }
+            var odds = $(this).prev().val();
+            if(odds == '')
+            {
+                layer.msg('请填写相应赔率');return;
+            }
+
+            $.ajax({
+                url: '/system/saveChange',
+                type: 'POST',
+                data: {br_id:rule,odds:odds},
+                dataType: 'json',
+                success: function(msgObj)
+                {
+                    if(msgObj.ret == 1)
+                    {
+                        layer.msg('批量修改成功');
+                        setTimeout(reload(),10000);
+                    }
+                    else
+                    {
+                        layer.msg('批量修改失败');
+                    }
+                }
+            });
+        });
+        
+         $('#odds').on('change', function(){
+             var val = $(this).val();
+            $(".val").each(function() {
+                var item = $(this).prev().prev().prev().children().attr("checked");
+                if(item == 'checked')
+                {
+                    $(this).children().val(val);
+                }    
+            });
+        });
+        
+        $('#bet_type').on('change', function(){
+            var bid = $('#bet_type').val();
+            var url = '/system/index?type='+bid;
+            location.href = url;
+        });
+        
+        $('#sbtn').on('click', function(){
+            var bet_id = $('#bet_type').val();
+            var bet_isenable = $("input[name='bet_isenable']:checked").val();
+            var bet_max = $('#bet_max').val();
+            var bet_min = $('#bet_min').val();
+            var bet_num = $('#bet_num').val();
+
+            if (bet_max == '' || isNaN(bet_max) ) {
+                layer.msg('请输入合法数值');
+                return false;
+            }
+            if (bet_min == '' || isNaN(bet_min)) {
+                layer.msg('请输入合法数值');
+                return false;
+            }
+            if (bet_num == '' || isNaN(bet_num)) {
+                layer.msg('请输入合法数值');
+                return false;
+            }
+
+            $.ajax({
+            url: '/system/betConfSet',
+            type: 'POST',
+            data: {bet_id:bet_id, bet_isenable:bet_isenable,bet_max:bet_max,bet_min:bet_min,bet_ball_num:bet_num},
+            dataType: 'json',
+            error: function()
+            {
+                layer.msg('System mistake!');
+            },
+            success: function(msgObj)
+            {
+                if(msgObj.ret == 1)
+                    layer.msg(msgObj.msg, {
+
+                  });
+                else
+                    layer.msg(msgObj.msg);
+
+                setTimeout("reload()",1000);
+            }
+        });
+        return false;
+    });
+        $('#cancle').on('click', function(){
+            reload();
+        })
+        $('.bett-ball').on('click', '.a-save', function(){
+        var opTr = $(this).parent().parent();//操作栏的tr
+        var tr = opTr.prev();//更改数值的tr
+        var id = tr.attr('data-id');//获取对应tr数值
+        var bonus = tr.find('.changeval').val();//获取对应tr的值
+        $.ajax({
+            url: '/system/betSet',
+            type: 'POST',
+            data: {br_id:id, br_bonus:bonus},
+            dataType: 'json',
+            error: function()
+            {
+                layer.msg('system mistake!');
+            },
+            success: function(msgObj)
+            {
+                if(msgObj.ret == 1)
+                {
+                    tr.find('.changeval').attr('value', bonus);
+                    layer.msg(msgObj.msg);
+                }
+                else
+                {
+                    layer.msg(msgObj.msg);
+                }
+                opTr.detach();//删除操作条
+                setTimeout("reload()",1000);
+            }
+        });
+    });
+    
+    $('.bett-ball').on('click', '.a-save', function(){
+        var opTr = $(this).parent().parent();//操作栏的tr
+        var tr = opTr.prev();//更改数值的tr
+        var id = tr.attr('data-id');//获取对应tr数值
+        var bonus = tr.find('.changeval').val();//获取对应tr的值
+        $.ajax({
+            url: '/system/betSet',
+            type: 'POST',
+            data: {br_id:id, br_bonus:bonus},
+            dataType: 'json',
+            error: function()
+            {
+                layer.msg('system mistake!');
+            },
+            success: function(msgObj)
+            {
+                if(msgObj.ret == 1)
+                {
+                    tr.find('.changeval').attr('value', bonus);
+                    layer.msg(msgObj.msg);
+                }
+                else
+                {
+                    layer.msg(msgObj.msg);
+                }
+                opTr.detach();//删除操作条
+                setTimeout("reload()",1000);
+            }
+        });
+    });
+
+        </script>
+

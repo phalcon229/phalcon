@@ -1,0 +1,71 @@
+<div class="pwd-body">
+    <?php $this->partial("shared/usertop"); ?>
+
+    <form>
+        <div class="container">
+            <div class="title"><?=$title;?></div>
+            <div class="content">
+                <div class="row">
+                    <input type="password" name="old_pwd" placeholder="输入旧密码" />
+                </div>
+                <div class="row">
+                    <input type="password" name="new_pwd" id="pwd" placeholder="输入新密码" />
+                </div>
+                <div class="row">
+                    <input type="password" name="confirm" placeholder="确认新密码" />
+                </div>
+            </div>
+            <input type="submit" value="提交" class="btn">
+        </div>
+    </form>
+</div>
+
+<script>
+$(document).ready(function() {
+    $("form").validate({
+        debug: true,
+        rules: {
+            old_pwd: {
+                required: true
+            },
+            new_pwd: {
+                required: true,
+                rangelength: [8, 15]
+            },
+            confirm: {
+                required: true,
+                equalTo: "#pwd"
+            }
+        },
+        messages: {
+            confirm: {
+                equalTo: '两次密码输入不一致'
+            }
+        },
+        submitHandler: function(form) {
+            $('form input[type="submit"]').attr('disabled', true).val('提交中...');
+            var data = $('form').serialize();
+            $.ajax({
+                type: 'post',
+                url: '/user/pwdlogin',
+                data: data,
+                dataType: 'json',
+                success: function(res) {
+                    if (res.code != 200) {
+                        alert(res.msg);
+                        return false;
+                    }
+                    alert('修改成功');
+                    window.location.href = res.data.url;
+                },
+                error: function() {
+                    alert('服务器错误，请重新尝试');
+                },
+                complete: function() {
+                    $('form input[type="submit"]').attr('disabled', false).val('提交');
+                }
+            });
+        }
+    });
+});
+</script>

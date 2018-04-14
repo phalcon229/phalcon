@@ -1,0 +1,606 @@
+<script type="text/javascript" src="<?=$this->di['config']['baseInfo']['domain']?>/js/powerange.min.js"></script>
+<script type="text/javascript" src="<?=$this->di['config']['baseInfo']['domain']?>/js/range.js"></script>
+<script type="text/javascript" src="<?=$this->di['config']['baseInfo']['domain']?>/js/fastclick.js"></script>
+<div class="lotteryHtml">
+    <div class="game-body">
+    <?php $this->partial("shared/usertop"); ?>
+    <div class="dis-date">
+        距<span class="perid"></span>期封盘时间：<span class="red countdown"></span>
+        <input type="hidden" name="game_id" value="<?=$gameId?>">
+    </div>
+    <div class="periods">
+        <div class="lucky-c t-periods ">
+           <ul class="prize-detail peridHtml" style="height: 84px;"></ul>
+        </div>
+        <span class="expand-t">
+        <i class="icon-d"></i>
+        </span>
+    </div>
+
+    <div class="db-bar">
+        <a class="txt-l" data-id="0" id="show-record"><i class="bet-rec"></i>投注记录<i class="" id="open"></i></a>
+        <a class="txt-r" data-id="1" id="show-trend"><i class="flow"></i>两面长龙</a>
+    </div>
+    <div class="play-black clearfix">
+        <span>
+            <select class="play-d">
+                <option value="信用玩法">信用玩法</option>
+            </select>
+            <em>信用玩法</em>
+        </span>
+    </div>
+
+        <div class="ele ballHtml">
+            <?php $this->partial("game/layball"); ?>
+        </div>
+        <div class="ele confirmHtml unsee">
+            <?php $this->partial("game/layconfirm"); ?>
+        </div>
+        <div class="ele recordHtml unsee"></div>
+        <div class="ele trendHtml unsee"></div>
+
+    </div>
+
+    <footer class="fixed bottom-box">
+        <div class="ele setpoint">
+            <div class="range-change flex">
+                <i class="reduce"></i>
+                <input type="text" class="js-decimal" style="display: none;" data-max="<?=$rate?>" data-min="0.00">
+                <i class="add"></i>
+                <span class="va js-display-decimal" id="percent"><?=$betRate?$betRate:0.00;?></span>%
+            </div>
+        </div>
+
+        <div class="ele bottom-input flex nextStep">
+            <a class="b-cancel" href="javascript: clear();">清空</a>
+            <div class="b-center flex1">
+                <input type="tel" name="unit_price" placeholder="请输入金额" />
+            </div>
+            <div class="b-center flex1 unsee">
+                共选<em class="yellow">1</em>注 共投<em class="yellow">2</em>元
+            </div>
+            <a class="b-add" id="add" data-disable="false">添加</a>
+        </div>
+
+        <div class="ele bottom-input flex confirm unsee">
+            <a class="b-cancel" id="track">追号</a>
+            <div class="b-center flex1">
+                共选<em class="yellow total"></em>注 共投<em class="yellow price"></em>元
+            </div>
+            <a class="b-add sub" data-disable="false">确定</a>
+        </div>
+    </footer>
+</div>
+
+<div class="trackHtml unsee">
+    <?php $this->partial("game/laytrack"); ?>
+</div>
+<script>
+
+    var api = new Api();
+    var newNper = 0;
+    var linfo = {
+        rules: [],
+        game_id: $('input[name="game_id"]').val(),
+        total:0,
+        price: 0,
+        track: null,
+        price_times: 1
+    }
+
+    $('#add').click(function() {
+
+        // 添加新号码
+        $('.ballsel.on').each(function(i, o) {
+            var selrule = {
+                index: null,
+                brid: $(o).data('rule'),
+                unit_price: 0,
+                percent: -1,
+                perid: peridInfo.perid,
+                odds: $(o).find('.srate').html(),
+                name: $(o).data('pname') + ':' + $(o).find('.cname').html()
+            };
+            linfo.rules.push(selrule);
+        });
+
+        // 判断是否可提交
+        if (linfo.rules.length == 0) {
+            alert('请选择一组号码添加');
+            return;
+        }
+
+        var unit_price = $('input[name="unit_price"]').val() * linfo.price_times;
+
+        if (!unit_price) {
+            alert('请输入金额');
+            return;
+        }
+
+        if (Math.ceil(unit_price) != unit_price) {
+            alert('金额必须是整数');
+            return;
+        }
+
+        var confirmHtml = ''; linfo.price = 0;
+
+        $.each(linfo.rules, function(idx, obj) {
+            if (!obj.unit_price)
+                obj.unit_price = unit_price;
+
+            if (obj.percent < 0)
+                obj.percent = $('#percent').html();
+            linfo.price += obj.unit_price;
+            obj.index = idx + 1;
+
+            confirmHtml += '<tr id="rule-'+obj.index+'">';
+            confirmHtml += '<td><p class="red">' + obj.name + '</p><p>[信用玩法]</p></td>';
+            confirmHtml += '<td><p class="red">' + obj.perid + '</p><p>' + obj.odds + '/' + obj.percent + '%</p></td>';
+            confirmHtml += '<td><p><em class="red">1</em>注</p><p><em class="red">'+obj.unit_price+'</em>元</p></td>';
+            confirmHtml += '<td><i class="delx" data-idx='+obj.index+'></i></td>';
+            confirmHtml += '</tr>';
+        });
+
+        linfo.total = linfo.rules.length;
+
+        $('.sure-list').html(confirmHtml);
+        $('.total').html(linfo.total);
+        $('.price').html(linfo.price);
+
+        $('.ele').addClass('unsee');
+
+        $('.ballHtml').addClass('unsee');
+        $('.ballHtml .ballsel').removeClass('on');
+        $('input[name="unit_price"]').val('');
+
+        $('.setpoint').addClass('unsee');
+        $('.nextStep').addClass('unsee');
+
+        $('.confirmHtml').removeClass('unsee');
+        $('.confirm').removeClass('unsee');
+    });
+
+    $('body').delegate('.delx', 'click', function() {
+        var idx = $(this).data('idx');
+
+        linfo.rules = jQuery.grep(linfo.rules, function(obj) {
+            if (idx == obj.index)
+                linfo.price -= obj.unit_price
+
+            return idx != obj.index
+        });
+
+        $('#rule-' + idx).remove();
+
+        linfo.total = linfo.rules.length;
+        $('.total').html(linfo.total);
+        $('.price').html(linfo.price);
+    });
+
+    $('#continue_add').click(function() {
+
+        $('.ele').addClass('unsee');
+
+        $('.ballHtml').removeClass('unsee');
+        $('.setpoint').removeClass('unsee');
+        $('.nextStep').removeClass('unsee');
+
+        $('.confirmHtml').addClass('unsee');
+        $('.confirm').addClass('unsee');
+        if(linfo.rules.length > 0)
+        {
+            $.each(linfo.rules,function(){
+                var add = this;
+                $('.ballsel').each(function(i, o) {
+                    var tamp = $(this).attr('data-rule');
+                    if(tamp == add.brid)
+                    {
+                        $(this).addClass('on');
+                    }
+                });
+            })
+        }
+        linfo.rules = [];
+    });
+
+    $('#del_all').click(function() {
+        linfo.rules = [];
+        linfo.price = 0;
+        $('.sure-list').html('');
+
+        $('.ballHtml').removeClass('unsee');
+        $('.setpoint').removeClass('unsee');
+        $('.nextStep').removeClass('unsee');
+
+        $('.confirmHtml').addClass('unsee');
+        $('.confirm').addClass('unsee');
+
+        linfo.total = linfo.rules.length;
+
+        $('.total').html(linfo.total);
+        $('.price').html(linfo.price);
+    });
+
+    $('#record').click(function() {
+        $('.recordHtml').removeClass('unsee');
+    });
+
+    // 显示走势
+    $('#show-trend').click(function() {
+        $('.recordHtml').addClass('unsee');
+        $('.trendHtml').removeClass('unsee');
+
+        api.getHtml('/game/trend', {id: linfo.game_id}, function(res) {
+            $('.trendHtml').html(res);
+        });
+    });
+
+    // 投注记录
+    $('#show-record').click(function() {
+        red();
+        if(newNper == 0)
+        {
+            newNper = peridInfo.perid;
+        }
+        $('.trendHtml').addClass('unsee');
+        $('.recordHtml').removeClass('unsee');
+
+        api.getHtml('/game/record', {id: linfo.game_id, nper:newNper, type:1}, function(res) {
+            $('.recordHtml').html(res);
+        });
+    });
+
+    $(".sub").click(function() {
+        if ($(this).data('disable'))
+            return false;
+
+        if ($(this).data('track') == 1 && !linfo.track) {
+            alert('请生成追号方案');
+            return false;
+        }
+
+        if (linfo.rules.length == 0) {
+            alert('请选择一组号码添加');
+            return false;
+        }
+
+        if (linfo.track && linfo.track.perids.length < 2) {
+            alert('请至少选择2期追号');
+            return false;
+        }
+
+        if (!confirm('确认下注?')) {
+            return false;
+        }
+
+        var _this = $(this);
+        var txt = $(this).html();
+        $(this).data('disable', true).html('...');
+
+        linfo.perid = peridInfo.perid;
+        linfo.rules = JSON.stringify(linfo.rules);
+        console.log(linfo);
+        api.post('/game/lottery', linfo, function(res) {
+            var msg = res.code == 200 ? '投注成功' : '投注失败，请重新尝试';
+            alert(msg);
+            clear();
+        }, function() {
+            if (linfo.rules != '')
+                linfo.rules = JSON.parse(linfo.rules);
+            _this.data('disable', false).html(txt);
+        });
+    });
+
+    function clear()
+    {
+        linfo.rules = [];
+        linfo.track = null;
+        $('.ballHtml').removeClass('unsee');
+        $('.setpoint').removeClass('unsee');
+        $('.nextStep').removeClass('unsee');
+        $('.ballHtml .ballsel').removeClass('on');
+        $('input[name="unit_price"]').val('');
+
+        $('.confirmHtml').addClass('unsee');
+        $('.confirm').addClass('unsee');
+
+        $('.lotteryHtml').removeClass('unsee');
+        $('.trackHtml').addClass('unsee');
+        $('.number-lump table tbody').html('<td colspan="7" class="null">没有任何资料</td>');
+    }
+
+    // 追号
+    $('#track').click(function() {
+        $('.lotteryHtml').addClass('unsee');
+        $('.trackHtml').removeClass('unsee');
+    });
+
+    $('#track-plan').click(function() {
+        if ($(this).data('disable'))
+            return false;
+
+        var html = '';
+
+        linfo.track = {
+            nums: $('#track-nums').val(),    // 追号期数
+            start_times: $('#track-start-times').val(), // 起始倍数
+            per_perid: $('#track-per-perid').val(),     // 隔x期
+            per_times: $('#track-per-times').val(),  // 倍数
+            perids: [],
+            win_stop: $('#win_stop').hasClass('on')
+        };
+
+        if (linfo.track.nums < 2) {
+            alert('追号期数至少2期');
+            return false;
+        }
+
+        if (linfo.track.nums > $('#trackMax').html()) {
+            alert('超过最大追号期数');
+            return false;
+        }
+
+        if (!linfo.track.nums || linfo.track.nums == 0 || !linfo.track.start_times || linfo.track.start_times == 0 || !linfo.track.per_perid || linfo.track.per_perid == 0 || !linfo.track.per_times || linfo.track.per_times == 0) {
+            alert('请设置完整追号信息');
+            return false;
+        }
+
+        $(this).data('disable', true).html('...');
+        var _this = this;
+
+        api.get('/game/nxtperids', {betid: linfo.game_id, nums: linfo.track.nums}, function(res) {
+
+            res = res.data;
+
+            $.each(res, function(idx, expect) {
+                linfo.track.perids.push(expect)
+            })
+
+            var pre_times = linfo.track.start_times;
+            var total_price = 0;
+
+            $.each(linfo.track.perids, function(idx, perid) {
+
+                if (idx > 0 && idx % linfo.track.per_perid == 0) {
+                    pre_times = pre_times * linfo.track.per_times
+                }
+                $.each(linfo.rules, function(i, rule) {
+                    // 计算当期投入金额
+                    var price = rule.unit_price * pre_times;
+                    total_price += price;
+
+                    // 计算盈利、盈利率
+                    var win = Math.floor(price * rule.odds * 100) / 100;
+                    var win_percent = Math.floor(win / total_price * 100 * 100) / 100;
+
+                    html += '<tr>';
+                    html += '<td><em class="chk ichk on" data-perid="'+perid+'" data-price="'+price+'"></em></td>';
+                    html += '<td>'+perid+'</td>';
+                    html += '<td>'+rule.odds+'</td>';
+                    html += '<td>'+price+'</td>';
+                    html += '<td>'+total_price+'</td>';
+                    html += '<td>'+win+'</td>';
+                    html += '<td>'+win_percent+'%</td>';
+                    html += '</tr>';
+
+                });
+
+            });
+
+            $('.track-perid').html(linfo.track.nums);
+            $('.track-total').html(total_price);
+            $('.number-lump table tbody').html(html);
+        }, function() {
+            $(_this).data('disable', false).html('生成追号方案');
+        });
+    });
+
+    // 中奖停止追号
+    $('#win_stop').on('click', function() {
+        linfo.track.win_stop = !linfo.track.win_stop;
+    });
+
+    trackChk('.allchk', '.ichk');
+
+    function trackChk(obj1, obj2) {
+        var l = $(obj2).size();
+        var fl = 0;
+        $('.game-body').on('click',obj1,function() {
+            if ($(this).hasClass('on')) {
+                $(this).removeClass('on');
+                $(obj2).removeClass('on');
+                fl = 0;
+            } else {
+                $(this).addClass('on');
+                $(obj2).addClass('on');
+                fl = l;
+            }
+
+            recountTrack();
+        });
+        $('.game-body').on('click',obj2,function() {
+            if ($(this).hasClass('on')) {
+                $(this).removeClass('on');
+                $(obj1).removeClass('on');
+                fl--;
+            } else {
+                $(this).addClass('on');
+                fl++;
+                if (fl == l) {
+                    $(obj1).addClass('on');
+                }
+            }
+            recountTrack();
+        });
+    }
+
+    function recountTrack()
+    {
+        var total_price = 0, total = 0;
+        linfo.track.perids = [];
+        $('.main-table .ichk.on').each(function() {
+            var price = parseFloat($(this).data('price'));
+            total_price += price
+            total++
+            if($.inArray($(this).data('perid'),linfo.track.perids)<0)
+            {
+                linfo.track.perids.push($(this).data('perid'));
+            }   
+        });
+
+        $('.track-total').html(total_price);
+        $('.track-perid').html(total);
+    }
+</script>
+
+<script>
+    var peridInfo = {
+        perid: 0,
+        closeTime: 0,
+        nextTime: 0,
+        nowTime: 0,
+        offset: 0
+    }
+
+    var countCfg = null;
+
+    function startCount() {
+        $('.countdown').countdown(countCfg);
+    }
+
+    function restartCount(obj) {
+        obj.restart(countCfg);
+    }
+
+    function getNext(cp)
+    {
+        api.get('/game/next', {betid: linfo.game_id, perid: peridInfo.perid}, function(res) {
+            if (res.code != 200) {
+                getNext(cp)
+                return false;
+            }
+            var data = res.data
+
+            if (data.expect == peridInfo.perid) {
+                getNext(cp);
+                return false;
+            } else
+                peridInfo.nextTime = data.interval;
+
+            peridInfo.perid = data.expect;
+            peridInfo.closeTime = data.closeTime;
+            var diff_ms = (new Date()).getTime() - data.time*1000;
+            peridInfo.offset = diff_ms | 0;
+
+            $('.perid').html(peridInfo.perid);
+
+            countCfg = {
+                date: new Date(peridInfo.closeTime * 1000),
+                render: function(date) {
+                     if (date.hours <=0 && date.sec <= 0 && date.millisec == 0) {
+                        getResult();
+                     }
+                    if (date.millisec == 0) {
+                        newNper = peridInfo.perid;
+                        getOpen(peridInfo.perid);
+                    }
+                    var hours = date.hours ? this.leadingZeros(date.hours, 2) + ':' : '';
+                    $(this.el).html(hours + this.leadingZeros(date.min, 2) + ':' + this.leadingZeros(date.sec, 2));
+                  },
+                offset: peridInfo.offset,
+                onEnd: function() {
+                    var _this = this;
+                    // 获取下期数据
+                    getNext(function(data) {
+                        restartCount(_this)
+                    });
+
+                    if (data.expect != peridInfo.perid) {
+                        alert("第" + peridInfo.perid + "期已截止，投注时请您确认您选的期号");
+                    }
+                }
+            }
+            typeof cp == "function" && cp(res.data)
+        });
+    }
+
+    getNext(function(data) {
+        startCount();
+        getResult();
+    });
+
+
+    //开奖投注记录显示红点
+    function red()
+    {
+        $('#open').removeClass('tip-circle');
+    }
+    // 获取开奖结果
+    function getResult()
+    {
+        api.getHtml('/game/result', {game_id: linfo.game_id,issue:peridInfo.perid}, function(html) {
+            $('.peridHtml').html(html);
+        }, function() {
+            setTimeout('getResult()', 10000);
+        });
+    }
+
+     function getOpen(issue)
+     {
+        issue = issue;
+        if(issue == null)
+        {
+            issue = peridInfo.perid-1;
+        }
+         api.post('/game/open', {game_id: linfo.game_id, issue : issue}, function(data) {
+
+            if(data.code == 200)
+            {
+                $('#open').addClass('tip-circle');
+                setTimeout('red()', 60000);
+            }
+            else if(data.code == 500)
+            {
+                return setTimeout('getOpen()', 10000);
+            }
+            else if(data.code == 201)
+            {
+                return true;
+            }
+         });
+     }
+
+    $('.game-list').on('change', function() {
+        var data = $(this).val().split('/');
+        var type = (data[1] == 1) ? 'info' : 'official';
+        window.location.href = '/game/'+type+'/' + data[0];
+    });
+
+    var range = new RangeSlider(document.querySelector('.js-decimal'), {
+        max: $('.js-decimal').data('max'),
+        min: $('.js-decimal').data('min'),
+        start: parseFloat($('#percent').html()).toFixed(1),
+        render: function(rate) {
+            var items = $('.game-show .item li');
+            console.log(items);
+            var myRate = $('.js-decimal').data('max');
+            $.each(items, function(idx, item) {
+                var bonus = parseFloat($(item).find('.ballsel').data('bonus'));
+                var times = Math.ceil(bonus);
+                var newBonus = bonus - (times * rate / 100);
+                $(item).find('.srate').html(newBonus.toFixed(3));
+            });
+            console.log(1);
+        }
+    });
+    var start = parseFloat($('#percent').html()).toFixed(1);
+    if(start !== 0)
+    {
+        range.options.render(start);
+    }
+
+
+</script>
+
+<script type="text/javascript" src="<?=$this->di['config']['baseInfo']['domain']?>/js/jquery.countdown.min.js"></script>
+

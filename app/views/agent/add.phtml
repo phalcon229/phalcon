@@ -1,0 +1,123 @@
+<form>
+    <div class="regist-manage-body">
+        <?php $this->partial("shared/usertop"); ?>
+        <div class="content">
+            <ul class="input-panel">
+                <li class="item flex">
+                    <label>用户类型</label>
+                    <span class="flex1 on">
+                    <select class="flex1" name="reg_type">
+                        <option value="">请选择类型</option>
+                        <option value="1">会员</option>
+                        <option value="3">代理</option>
+                    </select>
+                    <em>请选择类型</em>
+                    <i class="down"></i>
+                    </span>
+                </li>
+                <li class="item flex">
+                    <label>登录账户</label>
+                    <input class="flex1" type="text" name="username" placeholder="请输入4-15个数字或字母组成的账号" />
+                </li>
+                <li class="item flex">
+                    <label>登录密码</label>
+                    <input class="flex1" type="password" id="pwd" name="pwd" placeholder="请输入由8-15位数字或字母组成的密码" />
+                </li>
+                <li class="item flex">
+                    <label>确认密码</label>
+                    <input class="flex1" type="password" name="confirm" placeholder="请在此输入密码" />
+                </li>
+            </ul>
+        </div>
+       <div class="range-data">
+            <div class="text flex">
+                <span class="txt-l flex1">当前赔率:<i class="red rate-money bouns"><?=$rateMoney;?></i></span>
+                <span class="txt-r flex1">返点率:<i class="red js-display-decimal rate">0.00</i>%</span>
+            </div>
+            <div class="range-change flex">
+                <i class="reduce"></i>
+                <input type="text" class="js-decimal" style="display: none;" data-max="<?=$rate?>" data-min="0.00">
+                <i class="add"></i>
+                <span class="va"><?=$rate?></span>
+            </div>
+        </div>
+        <div class="btn-center">
+            <input type="submit" value="立即注册" class="btn">
+        </div>
+    </div>
+</form>
+
+<script>
+
+$(document).ready(function() {
+
+    $("form").validate({
+        debug: false,
+        rules: {
+            reg_type: {
+                required: true
+            },
+            username: {
+                required: true,
+                rangelength: [4, 15]
+            },
+            pwd: {
+                required: true,
+                rangelength: [8, 15]
+            },
+            confirm: {
+                required: true,
+                equalTo: "#pwd"
+            }
+        },
+        messages: {
+            reg_type: {
+                required: '请选择注册类型'
+            },
+            confirm: {
+                equalTo: '两次密码输入不一致'
+            }
+        },
+        submitHandler: function(form) {
+            $('form input[type="submit"]').attr('disabled', true).val('注册中...');
+            var ratemoney = $('.range-data .rate-money').html();
+            var rate = $('.range-data .rate').html();
+            var data = $('form').serialize() + "&ratemoney=" + ratemoney + "&rate=" + rate;
+
+            $.ajax({
+                type: 'post',
+                url: '/agent/add',
+                data: data,
+                dataType: 'json',
+                success: function(res) {
+                    if (res.code != 200) {
+                        alert(res.msg);
+                        return false;
+                    }
+                    alert('注册成功');
+                    window.location.href = res.data.url;
+                },
+                error: function() {
+                    alert('服务器错误，请重新尝试');
+                },
+                complete: function() {
+                    $('form input[type="submit"]').attr('disabled', false).val('立即注册');
+                }
+            });
+        }
+    });
+
+    var range = new RangeSlider(document.querySelector('.js-decimal'), {
+        max: $('.js-decimal').data('max'),
+        min: $('.js-decimal').data('min'),
+        formula: function(rate) {
+            var maxRate = $('.js-decimal').data('max');
+            var money = <?=$rateMoney;?> + <?=$bonus?> * rate / 100;
+            return money.toFixed(3);
+        }
+    });
+});
+</script>
+
+<script type="text/javascript" src="<?=$this->di['config']['baseInfo']['domain']?>/js/powerange.min.js"></script>
+ <script type="text/javascript" src="<?=$this->di['config']['baseInfo']['domain']?>/js/range.js"></script>

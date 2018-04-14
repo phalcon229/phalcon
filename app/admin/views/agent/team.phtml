@@ -1,0 +1,141 @@
+        <div class="search-box">
+        <form type='get'>
+            <div class="search-down ml15">
+                用户名:
+                <input type="text" class="user m1" name='name' id="name" value="<?=$this->request->get('name') ?: ''; ?>">
+                日期范围:
+                <div class="date-box">
+                        <em class="txt"><input type="text" name="startTime" id="start_time" value="<?=$this->request->get('startTime') ?: date('Y-m-d')?>"></em>
+                        <i class="date-icon"></i>
+                </div>
+                <label class="connet-line"></label>
+                <div class="date-box">
+                    <em class="txt"><input type="text" name="endTime" id="end_time" value="<?=$this->request->get('endTime') ?: date('Y-m-d')?>"></em>
+                    <i class="date-icon"></i>
+                </div>
+                <button type="submit" class="search-btn">查询</button>
+            </div>
+            </form>
+        </div>
+         <?php
+
+            $v1 = $v2 =$v3 =$v4 =$v5 =$v6 = '';
+            if(isset($_GET['pame']))
+            {
+                $on = $_GET['pame'];
+                if($on ==1)
+                    $v1 = 'on';
+                if($on ==2)
+                    $v2 = 'on';
+                if($on ==3)
+                    $v3 = 'on';
+                if($on ==4)
+                    $v4 = 'on';
+                if($on ==5)
+                    $v5 = 'on';
+                if($on ==6)
+                    $v6 = 'on';
+            }
+        ?>
+         <div class="search-box">
+            <span class="quik-btn <?=$v2?>" data-id=2 >昨日</span>
+            <span class="quik-btn <?=$v1?>" data-id=1 >今日</span>
+            <span class="quik-btn <?=$v3?>" data-id=3 >本周</span>
+            <span class="quik-btn <?=$v4?>" data-id=4 >上周</span>
+            <span class="quik-btn <?=$v5?>" data-id=5 >本月</span>
+            <span class="quik-btn <?=$v6?>" data-id=6 >上月</span>
+        </div>
+        <div class="table-box">
+            <table class="main-table" cellpadding="0" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>用户名</th>
+                        <th>用户类型</th>
+                        <th>团队总人数</th>
+                        <th>有效人数</th>
+                        <th>充值金额</th>
+                        <th>提现金额</th>
+                        <th>投注金额</th>
+                        <th>派彩金额</th>
+                        <th>返点金额</th>
+                        <th>总盈亏</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php if (!empty($lists)) : foreach ($lists as $value) : ?>
+                    <tr>
+                        <td><a class="operate" href="/agent/team?pame=<?=$pame?>&&uid=<?=$value['u_id']?>&&startTime=<?php echo !empty($_GET['startTime'])?$_GET['startTime']:''?>&&endTime=<?php echo isset($_GET['endTime'])?$_GET['endTime']:''?>"><?=$value['u_name']?></a>
+                        </td>
+                        <td><?=$value['u_type'] == 3 ? '代理' : '会员';?></td>
+                        <td><?=$value['u_type'] == 3 ? array_key_exists($value['u_id'], $teamNums) ? $teamNums[$value['u_id']][0] : 1 : 0;//判断是否是代理，输出代理会员人数
+                        ?></td>
+                        <td><?=$value['u_type'] == 3 ? array_key_exists($value['u_id'], $teamNums) ? $teamNums[$value['u_id']][1] : 1 : 0;//判断是否是代理，输出代理会员人数
+                        ?></td>
+                        <td><?=$value['recharge']?></td>
+                        <td><?=$value['withdraw']?></td>
+                        <td><?=$value['bet_money']?></td>
+                        <td><?=$value['pay_bonuses']?></td>
+                        <td><?=$value['reback']?></td>
+                        <td><?=$value['earn']?></td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+        <div class="pages">
+            <div class="posl">
+                共<em class="counts"><?=$total?></em>条 每页显示
+                <div class="select-box line-num">
+                    <select class="list"  id="limit">
+                    <?php foreach ($numsPage as $value) : ?>
+                        <option value="<?=$value?>" <?=$nums == $value ? 'selected="selected"' : ''?>><?=$value?></option>
+                    <?php endforeach; ?>
+                    </select>
+                    <em class="txt"><?=$nums?></em>
+                    <i class="i-arrow"></i>
+                </div>条
+            </div>
+            <div class="switch-box">
+                <a class="page-btn mr10" id="left"><i class="left"></i></a> 第
+                <div class="select-box line-num">
+                    <select class="list" id='page'>
+                    <?php for($i = 1; $i <= ceil($total / $nums); $i++) :?>
+                        <option value="<?=$i?>"  <?=$this->request->get('page') == $i ? 'selected="selected"' : '';?>><?=$i?></option>
+                    <?php endfor;?>
+                    </select>
+                    <em class="txt"><?=!empty($this->request->get('page')) ? $this->request->get('page'): 1?></em>
+                    <i class="i-arrow"></i>
+                </div>
+                共<em id='total'><?=ceil($total/$nums)?></em>页
+                <a class="page-btn ml10" id="right"><i class="right"></i></a>
+            </div>
+        </div>
+        <?php else : ?>
+            <tr class="null">
+                <td colspan="9">暂无数据！</td>
+            </tr>
+        <?php endif; ?>
+<script type="text/javascript">
+    $('#start_time').cxCalendar({
+        type: 'datetime',
+        format:'YYYY-MM-DD'
+    }, function(api){
+        startTime = api.getDate();
+    });
+    $('#end_time').cxCalendar({
+        type: 'datetime',
+        format:'YYYY-MM-DD'
+    }, function(api){
+        endTime = api.getDate();
+    });
+
+     $('.quik-btn').on('click',function(){
+        var id = $(this).data('id');
+        var name = $('#name').val();
+        if (name !='')
+            var url = '/agent/team?pame='+id+'&&name='+name;
+        else
+            var url = '/agent/team?pame='+id;
+        location.href = url;
+    })
+</script>

@@ -1,0 +1,51 @@
+
+    <div class="act-set ">
+            <div class="act-content banner-set">
+                <div class="content-tit">
+                    上传微信客服二维码
+                </div>
+                <form action="qrcode" id="rule">
+                <div class="qr-box">
+
+                    <div class="img-box">
+                        <img class="ImgPr" src="<?=$code?>"/>
+                    </div>
+
+                    <div class="add-img">
+                        <input type="file" id="up" class="up" value="" name='img'>
+                        <i class="add-black"></i>
+                    </div>
+                    <input type = 'hidden' value="<?=$type?>"  name="type">
+                    <input type="submit" value="保存"  class="sub-button fr" />
+                </div>
+                </form>
+            </div>
+
+        </div>
+
+    <script type="text/javascript">
+    function reload()
+        {
+            window.location.reload()
+        }
+    $('form').submit(function() {
+        $(this).ajaxSubmit({
+            dataType: 'json',
+            type: "POST",
+            success: function (msgObj) {
+                if(msgObj.ret == 1)
+                {
+                    layer.msg(msgObj.msg);
+                    setTimeout("reload()",1000);
+                }else {
+                    layer.msg(msgObj.msg);
+                    setTimeout("reload()",1000);
+                }
+            },
+            error: function(e){
+                   layer.msg("获取参数失败！");
+                 },
+        });
+        return false;
+      });
+    </script>

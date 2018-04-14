@@ -1,0 +1,82 @@
+<div class="game-show">
+
+    <?php if (!empty($rules[6])): ?>
+    <div class="item">
+        <div class="game-title"><?=$config['rule_type'][6]?></div>
+
+        <?php if (!empty($rules[6]['big'])): ?>
+            <ul class="data-show big">
+                <?php foreach ($rules[6]['big'] as $r): ?>
+                <li>
+                    <span class="cms ballsel" data-pname="<?=$config['rule_type'][6]?>" data-bonus=<?=$r['br_bonus']?> data-rule=<?=$r['br_id']?>>
+                        <i class="tit cname"><?=$config['rule_base_type'][$r['br_base_type']]?></i>
+                        <em class="srate"><?=$r['br_bonus']?></em>
+                    </span>
+                </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
+
+        <?php if (!empty($rules[6]['small'])): ?>
+            <ul class="data-show small">
+                <?php foreach ($rules[6]['small'] as $r): ?>
+                <li>
+                    <span class="cms ballsel" data-pname="<?=$config['rule_type'][6]?>" data-bonus=<?=$r['br_bonus']?> data-rule=<?=$r['br_id']?>>
+                        <i class="tit cname"><?=$config['rule_base_type'][$r['br_base_type']]?></i>
+                        <em class="srate"><?=$r['br_bonus']?></em>
+                    </span>
+                </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
+    </div>
+    <?php endif; ?>
+
+    <?php foreach ($rules as $ruleId => $rule): if ($ruleId == 6) continue; ?>
+    <div class="item">
+        <div class="game-title"><?=$config['rule_type'][$ruleId]?></div>
+
+        <?php if (!empty($rule['big'])): ?>
+            <ul class="data-show big">
+                <?php foreach ($rule['big'] as $r): ?>
+                <li>
+                    <span class="cms ballsel" data-pname="<?=$config['rule_type'][$ruleId]?>" data-bonus=<?=$r['br_bonus']?> data-rule=<?=$r['br_id']?>>
+                        <i class="tit cname"><?=$config['rule_base_type'][$r['br_base_type']]?></i>
+                        <em class="srate"><?=$r['br_bonus']?></em>
+                    </span>
+                </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
+
+        <?php if (!empty($rule['small'])): ?>
+            <ul class="data-show small">
+                <?php foreach ($rule['small'] as $r): ?>
+                <li>
+                    <span class="cms ballsel" data-pname="<?=$config['rule_type'][$ruleId]?>" data-bonus=<?=$r['br_bonus']?> data-rule=<?=$r['br_id']?>>
+                        <i class="tit cname"><?=$config['rule_base_type'][$r['br_base_type']]?></i>
+                        <em class="srate"><?=$r['br_bonus']?></em>
+                    </span>
+                </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
+
+        <?php if (!empty($rule['shape'])): ?>
+            <ul class="data-show two-col">
+                <?php foreach ($rule['shape'] as $r): ?>
+                <li>
+                    <span class="cms ballsel" data-pname="<?=$config['rule_type'][$ruleId]?>" data-bonus=<?=$r['br_bonus']?> data-rule=<?=$r['br_id']?>>
+                    <i class="txt">
+                        <span class="cname"><?=$config['rule_base_type'][$r['br_base_type']]?></span>
+                        <em class="font-red srate"><?=$r['br_bonus']?></em>
+                    </i>
+                    </span>
+                </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
+
+    </div>
+    <?php endforeach; ?>
+</div>

@@ -1,0 +1,195 @@
+<style>
+    .layui-layer-content{
+       color: #fff!important;
+    }
+
+</style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>网易彩票</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/jquery.cxcalendar.css">
+
+    <script src="/js/jquery-2.2.3.min.js"></script>
+    <script src="/js/jquery.cxcalendar.js"></script>
+    <script src="/js/powerange.min.js"></script>
+    <script src="/js/range.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/jquery.form.js"></script>
+    <script src="/js/layer/layer.js"></script>
+    <script src="/js/jquery.validate.js"></script>
+    <script src="/js/uploadPreview.js"></script>
+    <script src="/js/api.js"></script>
+    <script type="text/javascript">
+    jQuery.browser={};(function(){jQuery.browser.msie=false; jQuery.browser.version=0;if(navigator.userAgent.match(/MSIE ([0-9]+)./)){ jQuery.browser.msie=true;jQuery.browser.version=RegExp.$1;}})();
+    </script>
+</head>
+
+<body>
+<?php   if(stripos($_SERVER['QUERY_STRING'], 'login') === false){
+        if(isset($menus)){?>
+    <div class="menu">
+        <ul class="menu-side">
+
+<?php
+        foreach ($menus as $menu)
+        {
+?>
+            <li class="item <?php if ($controller == $menu['m_controller']) echo 'on'?>"  >
+            <?php
+                foreach ($menu['sub'] as $m) {
+            ?>
+                <a href="/<?=$m['m_controller']?>/<?=$m['m_action']?>">
+                    <i class="icon i-<?=$icon[$m['m_controller']]?>"></i>
+                    <em><?php echo $m['m_name'] ?: ''; ?></em>
+                </a>
+            <?php } ?>
+            </li>
+<?php
+    }
+?>
+            <li class="item" id= 'logout'>
+                <a href = '/index/logout' class = 'logout'>
+                    <i class="icon i-exit"></i>
+                    <em>安全退出</em>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <script type="text/javascript">
+        // var api = new Api();
+        // var num = 1;
+        // getAbnormal();
+
+        // function getAbnormal()
+        // {
+        //     api.get('/abnormal/have', {}, function(res) {
+        //             if(res.code == 200 && num<=1)
+        //             {
+        //                 num++;
+        //                 var str = '<i class="tip-circle"></i>';
+        //                 $('.i-throw').next().after(str);
+        //             }
+        //             else if(res.code == 500)
+        //             {
+        //                 num = 1;
+        //                 $('tip-circle').remove();
+        //             }
+        //         }, function() {
+        //             setTimeout('getAbnormal()', 30000);
+        //         });
+        // }
+    </script>
+    <?php } }?>
+    <?php echo $this->view->getContent(); ?>
+    </body>
+</html>
+<script type="text/javascript">
+
+    $('#logout').on('click', function() {
+    if(!confirm('确认退出登录?')) {
+        return false;
+    }})
+
+    function getNewUrl(pame)
+    {
+        var url = window.location.href;
+        var val = $('#'+pame).val();
+        if(url.indexOf('page')>=0) {
+            var re = eval('/(' + 'page' + '=)([^&]*)/gi');
+            var url = url.replace(re, 'page' + '=' + 1);
+        }
+
+        if(url.indexOf(pame)>=0)
+        {
+            var re = eval('/(' + pame + '=)([^&]*)/gi');
+            var newurl = url.replace(re, pame + '=' + val);
+        } else {
+            if(url.indexOf("?")>=0)
+                var newurl = url + '&'+pame+'=' + val;
+            else
+                var newurl = url+ '?'+pame+'=' + val;
+        }
+        return newurl;
+    }
+    $('#limit').on('change', function(){
+            var newurl = getNewUrl('limit')
+            location.href = newurl;
+        });
+
+        $('#page').on('change', function(){
+            var newurl = getNewUrl('page')
+            location.href = newurl;
+        })
+
+        $('#left').on('click', function(){
+            var url = window.location.href;
+            var page = $('#page').val() - 1;
+            if (page <= 0)
+                return false;
+            $('#page').val(page);
+            var newurl = getNewUrl('page')
+            location.href = newurl;
+        })
+
+        $('#right').on('click', function(){
+            var url = window.location.href;
+            var page = $('#page').val()*1 + 1*1;
+            var total = $('#total').html();
+            if (page > total)
+                return false;
+            $('#page').val(page);
+            var newurl = getNewUrl('page')
+            location.href = newurl;
+    });
+    var api = new Api();
+    var num = 1;
+    getAbnormal();
+    getCount();
+
+    function getAbnormal()
+    {
+        api.get('/abnormal/have', {}, function(res) {
+                if(res.code == 200 && num<=1)
+                {
+                    num++;
+                    var str = '<i class="tip-circle"></i>';
+                    $('.i-throw').next().after(str);
+                }
+                else if(res.code == 500)
+                {
+                    num = 1;
+                    $('tip-circle').remove();
+                }
+            }, function() {
+                setTimeout('getAbnormal()', 30000);
+            });
+    }
+
+
+    var str = '<i class="tip-circle"></i>';
+    function getCount()
+    {
+        api.get('/index/countmsg', {}, function(res) {
+            if (res.data.recharge == 1 || res.data.withdraw == 1 ) {
+                $('.i-withdrawal').parent('a').append(str);
+                var audio = new Audio('/finishfile.mp3');
+                audio.play();
+                }
+            }, function() {
+                setTimeout('getCount()', 40000);
+            });
+    }
+    function settime()
+    {
+        $('.i-withdrawal').parent('a').find('.tip-circle').remove();
+    }
+
+</script>

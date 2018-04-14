@@ -1,0 +1,177 @@
+        <div class="search-box">
+        <form type='get'>
+            <div class="search-down ml15">
+           
+                <input type="text" class="user m1" name = 'value' value= '<?php echo $this->request->get('value'); ?>'>
+                <div class="select-box right-box">
+                    <select class="list" name= 'condition'>
+                        <option  value="1" <?php echo $this->request->get('condition') == 1 ? 'selected="selected"' : ''  ?>>用户名</option>
+                        <option value="3" <?php echo $this->request->get('condition') == 3 ? 'selected="selected"' : ''  ?>>用户ID</option>
+                    </select>
+                    <em class="txt"><?php echo isset($_GET['condition']) ? ($_GET['condition'] == 1 ? '用户名' : ($_GET['condition'] == 3?'用户ID' : '')) : '用户名' ?></em>
+                    <i class="i-arrow"></i>
+                </div>
+          
+                  日期范围:
+                <div class="date-box">
+                        <em class="txt"><input type="text" name="startTime" id="start_time" value="<?=$startTime ? date('Y-m-d',$startTime) : date('Y-m-d')?>"></em>
+                        <i class="date-icon"></i>
+                </div>
+                <label class="connet-line"></label>
+                <div class="date-box">
+                    <em class="txt"><input type="text" name="endTime" id="end_time" value="<?=$endTime ? date('Y-m-d',$endTime) : date('Y-m-d')?>"></em>
+                    <i class="date-icon"></i>
+                </div>
+                <button type="submit" class="search-btn">查询</button>
+            </div>
+            </form>
+        </div>
+         <?php
+
+            $v1 = $v2 =$v3 =$v4 =$v5 =$v6 = '';
+            if(isset($_GET['pame']))
+            {
+                $on = $_GET['pame'];
+                if($on ==1)
+                    $v1 = 'on';
+                if($on ==2)
+                    $v2 = 'on';
+                if($on ==3)
+                    $v3 = 'on';
+                if($on ==4)
+                    $v4 = 'on';
+                if($on ==5)
+                    $v5 = 'on';
+                if($on ==6)
+                    $v6 = 'on';
+            }
+        ?>
+         <div class="search-box">
+            <span class="quik-btn <?=$v2?>" data-id=2 >昨日</span>
+            <span class="quik-btn <?=$v1?>" data-id=1 >今日</span>
+            <span class="quik-btn <?=$v3?>" data-id=3 >本周</span>
+            <span class="quik-btn <?=$v4?>" data-id=4 >上周</span>
+            <span class="quik-btn <?=$v5?>" data-id=5 >本月</span>
+            <span class="quik-btn <?=$v6?>" data-id=6 >上月</span>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:red">在线总人数&nbsp;&nbsp;&nbsp;<?php echo $allonline ?></span>
+        </div>
+        <div class="table-box">
+            <table class="main-table" cellpadding="0" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>用户名</th>
+                        <th>用户ID</th>
+                        <th>用户类型</th>
+                        <th>团队总人数</th>
+                        <th>直属下级在线人数</th>
+                        <th>有效人数</th>
+                        <th>充值金额</th>
+                        <th>提现金额</th>
+                        <th>投注金额</th>
+                        <th>派彩金额</th>
+                        <th>回水金额</th>
+<!--                        <th>总盈亏</th>-->
+                        <th>对上级贡献</th>
+                        <th>返点金额</th>
+                        <th>下级返点金额</th>
+                        <th>本级返点金额</th>
+                        <th>本级投注</th>
+                        <th>本级派彩</th>
+                        <th>下级回水金额</th>
+                        <th>本级盈亏</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php if (!empty($lists)) : foreach ($lists as $value) : ?>
+                    <tr>
+                        <td><a class="operate" href="/agent/index?pame=<?=$pame?>&&uid=<?=$value['u_id']?>&&startTime=<?php echo !empty($_GET['startTime'])?$_GET['startTime']:''?>&&endTime=<?php echo isset($_GET['endTime'])?$_GET['endTime']:''?>"><?=$value['u_name']?></a>
+                        </td>
+                        <td><?=$value['u_id'] ;//判断是否是代理，输出代理会员人数
+                        ?>
+                        </td>
+                        <td>
+                            <?=$value['ua_type'] == 3 ? '代理' : '会员';?>
+                        </td>
+                        <td><?=$value['ua_team_num'] ;//判断是否是代理，输出代理会员人数
+                        ?>
+                        </td>
+                        <td><?=$value['online']?></td>
+                        <td><?=$value['ua_good_user_nums'];//判断是否是代理，输出代理会员人数
+                        ?>
+                        </td>
+                        <td><?=$value['ar_team_recharge_money'] != '0.0000' ? sprintf("%.2f",$value['ar_team_recharge_money']) :'-'?></td>
+                        <td><?=$value['ar_team_withdraw_money'] != '0.0000'  ? sprintf("%.2f",$value['ar_team_withdraw_money']) : '-'?></td>
+                        <td><?=$value['ar_team_bet_money'] != '0.0000'  ? sprintf("%.2f",$value['ar_team_bet_money']) : '-'?></td>
+                        <td><?=$value['ar_team_earn_money']!= '0.0000'  ? sprintf("%.2f",$value['ar_team_earn_money']) : '-'?></td>
+                        <td><?=$value['ar_team_reback_money']!= '0.0000'  ? sprintf("%.2f",$value['ar_team_reback_money']) : '-'?></td>
+                        <td><?=sprintf("%.2f",$value['ar_team_bet_money']-$value['ar_team_earn_money']-$value['ar_team_back_money']-$value['ar_team_reback_money'])?></td>
+                        <td><?=$value['ar_team_back_money']!= '0.0000'  ? sprintf("%.2f",$value['ar_team_back_money']) : '-'?></td>
+                        <td><?=sprintf("%.2f",$value['ar_team_back_money'] - $value['ar_my_back_money'])?></td>
+                        <td><?=$value['ar_my_back_money']!= '0.0000'  ? sprintf("%.2f",$value['ar_my_back_money']) : '-'?></td>
+                        <td><?=$value['ar_my_bet_money']!= '0.0000'  ? sprintf("%.2f",$value['ar_my_bet_money']) : '-'?></td>
+                        <td><?=$value['ar_my_earn_money']!= '0.0000'  ? sprintf("%.2f",$value['ar_my_earn_money']) : '-'?></td>
+                        <td><?=$value['ar_my_reback_money']!= '0.0000'  ? sprintf("%.2f",$value['ar_my_reback_money']) : '-'?></td>
+                        <td><?=sprintf("%.2f",$value['ar_my_earn_money']-$value['ar_my_bet_money']+$value['ar_my_reback_money'])?></td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+            <p><center style="color:red">对上级贡献 - 本级盈亏 = 平台盈亏</center></p>
+        </div>
+        <div class="pages">
+            <div class="posl">
+                共<em class="counts"><?=$total?></em>条 每页显示
+                <div class="select-box line-num">
+                    <select class="list"  id="limit">
+                    <?php foreach ($numsPage as $value) : ?>
+                        <option value="<?=$value?>" <?=$nums == $value ? 'selected="selected"' : ''?>><?=$value?></option>
+                    <?php endforeach; ?>
+                    </select>
+                    <em class="txt"><?=$nums?></em>
+                    <i class="i-arrow"></i>
+                </div>条
+            </div>
+            <div class="switch-box">
+                <a class="page-btn mr10" id="left"><i class="left"></i></a> 第
+                <div class="select-box line-num">
+                    <select class="list" id='page'>
+                    <?php for($i = 1; $i <= ceil($total / $nums); $i++) :?>
+                        <option value="<?=$i?>"  <?=$this->request->get('page') == $i ? 'selected="selected"' : '';?>><?=$i?></option>
+                    <?php endfor;?>
+                    </select>
+                    <em class="txt"><?=!empty($this->request->get('page')) ? $this->request->get('page'): 1?></em>
+                    <i class="i-arrow"></i>
+                </div>
+                共<em id='total'><?=ceil($total/$nums)?></em>页
+                <a class="page-btn ml10" id="right"><i class="right"></i></a>
+            </div>
+        </div>
+        <?php else : ?>
+            <tr class="null">
+                <td colspan="18">暂无数据！</td>
+            </tr>
+        <?php endif; ?>
+<script type="text/javascript">
+    $('#start_time').cxCalendar({
+        type: 'datetime',
+        format:'YYYY-MM-DD'
+    }, function(api){
+        startTime = api.getDate();
+    });
+    $('#end_time').cxCalendar({
+        type: 'datetime',
+        format:'YYYY-MM-DD'
+    }, function(api){
+        endTime = api.getDate();
+    });
+
+     $('.quik-btn').on('click',function(){
+        var id = $(this).data('id');
+        var name = $('#name').val();
+        if (name !='')
+            var url = '/agent/index?pame='+id+'&&name='+name;
+        else
+            var url = '/agent/index?pame='+id;
+        location.href = url;
+    })
+</script>

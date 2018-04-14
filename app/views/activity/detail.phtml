@@ -1,0 +1,28 @@
+<div class="active-detal-body">
+<?php $this->partial("shared/usertop"); ?>
+    <div class="act-context">
+        <?php if(!empty($detail)){?>
+            <div class="act-tit"><?php echo $detail['pa_title'] ?></div>
+            <div class="date-tit">
+                活动时间：<em class="red"><?php echo $detail['if_end'] ?></em>
+                <p class="act-date">
+                    <em><?php echo $detail['pa_starttime'] ?></em>
+                    <label class="nect">至</label>
+                    <em><?php echo $detail['pa_endtime'] ?></em>
+                </p>
+            </div>
+            <div class="rule">
+                活动内容：
+                <p><?php echo str_replace(PHP_EOL, "<br />", $detail['pa_content'])?></p>
+            </div>
+            <?php if($detail['pa_type']==3){ ?>
+            <a href="/recharge/index?aid=<?=$detail['pa_id'];?>" class="btn">立即充值</a>
+            <?php }?>
+        </div>
+    <?php }else { ?>
+        <div class="state-null">
+            <i class="flag-icon"></i>
+            <p class="null-tit">活动已被删除</p>
+        </div>
+    <?php } ?>
+    </div>

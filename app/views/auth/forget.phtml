@@ -1,0 +1,225 @@
+    <div class="forgot-body" id='tab2'>
+        <div class="container">
+            <div class="forgot-content">
+                <div class="row flex">
+                    <input type="text" id="phone"  placeholder="请输入手机号" class="flex1" value="" >
+                </div>
+
+                <div class="row flex">
+                    <input type="text" placeholder="请输入短信验证码" id="mobicap" class="flex1">
+                    <input type="button" value="获取验证码" class="chk-code" >
+                </div>
+            </div>
+            <input type="button" value="提交" class="btn" id="sub">
+        </div>
+    </div>
+    <div class='i unsee'>
+        <div class="mask"></div>
+        <div class="pwd-pop">
+            <div class="row flex">
+                <input type="test" placeholder="请输入验证码" class="flex1" name='imgcap' id='imgcap'>
+                <span class="chk-img">
+                    <img src="/auth/captcha"/ onclick="this.src='/auth/captcha?'+Math.random();">
+                </span>
+            </div>
+            <div>
+                <button class="f-btn f-cancel">取消</button>
+                <button class="f-btn f-sure">确定</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+ $('#sub').on('click',function() {
+    var mobi = $('#phone').val();
+    if (mobi == '') {
+         alert('用户名不能为空');
+         return ;
+     }
+     var mobicap = $('#mobicap').val();
+     if (mobicap == '') {
+         alert('验证码不能为空');
+         return ;
+     }
+     $('#sub').attr('disabled', true).val('...');
+     $.ajax({
+                type: 'post',
+                url: '/auth/checkcode',
+                data: {mobi:mobi,mobicap:mobicap},
+                dataType: 'json',
+                success: function(res) {
+                    if(res.code == 500) {
+                        alert(res.msg);
+                        return;
+                    } else {
+                        var html = '<div class="container"><div class="forgot-content">';
+                        if(res.data.isWx == 1)
+                            html += '<div class="row flex"><input type="text" name="nick" placeholder="尊敬的微信用户，请输入一个新昵称" class="flex1"></div>';
+
+                        html +='<div class="row flex"><input type="password" placeholder="输入新密码" name="pass" class="flex1"></div>';
+                        html +='<div class="row flex"><input type="password" placeholder="确认新密码" name="cpass" class="flex1"></div></div>';
+                        html +='<input type="hidden" name = "id" value='+res.data.id+'>';
+                        html +='<input type="hidden" name = "mobi" value='+res.data.mobi+'>';
+                        html +='<input type="hidden" name = "rand" value='+res.data.rand+'>';
+                        html +='<input type="hidden" name = "wx" value='+res.data.isWx+'>';
+                        html +='<input type="button" value="提交"  class="btn" id="btn2"></div>';
+                        $('#tab2').html(html);
+                    }
+                },
+                error: function() {
+                    alert('服务器错误，请重新尝试');
+                },
+                complete: function() {
+                    $('#sub').attr('disabled', false).val('提交');
+                }
+            });
+    });
+
+    $('.chk-code').on('click',function(){
+        var mobi = $('#phone').val();
+        if (mobi == '') {
+         alert('手机号不能为空');
+         return ;
+        }
+        $.ajax({
+                type: 'post',
+                url: '/auth/validate',
+                data: {mobi:mobi},
+                dataType: 'json',
+                success: function(res) {
+                    if(res.code ==200)
+                    {
+                        $('.i').removeClass('unsee');
+                    } else {
+                    alert(res.msg);
+                    return;
+                }
+                },
+                error: function() {
+                    alert('服务器错误，请重新尝试');
+                },
+            });
+    });
+
+    $('body').on('click','.f-cancel',function(){
+        window.location.reload()
+    });
+
+    $('body').on('click', '.f-sure',function(){
+        var imgcap = $('#imgcap').val();
+        if (imgcap == '') {
+         alert('验证码不能为空');
+         return ;
+     };
+     var mobi = $('#phone').val();
+        if (mobi == '') {
+         alert('手机号不能为空');
+         return ;
+     };
+     $('.f-sure').attr('disabled',true).html('发送中...');
+     $.ajax({
+                type: 'post',
+                url: '/auth/mobicap',
+                data: {imgcap:imgcap, mobi:mobi},
+                dataType: 'json',
+                success: function(res) {
+                    if(res.code ==200)
+                    {
+                        $('.chk-img img').trigger('click');
+                        $('.i').addClass('unsee');
+                        $('.chk-code').attr('disabled',true);
+                        var time = 60;
+                        $('.chk-code').val('获取中('+time+'s)');
+                        var s = setInterval(function() {
+                            time--;
+                            if (time == 0) {
+                                clearInterval(s);
+                                $('.chk-code').val('重新获取');
+                                $('.chk-code').attr('disabled',false);
+                                return;
+                            }
+                        $('.chk-code').val('获取中('+time+'s)');
+                        }, 1000);
+                    } else if (res.code == 501) {
+                        alert(res.msg);
+                        $('.chk-img img').trigger('click');
+                        $('input[name="imgcap"]').val("").focus();
+                        return false;
+                    }  else {
+                    alert(res.msg);
+                    return false;
+                    }
+                },
+                error: function() {
+                    alert('服务器错误，请重新尝试');
+                },
+                complete:function(){
+                    $('.f-sure').attr('disabled',false).html('确定');
+                }
+            });
+    });
+
+    $('body').on('click','#btn2',function(){
+        var data = {};
+        if($('input[name="wx"]').val() == 1) {
+            data.nick = $('input[name="nick"]').val();
+            if (data.nick == '') {
+                alert('请输入昵称');
+             return ;
+            };
+        }
+        data.pass = $('input[name="pass"]').val();
+        if (data.pass == '') {
+             alert('请输入密码');
+             return ;
+        };
+        if (data.pass == '') {
+             alert('请输入密码');
+             return ;
+        };
+        if(data.pass.length > 15 || data.pass.length < 8 ) {
+             alert('密码长度在 8 到 15 之间');
+             return ;
+        };
+        data.cpass = $('input[name="cpass"]').val();
+        if (data.cpass == '') {
+             alert('请确认密码');
+             return ;
+        };
+        if(data.pass != data.cpass) {
+            alert('两次密码不一致');
+            return ;
+         }
+        data.id = $('input[name="id"]').val();
+        data.mobi = $('input[name="mobi"]').val();
+        data.rand = $('input[name="rand"]').val();
+        if(data.id=='' || data.mobi=='' || data.rand =='') {
+            alert('参数错误');
+            return ;
+        };
+        $('#btn2').attr('disabled',true).val('...');
+        $.ajax({
+            type: 'post',
+            url: '/auth/doupdate',
+            data: {data:data},
+            dataType: 'json',
+            success: function(res) {
+                if(res.code ==200)
+                {
+                    alert(res.data);
+                    window.location.href='/auth/login';
+                } else {
+                alert(res.msg);
+                return;
+                }
+            },
+            error: function() {
+                alert('服务器错误，请重新尝试');
+            },
+            complete:function(){
+                $('#btn2').attr('disabled',false).val('提交');
+            }
+        });
+    });
+
+</script>

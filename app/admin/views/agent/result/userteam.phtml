@@ -1,0 +1,58 @@
+        <div class="mask">
+            <div class="pop-panel">
+                <span class="close">
+                <i></i>关闭
+            </span>
+                <div class="view-tit">
+                    团队预览
+                </div>
+                <ul class="view-box">
+                    <li class="item">
+                        <label class="view-left">总人数</label>
+                        <span class="view-right"><?=$stat['ua_team_num']?:0?>人</span>
+                    </li>
+                    <li class="item">
+                        <label class="view-left">代理人数</label>
+                        <span class="view-right"><?=$agent?>人</span>
+                    </li>
+                    <li class="item">
+                        <label class="view-left">总余额</label>
+                        <span class="view-right"><?php//$team['money']?></span>
+                    </li>
+                    <li class="item">
+                        <label class="view-left">提现</label>
+                        <span class="view-right"><?=$team['withdraw']?></span>
+                    </li>
+                    <li class="item">
+                        <label class="view-left">充值</label>
+                        <span class="view-right"><?=$team['recharge']?></span>
+                    </li>
+                    <li class="item">
+                        <label class="view-left">中奖金额</label>
+                        <span class="view-right"><?=$team['pay_bonuses']?></span>
+                    </li>
+                    <li class="item">
+                        <label class="view-left">投注金额</label>
+                        <span class="view-right"><?=$team['bet_money']?></span>
+                    </li>
+                    <li class="item">
+                        <label class="view-left">代理返点</label>
+                        <span class="view-right"><?=$team['reback_money']?></span>
+                    </li>
+                    <li class="item">
+                        <label class="view-left">净盈点</label>
+                        <span class="view-right"><?=$team['earn_money']?></span>
+                    </li>
+                    <li class="item">
+                        <label class="view-left">最后登陆时间</label>
+                        <span class="view-right"><?=date('Y-m-d H:i', $loginTime)?></span>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+<script type="text/javascript">
+    $('.close').on('click', function(){
+        $(this).parent().parent().addClass('unsee');
+    });
+</script>

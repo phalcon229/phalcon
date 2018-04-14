@@ -1,0 +1,168 @@
+<?php $this->assets->outputJs() ?>
+<div class="bind-card-body">
+        <?php $this->partial("shared/usertop"); ?>
+    <form action="" id="">
+        <div class="content">
+            <ul class="input-panel">
+                <li class="item flex tbmb">
+                    <label>真实姓名</label>
+                    <input class="flex1" type="text" name="name" placeholder="请与银行账户名相同，否则不能出款" />
+                </li>
+                <li class="item flex tbmb">
+                    <label>手机号码</label>
+                    <input class="flex1" type="text" name="phone" placeholder="请与银行卡绑定的手机号相同，否则不能出款" />
+                </li>
+                <li class="item flex tbmb">
+                    <label>所属银行</label>
+                    <span class="flex1">
+                    <select class="flex1" name="bankId">
+                        <option value="">请选择银行</option>
+                        <?php foreach ($bank as $key=>$value) { ?>
+                        <option value="<?php echo $key ?>"><?php echo $value ?></option>
+                        <?php } ?>
+                    </select>
+                    <em>请选择银行</em>
+                    <i class="down"></i>
+                    </span>
+                </li>
+                <li class="item flex tb">
+                    <label>银行账号</label>
+                    <input class="flex1" type="text" name="number" placeholder="请输入银行账号" />
+                </li>
+                <li class="item flex">
+                    <label>开户行<em class="strong">(选填)</em></label>
+                    <input class="flex1" type="text" name="uname" placeholder="请输入开户行" />
+                </li>
+                <div  id="distpicker">
+                    <li class="item flex">
+                        <label>开户行省份</label>
+                        <span class="flex1">
+                    <select class="flex1" name="province" id="province" data-province="---- 选择省 ----">
+                    </select>
+                    <em>请选择省份</em>
+                    <i class="down"></i>
+                    </span>
+                    </li>
+                    <li class="item flex">
+                        <label>开户行城市</label>
+                        <span class="flex1">
+                    <select class="flex1" name="city" id="city" data-city="---- 选择市 ----">
+                    </select>
+                    <em>请选择市</em>
+                    <i class="down"></i>
+                    </span>
+                    </li>
+                </div>
+                <li class="item flex">
+                    <label>输入资金密码</label>
+                    <?php if(!empty($wPwd)){ ?>
+                    <input type="hidden" id="hasWpwd" value="1">
+                    <?php }else{ ?>
+                    <input type="hidden" id="hasWpwd" value="0">
+                    <?php } ?>
+                    <input class="flex1" type="password" name="pwd" placeholder="请输入资金密码" />
+                </li>
+            </ul>
+             <div class="clearfix mt10 plr12">
+                <a class="fr text-link" >忘记资金密码</a>
+            </div>
+        </div>
+        <div class="btn-center  mt20">
+            <input type="submit" value="提交" class="btn">
+        </div>
+    </form>
+    </div>
+    <div class="mask unsee"  id = "addinfo" >
+        <div class="qr-pop">
+
+        <i class="qr-close" id ="closeinfo"></i>
+        <div class="qr-tip">请补充您的账户信息</div>
+        <div class="text-center">
+            <a href="/user/base?info=2" class="qr-btn qr-reback">去完善资料</a>
+        </div>
+        </div>
+        </div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#distpicker").distpicker('reset', true);
+        $("#province").change(function () {
+            var city = $("#city").find('option:selected').val();
+            $("#city").click();
+            $("#city").siblings('em').html(city);
+            console.log(city);
+        });
+        var hasWpwd = $('#hasWpwd') .val();
+        if(hasWpwd != 1)
+        {
+            $('#addinfo').removeClass('unsee');
+        }
+        $('#closeinfo').click(function(){
+            window.location.href = '/';
+        });
+        $("form").validate({
+            debug: true,
+            rules: {
+                name: {
+                    required: true,
+                },
+                phone:{
+                    required:true,
+                },
+                bankId: {
+                    required: true,
+                },
+                number: {
+                    required: true,
+                    rangelength: [16, 19]
+                },
+                province:{
+                     required: true,
+                },
+                city:{
+                     required: true,
+                },
+                pwd:{
+                    required: true,
+                }
+
+            },
+
+        submitHandler: function(form) {
+            $('form input[type="submit"]').attr('disabled', true).val('添加中...');
+            var data = $('form').serialize();
+            $.ajax({
+                type: 'post',
+                url: '/bank/doAdd',
+                data: data,
+                dataType: 'json',
+                success: function(res) {
+                    if (res.code == 501) {
+                        alert(res.msg);
+                        window.location.href = '/user/pwdmoney';
+                        return false;
+                    }
+                    if (res.code == 500) {
+                        alert(res.msg);
+                        return false;
+                    }
+                    if (res.code == 499) {
+                        alert(res.msg);
+                        $('input[name="pwd"]').val('').focus();
+                        return false;
+                    }
+                    alert('银行卡添加成功');
+                    window.location.href = '/bank/show';
+                },
+                complete: function() {
+                    $('form input[type="submit"]').attr('disabled', false).val('添加');
+                }
+            });
+        }
+        });
+    });
+
+    $('.text-link').on('click',function(){
+        window.location.href = '/user/base?forget=2';
+    })
+</script>
+

@@ -1,0 +1,78 @@
+
+        <?php if(!empty($info)): ?>
+    <form action="dontedit" id="rule">
+        <div class="act-set">
+            <div class="act-content">
+                <dl class="item">
+                    <dd class="width4">公告标题:</dd>
+                    <dt>
+                        <input type="text" class="input-txt" value="<?=$info['n_title']?>" name="n_title">
+                    </dt>
+                </dl>
+                <dl class="item">
+                    <dd class="width4">公告内容:</dd>
+                    <dt>
+                        <textarea class="act-contxt" name="n_content"><?=$info['n_content']?></textarea>
+                    </dt>
+                </dl>
+            </div>
+            <input type="hidden" name="n_id" value="<?=$info['n_id']?>" ?>
+            <div class="divide-btn">
+                <button class="regist-btn">确定</button>
+            </div>
+        </div>
+    </form>
+    <?php endif; ?>
+    <script type="text/javascript">
+    function reload()
+    {
+        location.href = 'ntlist';
+    }
+
+   $.validator.setDefaults({
+    submitHandler: function() {
+        $('form').ajaxSubmit({
+            dataType: 'json',
+            type: "POST",
+              success: function (res) {
+                if(res.ret == 1)
+                {
+                    layer.msg(res.msg);
+                    setTimeout("reload()",1000);
+                }else {
+                    layer.msg(res.msg);
+                    setTimeout("reload()",1000);
+                }
+            },
+            error: function(e){
+                layer.msg("<h2>System mistake</h2>");
+            },
+        });
+        return false;
+        }
+    });
+
+    $().ready(function() {
+    // 在键盘按下并释放及提交后验证提交表单
+      $("#rule").validate({
+          rules: {
+
+            n_title: {
+                required: true,
+              },
+               n_content: {
+                required: true,
+              }
+            },
+            messages: {
+              n_title: {
+                required: "请输入标题",
+              },
+              n_content: {
+                required: "请输入内容",
+              }
+          }
+      });
+    });
+</script>
+

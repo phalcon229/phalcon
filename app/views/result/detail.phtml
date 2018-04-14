@@ -1,0 +1,54 @@
+<div class="prize-detail-body">
+    <?php $this->partial("shared/usertop"); ?>
+    <div class="select-title-black mt10">
+        <span>
+            <select class="select-p" >
+                    <?php foreach ($bet as $key=>$value){ ?>
+                        <?php if($nowBet == $value['bet_id']){ ?>
+                        <option value="<?php echo $value['bet_id'] ?>" selected="selected"><?php echo    $value['bet_name'] ?></option>
+                        <?php }else{ ?>
+                        <option value="<?php echo $value['bet_id'] ?>"><?php echo    $value['bet_name'] ?></option>
+                        <?php } ?>
+                    <?php } ?>
+                </select>
+                <?php if($nowBet <= 6){ ?>
+                    <em><?php echo $bet[$nowBet-1]['bet_name'] ?></em>
+                <?php }else if($nowBet == 10){ ?>
+                    <em><?php echo $bet[6]['bet_name'] ?></em>
+                <?php }else if($nowBet >= 14 ){ ?>
+                    <em><?php echo $bet[$nowBet-7]['bet_name'] ?></em>
+                <?php } ?>
+        </span>
+    </div>
+    <ul class="prize-detail"></ul>
+    <div class="btn-center">
+        <input type="button" value="加载更多" class="btn">
+    </div>
+</div>
+
+<script>
+    var api = new Api();
+    var param = {
+        betId: <?=$betId?>,
+        page: 1
+    };
+
+    $('.btn').click(function() {
+        loadMore();
+    });
+    $('.select-p').on('change', function(){
+        var bet = $(this).find('option:selected').val();
+        $(this).selected = true;
+        var url = '/result/detail?lotId='+bet;
+        location.href = url;
+    })
+    loadMore();
+    function loadMore() {
+        $('.btn').data('disable', true).val('加载更多...');
+        api.getHtml('/result/addmore', {bet_id: param.betId, page: param.page}, function(html) {
+            $('.prize-detail').append(html);
+            param.page++
+            $('.btn').data('disable', false).val('加载更多');
+        });
+    }
+</script>

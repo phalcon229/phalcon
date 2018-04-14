@@ -1,0 +1,208 @@
+
+    <div class="act-set ">
+            <div class="group-box ">
+            <?php
+
+                foreach($payType as $key => $value) {
+                    if($type == $key)
+                        $active = 'active' ;
+                    else
+                        $active= '' ;
+
+                    ?>
+                    <a href="/system/paylist?type=<?=$key?>"><span class="btn-group <?=$active?>" data-id="<?=$key?>"><?=$value?></span></a>
+            <?php }?>
+            </div>
+            <?php if($type < 9 || in_array($type,[13,17,19])) { ?>
+            <div class="act-content banner-set">
+                <div class="table-box">
+                    <table class="main-table">
+                        <thead>
+                            <tr>
+                                <th>充值渠道</th>
+                                <th>金额限额最低</th>
+                                <th>金额限额最高</th>
+                                <th>状态开关</th>
+                                <th>操作</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php if(!empty($res[$type])) : foreach ($res[$type] as $key => $value) : ?>
+                            <tr >
+                                <td><?=$value['pcc_name']?></td>
+                                <td><input type="text" class="input-num min" value="<?=$value['pcc_min']?>"></td>
+                                <td><input type="text" class="input-num max" value="<?=$value['pcc_max']?>"></td>
+                                <td><?=$value['pcc_status'] == 1 ? '开': '关'?></td>
+                                <td><a class="operate" data-id="<?=$value['pcc_id']?>" data-val="<?=$value['pcc_status']?>"><?=$value['pcc_status'] == 1 ? '关闭': '打开'?></a></td>
+                                <td><a class="w-btn w-center" data-id="<?=$value['pcc_id']?>" data-val=1>保存</a></td>
+                            </tr>
+                        <?php endforeach; endif;?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <?php } else if($type ==15) {?>
+            <div class="act-content banner-set">
+                <div class="table-box">
+                    <table class="main-table">
+                        <thead>
+                            <tr>
+                                <th>所属银行</th>
+                                <th>持卡人姓名</th>
+                                <th>银行卡号</th>
+                                <th>金额限额最低</th>
+                                <th>金额限额最高</th>
+                                <th>操作</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php if(!empty($res[15])) : foreach ($res[15] as $key => $value) : $arr = json_decode($value['pcc_memo'], true)?>
+                            <tr >
+                                <td><input type="text" class="input-num w-big bank" value="<?=$arr['bank']?>" ></td>
+                                <td><input type="text" class="input-num w-big name" value="<?=$arr['name']?>"></td>
+                                <td><input type="text" class="input-num w-big number" value="<?=$arr['number']?>"></td>
+                                <td><input type="text" class="input-num min" value="<?=$value['pcc_min']?>"></td>
+                                <td><input type="text" class="input-num max" value="<?=$value['pcc_max']?>"></td>
+                                <td><a class="operate" data-id="<?=$value['pcc_id']?>" data-val="<?=$value['pcc_status']?>"><?=$value['pcc_status'] == 1 ? '关闭': '打开'?></a></td>
+                                <td><a class="w-btn w-center" data-id="<?=$value['pcc_id']?>" data-val=7>保存</a></td>
+                            </tr>
+                        <?php endforeach; endif;?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <?php } else { ?>
+            <div class="act-content banner-set">
+                <div class="content-tit">
+                    上传收款二维码
+                </div>
+                <form action="qrcode" id="rule">
+                <div class="qr-box">
+
+                    <div class="img-box">
+                        <img class="ImgPr" src="<?=$code?>"/>
+                    </div>
+
+                    <div class="add-img">
+                        <input type="file" id="up" class="up" value="" name='img'>
+                        <i class="add-black"></i>
+                    </div>
+                    <input type = 'hidden' value="<?=$type?>"  name="type">
+                    <input type="submit" value="保存"  class="sub-button fr" />
+                </div>
+                </form>
+            </div>
+        <?php  } ?>
+        </div>
+
+    <script type="text/javascript">
+         function reload()
+        {
+            window.location.reload()
+        }
+
+         $('.operate').on('click', function(){
+            var id = $(this).data('id');
+            var status = $(this).data('val');
+            $.ajax({
+                type : "post",
+                url : '/system/paystatus',
+                dataType : 'json',
+                data : {id : id, status:status},
+                error: function(request) {
+                    layer.msg("<h2>System mistake</h2>");
+                },
+                success: function(msgObj) {
+                    if(msgObj.ret == 1) {
+                        layer.msg(msgObj.msg);
+                        setTimeout("reload()",1000);
+                }
+                else
+                    layer.msg(msgObj.msg);
+                }
+            });
+         return false;
+         })
+
+         $('.w-center').on('click', function(){
+            var id = $(this).data('id');
+            var type = $(this).data('val');
+            if (type == 7)
+            {
+                var bank = $(this).parents('tr').children('td').find('.bank').val();
+                var name = $(this).parents('tr').children('td').find('.name').val();
+                var number = $(this).parents('tr').children('td').find('.number').val();
+                if (bank == '') {
+                    layer.msg('所属银行不能为空');
+                    return false;
+                }
+                 if (name == '') {
+                    layer.msg('持卡人姓名不能为空');
+                    return false;
+                }
+                 if (number == '') {
+                    layer.msg('银行卡号不能为空');
+                    return false;
+                }
+            } else
+            {
+                var bank = '';
+                var name = '';
+                var number = '';
+            }
+
+            var min = $(this).parents('tr').children('td').find('.min').val();
+            var max = $(this).parents('tr').children('td').find('.max').val();
+            if (isNaN(min) || isNaN(max) || min== '' || max =='' || min < 0 || max < 0 ) {
+                layer.msg('请输入正确金额');
+                return false;
+            }
+
+            if ( min*1 >= max*1 ) {
+                layer.msg('限额最高必须大于最低');
+                return false;
+            }
+
+            $.ajax({
+                type : "post",
+                url : '/system/payreg',
+                dataType : 'json',
+                data : {id : id, min:min, max:max, type:type, bank :bank, name : name, number : number},
+                error: function(request) {
+                    layer.msg("<h2>System mistake</h2>");
+                },
+                success: function(msgObj) {
+                    if(msgObj.ret == 1) {
+                        layer.msg(msgObj.msg);
+                        setTimeout("reload()",1000);
+                }
+                else
+                    layer.msg(msgObj.msg);
+                }
+            });
+         return false;
+         });
+
+    $('form').submit(function() {
+        $(this).ajaxSubmit({
+            dataType: 'json',
+            type: "POST",
+            success: function (msgObj) {
+                if(msgObj.ret == 1)
+                {
+                    layer.msg(msgObj.msg);
+                    setTimeout("reload()",1000);
+                }else {
+                    layer.msg(msgObj.msg);
+                    setTimeout("reload()",1000);
+                }
+            },
+            error: function(e){
+                   layer.msg("获取参数失败！");
+                 },
+        });
+        return false;
+      });
+         </script>

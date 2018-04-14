@@ -1,0 +1,83 @@
+        <div class="search-box">
+        <form type='get'>
+            <div class="search-down ml15">
+                用户名:
+                <input type="text" class="user m1" name='name' value="<?=$this->request->get('name') ?: ''; ?>">
+                <button type="submit" class="search-btn">查询</button>
+            </div>
+            </form>
+        </div>
+        <div class="table-box">
+            <table class="main-table" cellpadding="0" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>用户名</th>
+                        <th>用户类型</th>
+                        <th>团队总人数</th>
+                        <th>有效人数</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php if (!empty($lists)) : foreach ($lists as $value) : ?>
+                    <tr>
+                        <?php if($value['ua_type'] == 3){ ?>
+                            <td><a href="/agent/agent?uid=<?=$value['u_id']?>"><?=$value['u_name']?></a></td>
+                        <?php }else{ ?>
+                            <td><?=$value['u_name']?></td>
+                        <?php } ?>
+                            <td><?=$value['ua_type'] == 3 ? '代理' : '会员';?></td>
+                            <td><?=$value['ua_type'] == 3 ? $value['ua_team_num'] : '';//判断是否是代理，输出代理会员人数
+                            ?></td>
+                            <td><?=$value['ua_good_user_nums']?></td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+        <div class="pages">
+            <div class="posl">
+                共<em class="counts"><?=$total?></em>条 每页显示
+                <div class="select-box line-num">
+                    <select class="list"  id="limit">
+                    <?php foreach ($numsPage as $value) : ?>
+                        <option value="<?=$value?>" <?=$nums == $value ? 'selected="selected"' : ''?>><?=$value?></option>
+                    <?php endforeach; ?>
+                    </select>
+                    <em class="txt"><?=$nums?></em>
+                    <i class="i-arrow"></i>
+                </div>条
+            </div>
+            <div class="switch-box">
+                <a class="page-btn mr10" id="left"><i class="left"></i></a> 第
+                <div class="select-box line-num">
+                    <select class="list" id='page'>
+                    <?php for($i = 1; $i <= ceil($total / $nums); $i++) :?>
+                        <option value="<?=$i?>"  <?=$this->request->get('page') == $i ? 'selected="selected"' : '';?>><?=$i?></option>
+                    <?php endfor;?>
+                    </select>
+                    <em class="txt"><?=!empty($this->request->get('page')) ? $this->request->get('page'): 1?></em>
+                    <i class="i-arrow"></i>
+                </div>
+                共<em id='total'><?=ceil($total/$nums)?></em>页
+                <a class="page-btn ml10" id="right"><i class="right"></i></a>
+            </div>
+        </div>
+        <?php else : ?>
+            <tr class="null">
+                <td colspan="9">暂无数据！</td>
+            </tr>
+        <?php endif; ?>
+<script type="text/javascript">
+    $('#start_time').cxCalendar({
+        type: 'datetime',
+        format:'YYYY-MM-DD'
+    }, function(api){
+        startTime = api.getDate();
+    });
+    $('#end_time').cxCalendar({
+        type: 'datetime',
+        format:'YYYY-MM-DD'
+    }, function(api){
+        endTime = api.getDate();
+    });
+</script>

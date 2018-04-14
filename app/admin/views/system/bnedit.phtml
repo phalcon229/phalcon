@@ -1,0 +1,88 @@
+ <?php if(!empty($info)): ?>
+        <form action="dobnedit" id="rule">
+        <div class="act-set">
+            <div class="act-content">
+                <dl class="item">
+                    <dd class="width4">排序:</dd>
+                    <dt>
+                        <input type="text" class="input-txt width-s" name="sort" value="<?=$info['ib_sort']?>">
+                    </dt>
+                </dl>
+
+                <dl class="item">
+                    <dd class="width4">说明:</dd>
+                    <dt>
+                        <input type="text" class="input-txt" name="title" value="<?=$info['ib_desc']?>">
+                    </dt>
+                </dl>
+
+                <dl class="item">
+                    <dd class="width4">URL:</dd>
+                    <dt>
+                        <input type="text" class="input-txt" name="URL" value="<?=$info['ib_url']?>">
+                    </dt>
+                </dl>
+
+                <dl class="item">
+                    <dd class="width4">banber图片:</dd>
+                    <dt>
+                        <div class="img-box">
+                            <img class="ImgPr" src="<?=$url.$info['ib_img']?>">
+                        </div>
+                        <span class="update-img">修改图片
+                            <input name="img" type="file"  class="up"/>
+                        </span>
+                    </dt>
+                </dl>
+
+            </div>
+            <input type="hidden" name="ib_id" value="<?=$info['ib_id']?>">
+            <div class="divide-btn">
+                <button class="regist-btn" id="sub">确定</button>
+            </div>
+        </div>
+        </form>
+    <?php endif;?>
+    <script type="text/javascript">
+
+    function reload()
+    {
+        location.href = "bannerlist";
+    }
+
+    $('#sub').on('click', function(){
+
+        if($.trim($("input[name='title']").val()) == '') {
+            layer.msg('说明不能为空');
+            return false;
+        };
+        if($.trim($("input[name='URL']").val()) == '') {
+            layer.msg('URL不能为空');
+            return false;
+        };
+        if(isNaN($("input[name='sort']").val())) {
+            layer.msg('请输入正确排序');
+            return false;
+        };
+    })
+    $('form').submit(function() {
+        $(this).ajaxSubmit({
+            dataType: 'json',
+            type: "POST",
+            success: function (msgObj) {
+                if(msgObj.ret == 1)
+                {
+                    layer.msg(msgObj.msg);
+                    setTimeout("reload()",1000);
+                }else {
+                    layer.msg(msgObj.msg);
+                    setTimeout("reload()",1000);
+                }
+            },
+            error: function(e){
+                   layer.msg("获取参数失败！");
+                 },
+        });
+        return false;
+      });
+</script>

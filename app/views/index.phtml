@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title><?=$title ?: '';?></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <script type="text/javascript" src="<?=$this->di['config']['baseInfo']['domain']?>/js/auto_rem.js"></script>
+    <script type="text/javascript" src="<?=$this->di['config']['baseInfo']['domain']?>/js/jquery.min.js"></script>
+    <script type="text/javascript" src="<?=$this->di['config']['baseInfo']['domain']?>/js/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="<?=$this->di['config']['baseInfo']['domain']?>/js/jquery.validate.messages_zh.js"></script>
+    <script type="text/javascript" src="<?=$this->di['config']['baseInfo']['domain']?>/js/fastclick.js"></script>
+    <script type="text/javascript" src="<?=$this->di['config']['baseInfo']['domain']?>/js/public.js"></script>
+    <script type="text/javascript" src="<?=$this->di['config']['baseInfo']['domain']?>/js/jquery.bxslider.min.js"></script>
+    <link rel="stylesheet" href="<?=$this->di['config']['baseInfo']['domain']?>/css/style.css" />
+    <script type="text/javascript" src="<?=$this->di['config']['baseInfo']['domain']?>/js/api.js"></script>
+    <style>
+        .error {
+            color: #d91d1d;
+        }
+    </style>
+</head>
+
+<body>
+    <a class="back-home" id="back-home" href="/"></a>
+    <?php if ($ctrl == 'index' && $act = 'index'): ?>
+        <header class="fixed top-nav">
+            <span class="toggle-money nav-icon coin">
+                <i class="d"></i>
+                <span class="money-show"></span>
+            </span>
+            <span class="toggle-money nav-icon coin-2 unsee">
+                <i class="d"></i>
+                隐藏金额
+            </span>
+            <span class="title"><?=$title;?></span>
+            <!--<a href="/auth/logout" class="nav-icon exit">[退出登录]</a>-->
+            <a class="nav-icon right nav-btn"><i class="list"></i>菜单</a>
+        </header>
+    <?php else: ?>
+        <header class="fixed top-nav">
+            <?php if (empty($hideBack) || !$hideBack): ?><a href="javascript:history.go(-1);" class="nav-icon back"></a><?php endif; ?>
+            <?php if (empty($ctrl) || $ctrl == 'auth'): ?><a class="nav-icon link left" href="http://try.dazhongcai.cn/auth/reg?type=1">[马上试玩]</a><?php endif; ?>
+            <?php if ((empty($ctrl) || $ctrl == 'auth') && $login == 2 && !empty($reg)): ?>
+            <!-- <a class="nav-icon link left" href="http://try.dazhongcai.cn/auth/reg?type=1">[马上试玩]</a> -->
+            <a class="nav-icon link right" href="/auth/reg">[注册]</a><?php endif; ?>
+            <?php if(empty($c)): ?>
+            <?php if ((empty($ctrl) || $ctrl == 'auth') && $login == 1 && !empty($reg) ): ?>
+                <a class="nav-icon link left" href="http://try.dazhongcai.cn/auth/reg">[马上试玩]</a>
+            <a class="nav-icon link right" href="/auth/login">[登入]</a><?php endif; ?>
+            <?php else: ?>
+                    <?php if ((empty($ctrl) || $ctrl == 'auth') && $login == 1 && !empty($reg) ): ?>
+                    <a class="nav-icon link left" href="http://try.dazhongcai.cn/auth/reg?c=<?php echo $c; ?>&type=<?php echo $type; ?>">[马上试玩]</a>
+                <a class="nav-icon link right" href="/auth/login">[登入]</a><?php endif; ?>
+            <?php endif;?>
+            <?php if (empty($gameList)): ?>
+            <span class="title"><?=!empty($title) ? $title : '';?></span>
+            <?php else: ?>
+            <div class="select-title-black uset">
+                <span>
+                    <select class="select-p game-list">
+                        <?php foreach ($gameList as $bet): ?>
+                        <option <?=$gameId == $bet['bet_id'] ? 'selected' : ''; ?> value="<?=$bet['bet_id'].'/'.$bet['bet_play_type']?>"><?=$bet['bet_name'];?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <em><?=$title;?></em>
+                </span>
+            </div>
+            <?php endif; ?>
+
+            <?php if (!empty($ctrl) && $ctrl != 'auth'): ?><a class="nav-icon right nav-btn"><i class="list"></i>菜单</a><?php endif; ?>
+        </header>
+    <?php endif; ?>
+
+    <?php echo $this->view->getContent(); ?>
+    <?php $this->partial("shared/sidebar"); ?>
+
+    <?php if (!empty($ctrl) && $ctrl != 'auth'): ?>
+    <script>
+        var api = new Api();
+        getMoney();
+
+        function getMoney()
+        {
+            api.get('/user/money', {}, function(res) {
+                toggleMoney(res.data);
+            }, function() {
+                setTimeout('getMoney()', 5000);
+            });
+        }
+
+        $('.reload').on('click', function() {
+            getMoney();
+        });
+
+        $('.toggle-money').on('click', function() {
+            api.post('/user/tglmoney', {}, function(res) {
+                toggleMoney(res.data);
+            });
+        });
+
+        function toggleMoney(money) {
+            if (money >= 0) {
+                $('.money-show').html(parseInt(money));
+                $('.money').removeClass('unsee');
+                $('.h-money').addClass('unsee');
+                $('.showm').removeClass('unsee');
+                $('.hidem').addClass('unsee');
+                $('.coin').removeClass('unsee');
+                $('.coin-2').addClass('unsee');
+                return;
+            }
+            $('.money-show').html('');
+            $('.money').addClass('unsee');
+            $('.h-money').removeClass('unsee');
+            $('.showm').addClass('unsee');
+            $('.hidem').removeClass('unsee');
+            $('.coin').addClass('unsee');
+            $('.coin-2').removeClass('unsee');
+        }
+    </script>
+    <?php endif; ?>
+    <script type="text/javascript" src="<?=$this->di['config']['baseInfo']['domain']?>/js/drag.js"></script>
+    <!-- <script language="javascript" src="http://chat56.live800.com/live800/chatClient/monitor.js?jid=9851480327&companyID=902630&configID=144110&codeType=custom"></script> -->
+</body>
+</html>

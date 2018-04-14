@@ -1,0 +1,417 @@
+<script type="text/javascript" src="<?=$this->di['config']['baseInfo']['domain']?>/js/powerange.min.js"></script>
+<script type="text/javascript" src="<?=$this->di['config']['baseInfo']['domain']?>/js/range.js"></script>
+<script type="text/javascript" src="<?=$this->di['config']['baseInfo']['domain']?>/js/api.js"></script>
+
+<div class="earn-money-body">
+    <?php $this->assets->outputJs() ?>
+    <?php $this->partial("shared/usertop"); ?>
+
+    <ul class="earn-tap flex" id="contentType">
+        <li class="item flex1 on" data-id="1" id="make">
+            <span>生成链接</span>
+        </li>
+        <li class="item flex1" data-id="2" id="show">
+            <span>链接管理</span>
+        </li>
+        <li class="item flex1" data-id="3">
+            <span>手动注册</span>
+        </li>
+    </ul>
+    <input type="hidden" name="upRate" id="upRate" value="0">
+    <input type="hidden" name="field_name" id="logo" value="<?php echo $logo ?>">
+    <div class="pro pro-1" id="reg">
+        <ul class="input-panel">
+            <li class="item flex">
+                <label>用户类型</label>
+                <span class="flex1">
+                <select class="flex1" id="makeType">
+                    <option value="3" selected="selected">代理</option>
+                    <option value="1">会员</option>
+                </select>
+                <em>代理</em>
+                <i class="down"></i>
+                </span>
+            </li>
+        </ul>
+        <div class="set-val ">
+            <ul class="val flex">
+                <li class="txt-l flex1">当前赔率:<em class="red bouns"><?=$rateMoney;?></em></li>
+                <li class="txt-r flex1">下级返点:<em class="red js-display-decimal" id="rate">0.00</em>%</li>
+            </ul>
+            <div class="range-change flex">
+                <i class="reduce"></i>
+                <input type="text" class="js-decimal" id="makeLink" style="display: none;" data-max="<?=$rate?>" data-min="0.00">
+                <i class="add"></i>
+                <span class="va"><?=$rate?></span>
+            </div>
+            <div class="tit" style="color:red">[总返点数-下级返点=本级佣金]</div>
+            <div class="tit">[奖金组一旦上调则无法降低，请谨慎操作]</div>
+        </div>
+        <div class="btn-center">
+            <input type="submit" value="生成链接" class="btn" id="create">
+        </div>
+    </div>
+    <div class="pro pro-2 unsee" id="list">
+        <ul class="pro-list" id="fresh">
+            <?php for($i=0;$i<count($recommendInfo['lists']);$i++){ ?>
+            <li class="item" data-id='0'>
+                <p class="tit">生成渠道链接<span class="copy-text fr" id="foo" data-clipboard-target="#foo" ata-clipboard-text="">复制链接</span></p>
+
+                <a class="link" id="url"><?php echo $recommendInfo['lists'][$i]['url'] ?>auth/reg?c=<?php echo $recommendInfo['lists'][$i]['ur_code'] ?></a>
+
+                <div class="state flex">
+                    <span class="flex1">返点率:<em class="red fandian"><?php echo $recommendInfo['lists'][$i]['ur_fandian'] ?></em>%</span>
+                    <span class="flex1">注册人数:<em class="red"><?php echo $recommendInfo['lists'][$i]['ur_reg_nums'] ?></em></span>
+                    <span class="flex1">访问量:<em class="red"><?php echo $recommendInfo['lists'][$i]['ur_visitor_nums'] ?></em></span>
+                    <span class="flex1">开户类型:<em class="red"><?php echo $recommendInfo['lists'][$i]['ur_type'] ?></em></span>
+                </div>
+                <p class="times">生成时间：<em class="red"><?php echo $recommendInfo['lists'][$i]['ur_created_time'] ?></em></p>
+                <div class="divide">
+                    <a class="md" id="edit" data="<?php echo $recommendInfo['lists'][$i]['ur_id'] ?>">编辑</a>
+                     <!--<a class="del" id="del" data="">删除</a>-->
+                </div>
+                <div><center><img src="<?php echo $recommendInfo['lists'][$i]['qr'] ?>"></center></div>
+            </li>
+            <?php } ?>
+            </ul>
+    </div>
+    <div class="pro pro-3 unsee" id="list">
+        <form>
+            <!--<div class="regist-manage-body">-->
+                <?php $this->partial("shared/usertop"); ?>
+                <div class="content">
+                    <ul class="input-panel">
+                        <li class="item flex">
+                            <label>用户类型</label>
+                            <span class="flex1 on">
+                            <select class="flex1" name="reg_type">
+                                <option value="">请选择类型</option>
+                                <option value="1">会员</option>
+                                <option value="3">代理</option>
+                            </select>
+                            <em>请选择类型</em>
+                            <i class="down"></i>
+                            </span>
+                        </li>
+                        <li class="item flex">
+                            <label>登录账户</label>
+                            <input class="flex1" type="text" name="username" placeholder="请输入4-15个数字或字母组成的账号" />
+                        </li>
+                        <li class="item flex">
+                            <label>登录密码</label>
+                            <input class="flex1" type="password" id="pwd" name="pwd" placeholder="请输入由8-15位数字或字母组成的密码" />
+                        </li>
+                        <li class="item flex">
+                            <label>确认密码</label>
+                            <input class="flex1" type="password" name="confirm" placeholder="请在此输入密码" />
+                        </li>
+                    </ul>
+                </div>
+                <div class="set-val range-data">
+                <ul class="val flex">
+                    <li class="txt-l flex1">当前赔率:<em class="red bouns rate-money "><?=$rateMoney;?></em></li>
+                    <li class="txt-r flex1">返点率:<em class="red js-display-decimal rate" id="rate">0.00</em>%</li>
+                </ul>
+                <div class="range-change flex">
+                    <i class="reduce"></i>
+                    <input type="text" class="js-decimal" id="register" style="display: none;" data-max="<?=$rate?>" data-min="0.00">
+                    <i class="add"></i>
+                    <span class="va"><?=$rate?></span>
+                </div>
+                <div class="tit">[奖金组一旦上调则无法降低，请谨慎操作]</div>
+                </div>
+                <div class="btn-center">
+                    <input type="submit" value="立即注册" class="btn">
+                </div>
+            <!--</div>-->
+        </form>
+    </div>
+
+    <div class="junior-ban unsee">
+            <div class="title">
+                推广管理
+                <i class="close"></i>
+            </div>
+            <ul class="earn-list" id="editInfo">
+                <li class="item flex">
+                    <label>渠道链接</label>
+                    <a class="right colr flex1">http://l.le.com/auth/reg?crc=<></a>
+                </li>
+                <li class="item flex">
+                    <label>访问量</label>
+                    <div class="right red flex1">0</div>
+                </li>
+                <li class="item flex">
+                    <label>注册人数</label>
+                    <div class="right red flex1">0</div>
+                </li>
+                <li class="item flex vc">
+                    <label>用户类型</label>
+                    <div class="right flex1">
+                        <div class="variety-box">
+                            <select class="down-list flex1">
+                                <option value="会员">会员</option>
+                                <option value="代理">代理</option>
+                            </select>
+                            <em>会员</em>
+                            <i class="down"></i>
+                        </div>
+                    </div>
+                </li>
+                <li class="item flex">
+                    <label>生成时间</label>
+                    <div class="right red flex1">2017-03-31 14:58:02</div>
+                </li>
+                <li class="item flex vc">
+                    <label>返点率</label>
+                    <div class="right flex1">
+                        <input type="text" value="0.00" class="earn-rate" />
+                    </div>
+                </li>
+            </ul>
+            <div class="earn-btn">
+                <a class="eclose">关闭</a>
+                <a class="esure" id='ensure'>确定</a>
+            </div>
+        </div>
+    </div>
+
+<script>
+    var type = '';
+    type = $("#makeType").find('option:selected').val();
+    $('#makeType').change(function(){
+        type = $("#makeType").find('option:selected').val();
+    });
+    var info = {
+        rate: 0,
+        type: type
+    };
+
+$("#fresh li p span").click(function() {
+        var content = $(this).parent().next().html();
+        $(this).attr('data-clipboard-text',content);
+            var clipboard = new Clipboard('#foo');
+            clipboard.on('success', function(e) {
+              console.info('Action:', e.action);
+              console.info('Text:', e.text);
+              console.info('Trigger:', e.trigger);
+            alert("复制成功");
+            clipboard.destroy();
+            e.clearSelection();
+    });
+    });
+    $(document).ready(function () {
+        var logo = $('#logo').val();
+        if(logo == '1')
+        {
+            $('#make').removeClass('on');
+            $('#show').addClass('on');
+            $('#reg').addClass('unsee');
+            $('#list').removeClass('unsee')
+        }
+    });
+    var range = new RangeSlider(document.querySelector('#makeLink'), {
+        max: $('#makeLink').data('max'),
+        min: $('#makeLink').data('min'),
+        formula: function(rate) {
+            info.rate = rate;
+            var maxRate = $('#makeLink').data('max');
+            var money = <?=$rateMoney;?> + <?=$bonus;?> * rate / 100;
+            return money.toFixed(3);
+        }
+    });
+
+    $('#create').click(function() {
+        $(this).attr('disabled', true).val('生成中...');
+        var that = this;
+        var dataJson = {};
+        dataJson.rate = info.rate;
+        dataJson.type = type;
+        api.post('/agent/linkadd', dataJson, function(res) {
+            if(res.code==500)
+            {
+                $(this).attr('disabled', false).val('生成');
+                alert(res.msg);
+                return false;
+            }
+            if(res.code==200)
+            {
+                alert('生成链接成功');
+                window.location.href = '/agent/link?logo=1';
+            }
+        },
+        function() {
+                $(that).attr('disabled', false).val('生成链接');
+            }
+        );
+    });
+    $(document).ready(function () {
+            $("#fresh .divide .md").each(function(){
+             $(this).click(function() {
+                var urId=$(this).attr("data");
+                $.ajax({
+                    type: "POST",
+                    url: "edit",
+                    data:{urId:urId},
+                    dataType: "json",
+                    success: function(res)
+                    {
+                        var str = '';
+                        if(res.code == 200)
+                        {
+                            if(res.data.ur_type == '会员')
+                            {
+                                var select = '<div class="variety-box"><select class="down-list flex1" id="agentType"><option value="1" selected="selected">会员</option><option value="3">代理</option></select><em>会员</em>';
+                            }else
+                            {
+                                var select = '<div class="variety-box"><select class="down-list flex1" id="agentType"><option value="1">会员</option><option value="3" selected="selected">代理</option></select><em>代理</em>';
+                            }
+                            var str='<li class="item flex"><label>渠道链接</label><a class="right colr flex1">'+res.data.url+'?c='+res.data.ur_code+'</a></li>'+
+                                    '<li class="item flex"><label>注册人数</label><div class="right red flex1">'+res.data.ur_reg_nums+'</div></li>'+
+                                    '<li class="item flex"><label>访问量</label><div class="right red flex1">'+res.data.ur_visitor_nums+'</div></li>'+
+                                    '<li class="item flex vc"><label>用户类型</label><div class="right flex1">'+select+
+                                    '<i class="down"></i></div></div><input type="hidden" id="updateUrid" value="'+res.data.ur_id+'"></li>'+
+                                    '<li class="item flex"><label>生成时间</label><div class="right red flex1">'+res.data.ur_created_time+'</div></li>'+
+                                    '<li class="item flex vc"><label>返点率</label><div class="right flex1"><input type="text" value="'+res.data.ur_fandian+'" class="earn-rate" data-rate="'+res.data.ur_fandian+'"/>%</div></li>';
+                            $("#editInfo").html(str);
+                            $("#upRate").val(res.data.upRate);
+                            $('#agentType').change(function(){
+                                var em = $("#agentType").find('option:selected').text();
+                                $("#agentType").next().html(em);
+                            });
+                        }
+                    }
+                    });
+                });
+             });
+            $("#fresh .divide .del").each(function(){
+                $(this).click(function() {
+                    var urId=$(this).attr("data");
+                    var that = this;
+                    if (!confirm('确认删除?')) {
+                        return false;
+                    }
+                    $.ajax({
+                        type: "POST",
+                        url: "del",
+                        data:{urId:urId},
+                        dataType: "json",
+                        success: function(res)
+                        {
+                            var fresh = '';
+                            if(res.code == 200)
+                            {
+                                $(that).closest("li").remove();
+                                alert('删除成功');
+                            }
+                        }
+
+                    });
+                 });
+            });
+         });
+         $('#ensure').click(function() {
+                var type = $('#agentType').val();
+                var rate = $('.earn-rate').val();
+                var upRate = $('#upRate').val();
+                var fandian = $('.earn-rate').data('rate');
+                if(parseFloat(rate) < parseFloat(fandian))
+                {
+                    alert('返点率不能小于等于已设值');return;
+                }
+                if(parseFloat(rate) > parseFloat(upRate))
+                {
+                    alert('返点率不能大于上级');return;
+                }
+                var urId = $('#updateUrid').val();
+                if (!confirm('确认更改?')) {
+                    return false;
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "update",
+                    data:{type:type, rate:rate, urId:urId},
+                    dataType: "json",
+                    success: function(res)
+                    {
+                        if(res.code == 200)
+                        {
+                            alert('更新成功');
+                            window.location.href = '/agent/link?logo=1';
+                        }
+                    }
+                });
+            });
+</script>
+<script>
+
+$(document).ready(function() {
+
+    $("form").validate({
+        debug: false,
+        rules: {
+            reg_type: {
+                required: true
+            },
+            username: {
+                required: true,
+                rangelength: [4, 15]
+            },
+            pwd: {
+                required: true,
+                rangelength: [8, 15]
+            },
+            confirm: {
+                required: true,
+                equalTo: "#pwd"
+            }
+        },
+        messages: {
+            reg_type: {
+                required: '请选择注册类型'
+            },
+            confirm: {
+                equalTo: '两次密码输入不一致'
+            }
+        },
+        submitHandler: function(form) {
+            $('form input[type="submit"]').attr('disabled', true).val('注册中...');
+            var ratemoney = $('.range-data .rate-money').html();
+            var rate = $('.range-data .rate').html();
+            var data = $('form').serialize() + "&ratemoney=" + ratemoney + "&rate=" + rate;
+
+            $.ajax({
+                type: 'post',
+                url: '/agent/add',
+                data: data,
+                dataType: 'json',
+                success: function(res) {
+                    if (res.code != 200) {
+                        alert(res.msg);
+                        return false;
+                    }
+                    alert('注册成功');
+                    window.location.href = res.data.url;
+                },
+                error: function() {
+                    alert('服务器错误，请重新尝试');
+                },
+                complete: function() {
+                    $('form input[type="submit"]').attr('disabled', false).val('立即注册');
+                }
+            });
+        }
+    });
+
+    var range = new RangeSlider(document.querySelector('#register'), {
+        max: $('#register').data('max'),
+        min: $('#register').data('min'),
+        formula: function(rate) {
+            info.rate = rate;
+            var maxRate = $('#register').data('max');
+            var money = <?=$rateMoney;?> + <?=$bonus;?> * rate / 100;
+            return money.toFixed(3);
+        }
+    });
+});
+</script>

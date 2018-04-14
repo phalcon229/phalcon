@@ -1,0 +1,37 @@
+    <div class="throw-home-body container">
+        <div class="top-title">
+            <i class="throw-red"></i> <em class="tit">异常订单</em><i class="tip-circle"></i>
+        </div>
+        <div class="table-box">
+            <table class="main-table " cellpadding="0" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th class="width1">彩种</th>
+                        <th class="width2">期数</th>
+                        <th class="width2">状态</th>
+                        <th class="width3">操作</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php
+                    foreach ($list as $item) {
+                ?>
+                    <tr>
+                        <td class="width1"><?=$item['bet_name']?></td>
+                        <td class="width2"><?=$item['bres_periods']?>期</td>
+                         <td class="width2"><?=$item['bres_plat_isopen']=='5'?'开奖延迟':'异常'?></td>
+                        <td class="width3"><a class="operate" href = "/abnormal/detail?betid=<?php echo $item['bet_id'].'&issue='.$item['bres_periods']; ?>">查看详情</a></td>
+                        <td></td>
+                    </tr>
+                <?php }?>
+
+                    <?php if (empty($list)){?>
+                    <tr class="null">
+                        <td colspan="12">暂无数据！</td>
+                    </tr>
+                    <?php }?>
+                </tbody>
+            </table>
+        </div>
+    </div>

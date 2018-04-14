@@ -1,0 +1,126 @@
+<div class="account-centre-body">
+        <?php $this->partial("shared/usertop"); ?>
+        <div class="history-t main-table">
+            <div class="select-title-black">
+                <span>                    
+                    <select class="select-p">
+                        <option value="全部">全部</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                    </select>
+                    <em>全部</em>
+                </span>
+            </div>
+            <table>
+                <tbody id="table">
+                    <?php for($i=0;$i<count($info);$i++){ ?>
+                    <tr>
+                        <td><?php echo $info[$i]['uwr_created_time']?></td>
+                        <td class="red"><?php echo $info[$i]['uwr_money']?></td>
+                        <td><?php echo $info[$i]['uwr_Type']?></td>
+                        <td><a href="/WalletRecord/detail?uwrId=<?php echo $info[$i]['uwr_id'] ?>">详情></a></td>
+                    </tr>
+                    <?php }?>
+                </tbody>
+            </table>
+            <ul class="history-list clearfix">
+                <li>小计:<i class="red" id="num"><?php echo $subtotal ?>笔</i></li>
+                <li>交易额度:<i class="red" id="numMoney"><?php echo  $subtotalMoney?></i></li>
+                <li>总计:<i class="red" id="subtotal"><?php echo $num ?>笔</i></li>
+                <li>交易额度:<i class="red" id="subtotalMoney"><?php echo $numMoney ?></i></li>
+            </ul>
+            <div class="btn-center">
+                <input type="submit" value="加载更多" class="btn">
+            </div>
+        </div>
+        <div class="side-nav">
+            <div class="top">
+                <p class="name">Soone2</p>
+                <p><i class="wallet"></i>103.58</p>
+                <i class="reload"></i>
+            </div>
+        <div class="mask">
+                </div>
+                <div class="junior-ban">
+                    <div class="title">
+                        交易记录
+                        <i class="close"></i>
+                    </div>
+                    <ul class="text">
+                        <li class="flex">
+                            <span>日期</span>
+                            <span class="flex1"><?php echo $detai[0]['uwr_created_time'] ?></span>
+                        </li>
+                        <li class="flex">
+                            <span>类型</span>
+                            <span class="flex1"><?php echo $detai[0]['uwr_Type'] ?></span>
+                        </li>
+                        <li class="flex">
+                            <span>交易额</span>
+                            <span class="red flex1"><?php echo $detai[0]['uwr_money'] ?></span>
+                        </li>
+                        <li class="flex">
+                            <span>备注</span>
+                            <span class="flex1"><?php echo $detai[0]['uwr_bussiness_id'] ?></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+    <script type="text/javascript">
+    $(function(){
+            var num=1;
+            $('.btn').click(function(){
+            num+=1;
+            var type=$('.select-p option:selected').val();
+            $.ajax({
+                    type: "POST",
+                    url: "addMore",
+                    data:{type:type,num:num},
+                    dataType: "json",
+                    success: function(data){
+                        var str='';
+                        $.each(data.info,function(index, n)
+                        {
+                            str=str+'<tr><td>'+data.info[index].uwr_created_time+'</td><td class="red">'+data.info[index].uwr_money+'</td><td>'+data.info[index].uwr_Type+'</td><td><a href="/WalletRecord/detail?uwrId='+data.info[index].uwr_id+ '">详情></a></td></tr>';
+                        });    
+                        $("#table").html(str);
+                        $("#num").html(data.num+'笔');    
+                        $("#numMoney").html(data.numMoney); 
+                        $("#subtotal").html(data.subtotal+'笔'); 
+                        $("#subtotalMoney").html(data.subtotalMoney);
+                    }
+                });
+            });
+        });
+         $(document).ready(function () {
+             $(".select-p").change(function () {
+                var type=$('.select-p option:selected').val();
+                $.ajax({
+                    type: "POST",
+                    url: "ajax",
+                    data:{type:type},
+                    dataType: "json",
+                    success: function(data)
+                    {
+                        var str='';
+                        $.each(data.info,function(index, n)
+                        {
+                            str=str+'<tr><td>'+data.info[index].uwr_created_time+'</td><td class="red">'+data.info[index].uwr_money+'</td><td>'+data.info[index].uwr_Type+'</td><td><a href="/WalletRecord/detail?uwrId='+data.info[index].uwr_id+ '">详情></a></td></tr>';
+                        });
+                        $("#table").html(str);
+                        $("#num").html(data.subtotal+'笔');    
+                        $("#numMoney").html(data.subtotalMoney); 
+                        $("#subtotal").html(data.num+'笔'); 
+                        if(data.numMoney!==''){
+                            $("#subtotalMoney").html(data.numMoney); 
+                        }
+                        else
+                        {
+                            var subtotalMoney=0;
+                            $("#subtotalMoney").html(subtotalMoney.toFixed(4));
+                        }
+                    }
+                });
+             });
+         });
+    </script>

@@ -1,0 +1,83 @@
+<?php
+    $dx = [1 => '大', 2 => '小'];
+    $ds = [1 => '双', 2 => '单'];
+    foreach ($list as $l):
+                $memo = !empty($l['bres_memo']) ? json_decode($l['bres_memo'], true) : [];
+                if (empty($l['bres_result'])) {
+                    $nums = array_fill(0, 10, '?');
+                } else {
+                    $nums = explode(',', $l['bres_result']);
+                }
+?>
+<li class="item flex">
+    <div class="flex1">
+        <p class="tit">第<?=$l['bres_periods']?>期 <?=date('Y-m-d H:i:s', $l['bres_plat_open_time']);?></p>
+        <dl class="prize-data flex">
+            <dd class="text flex1">
+            <?php foreach ($nums as $i => $n): ;?>
+                    <span class="square va">
+                        <?php if ( empty($l['bres_result'])): ?>
+                        <i class="mbg <?=$ballColor[10]?>"><?=$n;?></i>
+                        <?php else : ?>
+                        <i class="mbg <?=$ballColor[$n-1]?>"><?=$n;?></i>
+                        <?php endif; ?>
+                        <?php $datail = $memo['detail'];if($i<5):$ruleIdx = 6+$i*4 ?>
+                            <?php if (empty($datail[$ruleIdx])): ?>
+                                <em>?</em>
+                            <?php else:  $lh = explode('-', $datail[$ruleIdx-1]); ?>
+                                <em><?=$ruleCfg['rule_base_type'][$lh[1]]?></em>
+                            <?php endif; ?>
+                        <?php endif; ?> 
+                    </span>
+                    <?php endforeach; ?>
+                <!-- <span>
+                    <i class="mbg <?php echo $ballColor[$openNums[0]-1] ?>"><?php echo $openNums[0] ?></i>
+                    <em></em>
+                </span>
+                <span>
+                    <i class="mbg <?php echo $ballColor[$openNums[1]-1] ?>"><?php echo $openNums[1] ?></i>
+                    <em></em>
+                </span>
+                <span>
+                    <i class="mbg <?php echo $ballColor[$openNums[2]-1] ?>"><?php echo $openNums[2] ?></i>
+                    <em></em>
+                </span>
+                <span>
+                    <i class="mbg <?php echo $ballColor[$openNums[3]-1] ?>"><?php echo $openNums[3] ?></i>
+                    <em></em>
+                </span>
+                <span>
+                    <i class="mbg <?php echo $ballColor[$openNums[4]-1] ?>"><?php echo $openNums[4] ?></i>
+                    <em></em>
+                </span>
+                <span>
+                    <i class="mbg <?php echo $ballColor[$openNums[5]-1] ?>"><?php echo $openNums[5] ?></i>
+                    <em></em>
+                </span>
+                <span>
+                    <i class="mbg <?php echo $ballColor[$openNums[6]-1] ?>"><?php echo $openNums[6] ?></i>
+                    <em></em>
+                </span>
+                <span>
+                    <i class="mbg <?php echo $ballColor[$openNums[7]-1] ?>"><?php echo $openNums[7] ?></i>
+                    <em></em>
+                </span>
+                <span>
+                    <i class="mbg <?php echo $ballColor[$openNums[8]-1] ?>"><?php echo $openNums[8] ?></i>
+                    <em></em>
+                </span>
+                <span>
+                    <i class="mbg <?php echo $ballColor[$openNums[9]-1] ?>"><?php echo $openNums[9] ?></i>
+                    <em></em>
+                </span> -->
+            </dd>
+        </dl>
+    </div>
+    <div class="sum">
+        <p class="all-sum">冠亚军和</p>
+        <i><?=$memo['zh']?></i>
+        <em class="<?=$memo['dx'] == 1 ? 'red' : '';?>"><?=$dx[$memo['dx']]?></em>
+        <em class="<?=$memo['ds'] == 1 ? 'red' : '';?>"><?=$ds[$memo['ds']]?></em>
+    </div>
+</li>
+<?php endforeach; ?>

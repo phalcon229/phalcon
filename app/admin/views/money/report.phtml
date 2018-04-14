@@ -1,0 +1,230 @@
+<?php
+    $bet = $js = $betdate = $js2 = $js3 = $js4 = $js5 = '';
+    if (isset($_GET['limit'])) {
+        $urlLimit = $_GET['limit'];
+        $js = '$("#limit").val('.$urlLimit.');';
+        if (!in_array($_GET['limit'], $perpage))
+            $urlLimit = current($perpage);
+    }
+    if (!empty($_GET['page'])) {
+        if (is_numeric($_GET['page'])) {
+            $js4 = '$("#page").val('.$_GET['page'].');';
+            $page = $_GET['page'];
+        }
+        else {
+            $js4 = '$("#page").val(1);';
+            $page =1;
+        }
+    }
+    if(!empty($type)) {
+        if (isset($_GET['type']) && $_GET['type'] !=0) {
+            $js= '$("#bet_type").val('.$_GET['type'].');';
+            if (!empty($type))
+                $bet = $type[$_GET['type']];
+        } else
+            $bet = current($type);
+    }
+
+    if(!empty($date)) {
+        if (isset($_GET['date'])) {
+            $js2= '$("#date").val('.$_GET['date'].');';
+            if (!empty($date))
+                $betdate = $_GET['date'];
+        } else
+            $betdate = current($date);
+    }
+?>
+
+        <div class="top-title">
+            <i class="financail-red"></i> <em class="tit">现金结算</em>
+        </div>
+        <div class="search-box">
+        <form type='get'>
+            <div class="search-down ml15">
+                日期范围:
+                <div class="date-box">
+                        <em class="txt"><input type="text" name="startTime" id="start_time" value="<?=$this->request->get('startTime') ?: date('Y-m-d')?>"></em>
+                        <i class="date-icon"></i>
+                </div>
+                <label class="connet-line"></label>
+                <div class="date-box">
+                    <em class="txt"><input type="text" name="endTime" id="end_time" value="<?=$this->request->get('endTime') ?: date('Y-m-d')?>"></em>
+                    <i class="date-icon"></i>
+                </div>
+                <button type="submit" class="search-btn">查询</button>
+            </div>
+            </form>
+        </div>
+        <?php
+             if(isset($_GET['v']))
+                $v = $_GET['v']+1;
+             else
+                $v = 2;
+
+            $v2 = $v3 =$v4 =$v5 =$v6 = '';
+            $v1 = 'on';
+
+            if(isset($_GET['pame']))
+            {
+                $pame = $_GET['pame'];
+                $on = $_GET['pame'];
+                if($on ==1) {
+                    $v1 = 'on';
+                }
+                if($on ==2) {
+                    $v2 = 'on';
+                    $v1 = '';
+                }
+                if($on ==3) {
+                    $v3 = 'on';
+                    $v1 = '';
+                }
+                if($on ==4) {
+                    $v4 = 'on';
+                    $v1 = '';
+                }
+                if($on ==5) {
+                    $v5 = 'on';
+                    $v1 = '';
+                }
+                if($on ==6) {
+                    $v6 = 'on';
+                    $v1 = '';
+                }
+            } else
+                $pame = 1;
+        ?>
+        
+        <div class="search-box">
+        </div>
+        <div class="table-box">
+            <table class="main-table" cellpadding="0" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>日期</th>
+                        <th>平台输赢</th>
+                        <th>赠送金额</th>
+                        <th>存入金额</th>
+                        <th>出款金额</th>
+                        <th>昨日总余额</th>
+                        <th>今日总余额</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($info as $key=>$value){ ?>
+                    <tr>
+                        <td><?=$value['st_date']?></td>
+                        <td><?=$value['st_plat_earn']?-$value['st_plat_earn']:0?></td>
+                        <td><?=-$value['st_give']?-$value['st_give']:0?></td>
+                        <td><?=$value['st_recharge']?$value['st_recharge']:0?></td>
+                        <td><?=$value['st_withdraw']?$value['st_withdraw']:0?></td>
+                        <td><?=$value['st_before_money']?$value['st_before_money']:0?></td>
+                        <td><?=$value['st_after_money']?$value['st_after_money']:0?></td>
+                        
+                    </tr>
+                <?php }?> 
+                </tbody>
+                <?php if(!empty($total)){ ?>
+                <tr>
+                    <td>总计</td>
+                    <td><?php echo -$total['st_plat_earn'] ?></td>
+                    <td><?php echo -$total['st_give'] ?></td>
+                    <td><?php echo $total['st_recharge'] ?></td>
+                    <td><?php echo $total['st_withdraw'] ?></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <?php } ?>
+            </table>
+            
+            <center><p style="color:red">今日总余额 - 昨日总余额 = 存入金额 + 出款金额 - 赠送金额 - 平台输赢</p></center>
+                
+        </div>
+
+    </div>
+
+<script type="text/javascript">
+$('#start_time').cxCalendar({
+        type: 'datetime',
+        format:'YYYY-MM-DD'
+    }, function(api){
+        startTime = api.getDate();
+    });
+    $('#end_time').cxCalendar({
+        type: 'datetime',
+        format:'YYYY-MM-DD'
+    }, function(api){
+        endTime = api.getDate();
+    });
+
+    <?php echo $js; echo $js2; echo $js3; echo $js4;?>
+   $(function() {
+        var bid = $('#bet_type').val();
+        if(bid!=='0')
+        {
+            $('#issue').removeClass('unsee');
+        }
+        $('#ifIssue').click(function(){
+            $(this).toggle().attr('checked');
+        })
+        $('#bet_type').on('change', function(){
+            var bid = $('#bet_type').val();
+            
+            var url = '/forms/total?type='+bid;
+            location.href = url;
+        });
+        $('#serial').change(function(){
+            var issue = $('#serial').val();
+            var url = '/forms/total?type='+bid+'&&issue='+issue;
+            location.href = url;
+        })
+        function getUrlParam(name) {
+          var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+          var r = window.location.search.substr(1).match(reg); //匹配目标参数
+          if (r != null) return unescape(r[2]);
+          return null; //返回参数值
+        }
+
+        $('#excel').on('click',function(){
+            if ($("#bet_type").val())
+                var type = $("#bet_type").val();
+            else
+                var type = 0; 
+            var pame = getUrlParam('pame');
+            if(pame == null )
+            {
+                pame = 1;
+            }
+            var v = getUrlParam('v');
+            var issue = $('#issueNum').html();
+            if(issue == null )
+            {
+                issue = '';
+            }
+            if(type == 0)
+            {
+                issue = '';
+            }
+            if (getUrlParam('v') == null)
+                v = 1;
+            var url = '/forms/excel?v='+v+'&&type='+type+'&&pame='+pame+'&&issue='+issue;
+            location.href = url;
+    })
+
+    $('.quik-btn').on('click',function(){
+        var id = $(this).data('id');
+        var v = getUrlParam('v');
+        if (getUrlParam('v') == null)
+            v = 1;
+        if (v > 2)
+            v = 2;
+
+        if ($("#bet_type").val())
+                var type = $("#bet_type").val();
+        else
+                var type = 0;
+        var url = '/money/report?v='+v+'&&type='+type+'&&pame='+id;
+        location.href = url;
+    })
+})
+</script>

@@ -1,0 +1,114 @@
+<?php
+    $js = $js2 = '';
+
+    if (isset($_GET['limit'])) {
+        $urlLimit = $_GET['limit'];
+        $js = '$("#limit").val('.$urlLimit.');';
+        if (!in_array($_GET['limit'], $perpage))
+            $urlLimit = current($perpage);
+    }
+    if (!empty($_GET['page'])) {
+        if (is_numeric($_GET['page'])) {
+            $js2 = '$("#page").val('.$_GET['page'].');';
+            $page = $_GET['page'];
+        }
+        else {
+            $js2 = '$("#page").val(1);';
+            $page =1;
+        }
+    }
+
+?>
+        <div class="search-box">
+            <a class="add-btn" href="ntadd">
+                <i class="add-white"></i> 添加公告
+            </a>
+        </div>
+        <div class="table-box">
+            <table class="main-table" cellpadding="0" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>标题</th>
+                        <th>添加时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                   <?php if(empty($info['total'])) {?>
+                   <tr class="null">
+                        <td colspan="4">暂无数据！</td>
+                    </tr>
+                <?php } else {foreach ($info['list'] as $value) : ?>
+                    <tr>
+                        <td><?=$value['n_id']?></td>
+                        <td><?=$value['n_title']?></td>
+                        <td><?=date('Y-m-d H:i', $value['n_created_time'])?></td>
+                        <td>
+                            <a class="operate" href="ntedit?n_id=<?=$value['n_id']?>">编辑</a>
+                            <span class="divide-line"></span>
+                            <a class="operate del" data-id="<?=$value['n_id']?>">删除</a>
+                        </td>
+                    </tr>
+                <?php endforeach;  ?>
+                </tbody>
+            </table>
+        </div>
+        <div class="pages">
+            <div class="posl">
+                共<em class="counts"><?=$info['total']?></em>条 每页显示
+                <div class="select-box line-num">
+                    <select class="list" id="limit">
+                    <?php foreach ($perpage as $key => $value) : ?>
+                        <option value="<?=$key?>"><?=$value?></option>
+                    <?php endforeach ?>
+                    </select>
+                    <em class="txt"><?=!empty($urlLimit) ? $urlLimit : current($perpage)?></em>
+                    <i class="i-arrow"></i>
+                </div>条
+            </div>
+            <div class="switch-box">
+                <a class="page-btn mr10" id="left"><i class="left"></i></a> 第
+                <div class="select-box line-num">
+                    <select class="list" id="page">
+                      <?php if(!empty($info['limit'])): for($i=1; $i <= $info['limit']; $i++ ) : ?>
+                        <option value="<?=$i?>"><?=$i?></option>
+                    <?php endfor; endif;?>
+                    </select>
+                    <em class="txt"><?=!empty($page) ? $page: 1?></em>
+                    <i class="i-arrow"></i>
+                </div>
+                共<em id="total"><?=$info['limit']?></em>页
+                <a class="page-btn ml10" id="right"><i class="right" ></i></a>
+            </div>
+        </div>
+        <?php } ?>
+        <script type="text/javascript">
+        <?php echo $js; echo $js2?>
+        function reload()
+        {
+            window.location.reload()
+        }
+
+        $('.del').on('click', function(){
+            var id = $(this).data('id');
+            $.ajax({
+            type : "post",
+            url : 'ntdel',
+            dataType : 'json',
+            data : {n_id : id},
+            error: function(request) {
+                    layer.msg("<h2>System mistake</h2>");
+            },
+            success: function(msgObj) {
+                if(msgObj.ret == 1) {
+                    layer.msg(msgObj.msg);
+                    setTimeout("reload()",1000);
+                }
+                else
+                    layer.msg(msgObj.msg);
+                }
+            });
+         return false;
+        })
+        </script>

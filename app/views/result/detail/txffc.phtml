@@ -1,0 +1,35 @@
+<?php
+    $dx = [1 => '大', 2 => '小'];
+    $ds = [1 => '双', 2 => '单'];
+    foreach ($list as $item):
+        $openNums = explode(',', $item['bres_result']);
+        $memo = !empty($item['bres_memo']) ? json_decode($item['bres_memo'], true) : [];
+?>
+<li class="item flex">
+    <div class="flex1">
+        <p class="tit">第<?=$item['bres_periods']?>期 <?=date('Y-m-d H:i:s', $item['bres_plat_open_time']);?></p>
+        <dl class="prize-data flex">
+            <dd class="text flex1">
+                <?php foreach ($openNums as $i=> $num): ?>
+                <span>
+                    <i class="circle"><?=$num;?></i>
+                    <?php $datail = $memo['detail'];if($i==0):$ruleIdx = 3 ?>
+                            <?php if (empty($datail[$ruleIdx])): ?>
+                                <em>?</em>
+                            <?php else:  $lh = explode('-', $datail[$ruleIdx-1]); ?>
+                                <em><?=$ruleCfg['rule_base_type'][$lh[1]]?></em>
+                            <?php endif; ?>
+                        <?php endif;     ?>
+                </span>
+                <?php endforeach; ?>
+            </dd>
+        </dl>
+    </div>
+    <div class="sum">
+        <p class="all-sum">总和</p>
+        <i><?=$memo['zh']?></i>
+        <em class="<?=$memo['dx'] == 1 ? 'red' : '';?>"><?=$dx[$memo['dx']]?></em>
+        <em class="<?=$memo['ds'] == 1 ? 'red' : '';?>"><?=$ds[$memo['ds']]?></em>
+    </div>
+</li>
+<?php endforeach; ?>

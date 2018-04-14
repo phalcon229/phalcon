@@ -1,0 +1,413 @@
+    <?php if($brid == 1 ) { ?>
+      <div class="h-auto trend">
+        <div class="table-container">
+            <table  class="dataTable">
+                <thead>
+                    <tr>
+                        <th class="td-wd">期号</th>
+                            <?php for($i=1; $i<12;$i++) :?>
+                            <th><?=$i?></th>
+                            <?php endfor; ?>
+                        </tr>
+                </thead>
+                <tbody>
+                <?php $a=[1,1,1,1,1,1,1,1,1,1,1]; $b=[0,0,0,0,0,0,0,0,0,0,0]; $c=[0,0,0,0,0,0,0,0,0,0,0]; $d=[0,0,0,0,0,0,0,0,0,0,0]; $e=[0,0,0,0,0,0,0,0,0,0,0]; $f=[0,0,0,0,0,0,0,0,0,0,0]?>
+                <?php foreach ($zst as $key => $value) {  if (!empty($value)){?>
+                <tr>
+                    <td class="xcell td-wd">
+                            <?=$key < 10 ? '0'.$key : $key?>
+                    </td>
+                    <?php for($i=0;$i<11;$i++) : ?>
+                        <td class="xcell">
+                            <?php if(intval($value[$nkey])==($i+1)) {
+                            echo '<i class="'.$color[$nkey].'">'.$value[$nkey].'</i>';
+                            $a[$i]=1;
+                            $b[$i]++;
+                            $f[$i] == 0 ? $f[$i]++ :'';
+                            if ($key > 0 && !empty($zst[$key-1][$nkey]) ) {
+                                if($zst[$key][$nkey]==$zst[$key-1][$nkey])
+                                {
+                                    $e[$i]++;
+                                    if($e[$i] >= $f[$i])
+                                        $f[$i] = $e[$i]+1;
+                                } else {
+                                    $e[$i] = 0;
+                                }
+                            }
+                        }
+                         else {
+                            echo $a[$i]++;
+                            if($a[$i] > $c[$i])
+                                $c[$i] = $a[$i]-1;
+                            $d[$i]++;
+                            }
+                        ?>
+                    </td>
+                    <?php endfor; ?>
+                    </tr>
+                <?php } }?>
+                     <tr class="color-blue">
+                    <td class="xcell td-wd">
+                        出现次数
+                    </td>
+                <?php foreach($b as $val) {?>
+                    <td class="xcell">
+                        <?=$val?>
+                    </td>
+                    <?php }?>
+                </tr>
+                <tr class="color-black">
+                    <td class="xcell td-wd">
+                        平均遗漏
+                    </td>
+                     <?php foreach($d as $key=>$val) {?>
+                    <td class="xcell">
+                        <?=round($d[$key]/($b[$key]+1))?>
+                    </td>
+                    <?php }?>
+                </tr>
+                <tr class="color-green">
+                    <td class="xcell td-wd">
+                        最大遗漏
+                    </td>
+                    <?php foreach($c as $val) {?>
+                    <td class="xcell">
+                        <?=$val?>
+                    </td>
+                    <?php }?>
+                </tr>
+                <tr class="color-theme">
+                    <td class="xcell td-wd">
+                        最大连出
+                    </td>
+                     <?php foreach($f as $val) {?>
+                    <td class="xcell">
+                        <?=$val?>
+                    </td>
+                    <?php }?>
+                </tr>
+                </tbody>
+            </table>
+            <canvas id='canvas'></canvas>
+        </div>
+    </div>
+
+    <?php } elseif($brid ==2) { ?>
+            <div class="h-auto trend">
+                <div class="table-container">
+                    <table class="dataTable">
+                        <thead>
+                            <tr>
+                                <th class="td-wd">期号</th>
+                                 <?php for($i=1; $i<12;$i++) :?>
+                                <th><?=$i?></th>
+                               <?php endfor; ?>
+                            </tr>
+                        </thead>
+                        <tbody>
+                           <?php $a=[1,1,1,1,1,1,1,1,1,1,1]; $b=$temp1=$temp2=[0,0,0,0,0,0,0,0,0,0,0]; $c=[0,0,0,0,0,0,0,0,0,0,0]; $d=[0,0,0,0,0,0,0,0,0,0,0]; $e=[0,0,0,0,0,0,0,0,0,0,0]; $f=[0,0,0,0,0,0,0,0,0,0,0]?>
+                           <?php foreach ($zst as $key => $value) {  if (!empty($value)){?>
+                            <tr>
+                                <td class="xcell td-wd">
+                                    <?=$key < 10 ? '0'.$key : $key?>
+                                </td>
+                                <?php for($i=0;$i<11;$i++) : ?>
+                                     <td class="xcell">
+                                     <?php
+                                                if(intval($value[0])==($i+1) || intval($value[1] == ($i+1))) {
+                                                        $j = $i+1;
+                                                    echo '<i class="c-theme">'.$j.'</i>';
+                                                    $a[$i]=1;
+                                                    if ($key < 31) {
+                                                        $b[$i]++;
+                                                        $temp1[$i]++;
+                                                        $temp2[$i]++;
+                                                    }
+                                                    else if($key<51 && $key >30) {
+                                                        $b[$i]++;
+                                                        $temp2[$i]++;
+                                                    } else {
+                                                        $b[$i]++;
+                                                    }
+                                                    $f[$i] == 0 ? $f[$i]++ :'';
+                                                    if ($key > 0 && !empty($zst[$key-1][0]) ) {
+                                                        if($j==$zst[$key-1][0] || $j==$zst[$key-1][1])
+                                                        {
+                                                            $e[$i]++;
+                                                            if($e[$i] >= $f[$i])
+                                                                $f[$i] = $e[$i]+1;
+                                                        } else {
+                                                            $e[$i] = 0;
+                                                        }
+                                                    }
+                                                }
+                                                 else {
+                                                    echo $a[$i]++;
+                                                    if($a[$i] > $c[$i])
+                                                        $c[$i] = $a[$i]-1;
+                                                    $d[$i]++;
+                                                    }
+                                                ?>
+                                                </td>
+                                        <?php endfor; ?>
+                                    <?php } }?>
+                                    <tr class="color-blue">
+                            <td class="xcell td-wd">
+                                出现次数
+                            </td>
+                        <?php foreach($b as $val) {?>
+                            <td class="xcell">
+                                <?=$val?>
+                            </td>
+                            <?php }?>
+                        </tr>
+                        <tr class="color-black">
+                            <td class="xcell td-wd">
+                                平均遗漏
+                            </td>
+                             <?php foreach($d as $key=>$val) {?>
+                            <td class="xcell">
+                                <?=round($d[$key]/($b[$key]+1))?>
+                            </td>
+                            <?php }?>
+                        </tr>
+                        <tr class="color-green">
+                            <td class="xcell td-wd">
+                                最大遗漏
+                            </td>
+                            <?php foreach($c as $val) {?>
+                            <td class="xcell">
+                                <?=$val?>
+                            </td>
+                            <?php }?>
+                        </tr>
+                        <tr class="color-theme">
+                            <td class="xcell td-wd">
+                                最大连出
+                            </td>
+                             <?php foreach($f as $val) {?>
+                            <td class="xcell">
+                                <?=$val?>
+                            </td>
+                            <?php }?>
+                        </tr>
+                                </tbody>
+                            </table>
+                        </div>
+            </div>
+            <div class="h-auto trend unsee">
+                <div class="table-container">
+                    <table class="dataTable">
+                        <thead>
+                            <tr>
+                                <th class="td-wd">号码</th>
+                                <th colspan="3">30期</th>
+                                <th colspan="3">50期</th>
+                                <th colspan="3">100期</th>
+                                <th colspan="2">遗漏</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php $g=[0,0,0,0,0,0,0,0,0,0,0] ?>
+                        <?php for($i=0;$i<11;$i++) { $x=$i+1;?>
+                            <tr>
+                                <td class="xcell td-wd">
+                                    <?=$i < 9 ? '<i class="circle-big c-theme">0'.$x.'</i>' : '<i class="circle-big c-theme">'.$x.'</i>'?>
+                                </td>
+                                <td class="xcell" colspan="3">
+                                    <?php for ($j=0; $j < 30;$j++) {
+                                        if (!empty($zst[$j+1])) {
+                                            if ( ($i+1)==$zst[$j+1][0] || ($i+1)==$zst[$j+1][1] ) {
+                                                $g[$i]++;
+                                            }
+                                        }
+                                    }  echo $g[$i] == max($temp1) ?'<span class="red">'. $g[$i] .'</span>' : $g[$i];?>
+                                </td>
+                                <td class="xcell" colspan="3">
+                                    <?php for ($j=30; $j < 50;$j++) {
+                                        if (!empty($zst[$j+1])) {
+                                            if ( ($i+1)==$zst[$j+1][0] || ($i+1)==$zst[$j+1][1] ) {
+                                                $g[$i]++;
+                                            }
+                                        }
+                                    }  echo $g[$i] == max($temp2) ?'<span class="red">'. $g[$i] .'</span>' : $g[$i];?>
+                                </td>
+                                <td class="xcell" colspan="3">
+                                    <?php for ($j=50; $j < 100;$j++) {
+                                        if (!empty($zst[$j+1])) {
+                                            if ( ($i+1)==$zst[$j+1][0] || ($i+1)==$zst[$j+1][1] ) {
+                                                $g[$i]++;
+                                            }
+                                        }
+                                    }  echo $g[$i] == max($b) ?'<span class="red">'. $g[$i] .'</span>' : $g[$i];?>
+                                </td>
+                                <td class="xcell" colspan="2">
+                                    <?php echo $b[$i] == min($b) ? '<span class="red">'.(count($zst)-$b[$i]).'</span>' : count($zst)-$b[$i]; ?>
+                                </td>
+                            </tr>
+                            <?php }?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+<?php } else { ?>
+            <div class="h-auto trend">
+                <div class="table-container">
+                    <table class="dataTable">
+                        <thead>
+                            <tr>
+                                <th class="td-wd">期号</th>
+                                 <?php for($i=1; $i<12;$i++) :?>
+                                <th><?=$i?></th>
+                               <?php endfor; ?>
+                            </tr>
+                        </thead>
+                        <tbody>
+                           <?php $a=[1,1,1,1,1,1,1,1,1,1,1]; $b=$temp1=$temp2=[0,0,0,0,0,0,0,0,0,0,0]; $c=[0,0,0,0,0,0,0,0,0,0,0]; $d=[0,0,0,0,0,0,0,0,0,0,0]; $e=[0,0,0,0,0,0,0,0,0,0,0]; $f=[0,0,0,0,0,0,0,0,0,0,0]?>
+                           <?php foreach ($zst as $key => $value) {  if (!empty($value)){?>
+                            <tr>
+                                <td class="xcell td-wd">
+                                    <?=$key < 10 ? '0'.$key : $key?>
+                                </td>
+                                <?php for($i=0;$i<11;$i++) : ?>
+                                     <td class="xcell">
+                                     <?php
+                                                if(intval($value[0])==($i+1) || intval($value[1] == ($i+1)) || intval($value[2] == ($i+1))) {
+                                                        $j = $i+1;
+                                                    echo '<i class="c-theme">'.$j.'</i>';
+                                                    $a[$i]=1;
+                                                    if ($key < 31) {
+                                                        $b[$i]++;
+                                                        $temp1[$i]++;
+                                                        $temp2[$i]++;
+                                                    }
+                                                    else if($key<51 && $key >30) {
+                                                        $b[$i]++;
+                                                        $temp2[$i]++;
+                                                    } else {
+                                                        $b[$i]++;
+                                                    }
+                                                    $f[$i] == 0 ? $f[$i]++ :'';
+                                                    if ($key > 0 && !empty($zst[$key-1][0]) ) {
+                                                        if($j==$zst[$key-1][0] || $j==$zst[$key-1][1] || $j==$zst[$key-1][2])
+                                                        {
+                                                            $e[$i]++;
+                                                            if($e[$i] >= $f[$i])
+                                                                $f[$i] = $e[$i]+1;
+                                                        } else {
+                                                            $e[$i] = 0;
+                                                        }
+                                                    }
+                                                }
+                                                 else {
+                                                    echo $a[$i]++;
+                                                    if($a[$i] > $c[$i])
+                                                        $c[$i] = $a[$i]-1;
+                                                    $d[$i]++;
+                                                    }
+                                                ?>
+                                                </td>
+                                        <?php endfor; ?>
+                                    <?php } }?>
+                                    <tr class="color-blue">
+                            <td class="xcell td-wd">
+                                出现次数
+                            </td>
+                        <?php foreach($b as $val) {?>
+                            <td class="xcell">
+                                <?=$val?>
+                            </td>
+                            <?php }?>
+                        </tr>
+                        <tr class="color-black">
+                            <td class="xcell td-wd">
+                                平均遗漏
+                            </td>
+                             <?php foreach($d as $key=>$val) {?>
+                            <td class="xcell">
+                                <?=round($d[$key]/($b[$key]+1))?>
+                            </td>
+                            <?php }?>
+                        </tr>
+                        <tr class="color-green">
+                            <td class="xcell td-wd">
+                                最大遗漏
+                            </td>
+                            <?php foreach($c as $val) {?>
+                            <td class="xcell">
+                                <?=$val?>
+                            </td>
+                            <?php }?>
+                        </tr>
+                        <tr class="color-theme">
+                            <td class="xcell td-wd">
+                                最大连出
+                            </td>
+                             <?php foreach($f as $val) {?>
+                            <td class="xcell">
+                                <?=$val?>
+                            </td>
+                            <?php }?>
+                        </tr>
+                                </tbody>
+                            </table>
+                        </div>
+            </div>
+
+            <div class="h-auto trend unsee">
+                <div class="table-container">
+                    <table class="dataTable">
+                        <thead>
+                            <tr>
+                                <th class="td-wd">号码</th>
+                                <th colspan="3">30期</th>
+                                <th colspan="3">50期</th>
+                                <th colspan="3">100期</th>
+                                <th colspan="2">遗漏</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php $g=[0,0,0,0,0,0,0,0,0,0,0] ?>
+                        <?php for($i=0;$i<11;$i++) { $x=$i+1;?>
+                            <tr>
+                                <td class="xcell td-wd">
+                                    <?=$i < 9 ? '<i class="circle-big c-theme">0'.$x.'</i>' : '<i class="circle-big c-theme">'.$x.'</i>'?>
+                                </td>
+                                <td class="xcell" colspan="3">
+                                    <?php for ($j=0; $j < 30;$j++) {
+                                        if (!empty($zst[$j+1])) {
+                                            if ( ($i+1)==$zst[$j+1][0] || ($i+1)==$zst[$j+1][1] || ($i+1)==$zst[$j+1][2]) {
+                                                $g[$i]++;
+                                            }
+                                        }
+                                    }  echo $g[$i] == max($temp1) ?'<span class="red">'. $g[$i] .'</span>' : $g[$i];?>
+                                </td>
+                                <td class="xcell" colspan="3">
+                                    <?php for ($j=30; $j < 50;$j++) {
+                                        if (!empty($zst[$j+1])) {
+                                            if ( ($i+1)==$zst[$j+1][0] || ($i+1)==$zst[$j+1][1]  || ($i+1)==$zst[$j+1][2]) {
+                                                $g[$i]++;
+                                            }
+                                        }
+                                    }  echo $g[$i] == max($temp2) ?'<span class="red">'. $g[$i] .'</span>' : $g[$i];?>
+                                </td>
+                                <td class="xcell" colspan="3">
+                                    <?php for ($j=50; $j < 100;$j++) {
+                                        if (!empty($zst[$j+1])) {
+                                            if ( ($i+1)==$zst[$j+1][0] || ($i+1)==$zst[$j+1][1] || ($i+1)==$zst[$j+1][2]) {
+                                                $g[$i]++;
+                                            }
+                                        }
+                                    }  echo $g[$i] == max($b) ?'<span class="red">'. $g[$i] .'</span>' : $g[$i];?>
+                                </td>
+                                <td class="xcell" colspan="2">
+                                    <?php echo $b[$i] == min($b) ? '<span class="red">'.(count($zst)-$b[$i]).'</span>' : count($zst)-$b[$i]; ?>
+                                </td>
+                            </tr>
+                            <?php }?>
+
+                        </tbody>
+                    </table>
+                </div>
+<?php    } ?>
+

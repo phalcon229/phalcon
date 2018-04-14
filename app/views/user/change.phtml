@@ -1,0 +1,325 @@
+<div class="account-record-body">
+    <div class="search-box">
+            <div class="date flex">
+                <span class="box flex1">                
+                    <input type="date" value="" id="startDay" placeholder="请选择日期">
+                    <em>请选择日期</em>
+                </span>
+                <label class="word">至</label>
+                <span class="box flex1">
+                    <input type="date" value="" id="endDay" placeholder="请选择日期">
+                    <em>请选择日期</em>
+                </span>
+            </div>
+            <div class="variety-box">                
+                <select class="down-list flex1" id="type">
+                    <option value="0">全部</option>
+                        <?php foreach($recordType as $key=>$val) { ?>
+                        <option value="<?php echo $key ?>"><?php echo $val?></option>
+                        <?php }?>
+                </select>
+                <em>全部</em>
+                <i class="down"></i>
+            </div>
+            <div class="a-box flex vc">
+                <input type="text" placeholder="用户名" id='name' class="input-box flex1">
+                <span class="check" id="next">
+                    <i class="icheck "></i>包括下级
+                </span>
+            </div>
+            <input type="submit" value="搜索" class="btn" id="fresh">
+        </div>
+        <div class="main-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>用户名</th>
+                        <th>时间</th>
+                        <th>账变类型</th>
+                        <th>金额</th>
+                    </tr>
+                </thead>
+                <tbody id="info">
+                   
+                        <?php if(empty($subInfo)){ ?>
+                            <tr>
+                                <td colspan="7" class="null">没有任何资料</td>
+                            </tr>
+                        <?php }else{ ?>
+                        <?php for($i = 0; $i < count($subInfo); $i++){ ?>
+                            <tr>
+                                <td><?php echo $subInfo[$i]['u_name'] ?></td>
+                                <td><?php echo $subInfo[$i]['uwr_created_time'] ?></td>
+                                <td><?php echo $subInfo[$i]['uwr_type'] ?></td>                    
+                                <td><?php echo $subInfo[$i]['uwr_money'] ?></td>
+                                <!--<td><?php echo $subInfo[$i]['uwr_memo'] ?></td>-->   
+                            </tr>
+                        <?php } }?>
+                </tbody>
+            </table>
+        </div>
+        <table class="count">
+                <tbody>
+                    <tr>
+                        <td>
+                            小计<em id="subTotal"><?php echo $subTotal ?></em>笔
+                        </td>
+                        <td>
+                            总支出:<em class="red" id="subTotalOut"><?php echo $subTotalOut ?></em>
+                        </td>
+                        <td>
+                            总收入:<em class="red" id="subTotalIn"><?php echo $subTotalIn ?></em>
+                        </td>
+                    </tr>
+                    <input type="hidden" name="" id="subTo" value="<?php echo $subTotal ?>"> 
+                    <input type="hidden" name="" id="subMonOut" value="<?php echo  $subTotalOut?>">
+                    <input type="hidden" name="" id="subMonIn" value="<?php echo  $subTotalIn?>">
+                    <tr>
+                        <td>
+                            总计<em id="total"><?php echo $total ?></em>笔
+                        </td>
+                        <td>
+                            总支出:<em class="red" id="totalOut"><?php echo $totalOut ?></em>
+                        </td>
+                        <td>
+                            总收入:<em class="red" id="totalIn"><?php echo $totalIn ?></em>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        <div class="btn-center" >
+            <input type="hidden" id="uId" value="<?php echo $uId ?>">
+            <input type="hidden" id="istotal" value="<?php echo $total ?>"> 
+            <?php if($total > 10){ ?>
+            <input type="submit" value="加载更多" class="btn" id="add">
+            <?php } ?>
+        </div>
+    <script>
+        
+    var num = 1;
+    var next = '';
+    var uId =  $('#uId').val();
+    var nowNum=0;
+    $("#next i").click(function() {
+           $(this).toggleClass("on");
+    });
+    $(function(){         
+            $('#fresh').click(function(){
+            num = 1;
+            nowNum=0;
+            var type = $('#type option:selected').val();
+            var startDay = $('#startDay').val();
+            var endDay = $('#endDay').val();
+            var name = $('#name').val();
+            var next = $('#next i').hasClass('on');
+            if(startDay == '' && endDay != '')
+            {
+                alert('请选择开始日期');return;
+            }
+            if(startDay != '' && endDay == '')
+            {
+                alert('请选择截止日期');return;
+            }
+            $('#add').show();
+            $.ajax({
+                    type: "POST",
+                    url: "/user/changefresh",
+                    data:{startDay:startDay,endDay:endDay,type:type,name:name,next:next,uId:uId},
+                    dataType: "json",
+                    success: function(data){
+                        if(data.code == 501)
+                        {
+                            alert(data.msg);return;
+                        }
+                        if(data.code == 500)
+                        {
+                            alert(data.msg);
+                            var str='<tr><td colspan="7" class="null">没有任何资料</td></tr>';
+                            $("#info").html(str);
+                            $("#subTotal").html(0);    
+                            $("#total").html(0); 
+                            $("#subTo").val(0);
+                            $("#subMonOut").val(0);
+                            $("#subMonIn").val(0);
+                            $("#subTotalIn").html(0); 
+                            $("#subTotalOut").html(0);
+                            $("#totalIn").html(0); 
+                            $("#totalOut").html(0); 
+                            $('#add').hide();
+                        }
+                        if(data.code == 200)
+                        {
+                            var str='';
+                            $.each(data.data.subInfo,function(index, n)
+                            {
+                                str=str+'<tr><td>'+data.data.subInfo[index].u_name+'</td><td>'
+                                        +data.data.subInfo[index].uwr_created_time+'</td><td>'+data.data.subInfo[index].uwr_type+'</td>'+
+                                        '<td>'+data.data.subInfo[index].uwr_money+'</td></tr>';
+                            });    
+                            $("#info").html(str);
+                            $("#istotal").val(data.data.total);
+                            var total = $("#istotal").val();     
+                            $("#total").html(data.data.total); 
+                            $("#subTotal").html(data.data.subTotal); 
+                            $("#subTotalIn").html(data.data.subTotalIn);
+                            $("#subTo").val(data.data.subTotal);
+                            $("#subMonOut").val(data.data.subTotalOut);
+                            $("#subMonIn").val(data.data.subTotalIn);
+                            $("#subTotalOut").html(data.data.subTotalOut);
+                            $("#totalIn").html(data.data.totalIn); 
+                            $("#totalOut").html(data.data.totalOut); 
+                            if(data.data.total > 10)
+                            {
+                                var strAdd = '<input type="hidden" id="uId" value="'+data.data.uId+'"><input type="hidden" id="istotal" value="'+data.data.total+'"><input type="submit" value="加载更多" class="btn" id="add"> ';
+                            }
+                            $(".btn-center").html(strAdd);
+                            nowNum=num*10;
+                            num+=1;
+                            // if(eval(total)<=eval(nowNum))
+                            // {
+                            //     $('#add').hide();return;
+                            // }
+                            $(function(){
+                            $('#add').click(function(){
+                            $(this).attr('disabled', true).val('加载中...');
+                            var that = this;
+                            var type = $('#type option:selected').val();
+                            var startDay = $('#startDay').val();
+                            var endDay = $('#endDay').val();
+                            var name = $('#name').val();
+                            var next = $('#next i').hasClass('on');
+                            var subTo = $("#subTo").val();
+                            var subMonOut = $("#subMonOut").val();
+                            var subMonIn = $("#subMonIn").val();
+                           $.ajax({
+                                    type: "POST",
+                                    url: "/user/addmore",
+                                    data:{startDay:startDay,endDay:endDay,type:type,name:name,next:next,num,uId:uId, subTo:subTo, subMonOut:subMonOut, subMonIn:subMonIn},
+                                    dataType: "json",
+                                    success: function(data){
+                                        if(data.code == 501)
+                                        {
+                                            alert(data.msg);return;
+                                        }
+                                        if(data.code == 500)
+                                        {
+                                            alert(data.msg);
+                                            var str='<tr><td colspan="7" class="null">没有任何资料</td></tr>';
+                                            $("#info").html(str);
+                                            $("#subTotal").html(0);    
+                                            $("#total").html(0); 
+                                            $("#subTotalIn").html(0); 
+                                            $("#subTotalOut").html(0);
+                                            $("#subTo").val(0);
+                                            $("#subMonOut").val(0);
+                                            $("#subMonIn").val(0);
+                                            $("#totalIn").html(0); 
+                                            $("#totalOut").html(0); 
+                                            $('#add').hide();
+                                        }
+                                        if(data.code == 200)
+                                        {
+                                            var str='';
+                                            $.each(data.data.subInfo,function(index, n)
+                                            {
+                                                str=str+'<tr><td>'+data.data.subInfo[index].u_name+'</td><td>'
+                                                        +data.data.subInfo[index].uwr_created_time+'</td><td>'+data.data.subInfo[index].uwr_type+'</td><td>'+data.data.subInfo[index].uwr_money+'</td></tr>';
+                                            });    
+                                            $("#info").append(str);
+                                            var total = $("#istotal").val();
+                                            $("#subTotal").html(data.data.subTotal);    
+                                            $("#total").html(data.data.total); 
+                                            $("#subTotalIn").html(data.data.subTotalIn); 
+                                            $("#subTo").val(data.data.subTotal);
+                                            $("#subMonOut").val(data.data.subTotalOut);
+                                            $("#subMonIn").val(data.data.subTotalIn);
+                                            $("#subTotalOut").html(data.data.subTotalOut);
+                                            $("#totalIn").html(data.data.totalIn); 
+                                            $("#totalOut").html(data.data.totalOut);
+                                            $(that).attr('disabled', false).val('加载更多');
+                                            nowNum=num*10;
+                                            num+=1;
+                                            if(eval(total)<=eval(nowNum))
+                                            {
+                                                $('#add').hide();return;
+                                            }
+                                        }
+                                    }
+                                });
+                            });
+                        });
+                        }
+                    }
+                });
+            });
+        });
+        $(function(){
+            $('#add').click(function(){
+            $(this).attr('disabled', true).val('加载中...');
+            num ++;
+            var that = this;
+            var type = $('#type option:selected').val();
+            var startDay = $('#startDay').val();
+            var endDay = $('#endDay').val();
+            var name = $('#name').val();
+            var next = $('#next i').hasClass('on');
+            var subTo = $("#subTo").val();
+            var subMonOut = $("#subMonOut").val();
+            var subMonIn = $("#subMonIn").val();
+           $.ajax({
+                    type: "POST",
+                    url: "/user/addmore",
+                    data:{startDay:startDay,endDay:endDay,type:type,name:name,next:next,num:num,uId:uId, subTo:subTo, subMonOut:subMonOut, subMonIn:subMonIn},
+                    dataType: "json",
+                    success: function(data){
+                        if(data.code == 501)
+                        {
+                            alert(data.msg);return;
+                        }
+                        if(data.code == 500)
+                        {
+                            alert(data.msg);
+                            var str='<tr><td colspan="7" class="null">没有任何资料</td></tr>';
+                            $("#info").html(str);
+                            $("#subTotal").html(0);    
+                            $("#total").html(0); 
+                            $("#subTotalIn").html(0); 
+                            $("#subTotalOut").html(0);
+                            $("#subTo").val(0);
+                            $("#subMonOut").val(0);
+                            $("#subMonIn").val(0);
+                            $("#totalIn").html(0); 
+                            $("#totalOut").html(0); 
+                            $('#add').hide();
+                        }
+                        if(data.code == 200)
+                        {
+                            var str='';
+                            $.each(data.data.subInfo,function(index, n)
+                            {
+                                str=str+'<tr><td>'+data.data.subInfo[index].u_name+'</td><td>'
+                                        +data.data.subInfo[index].uwr_created_time+'</td><td>'+data.data.subInfo[index].uwr_type+'</td><td>'+data.data.subInfo[index].uwr_money+'</td></tr>';
+                            });    
+                            $("#info").append(str);
+                            var total = $("#istotal").val();
+                            $(that).attr('disabled', false).val('加载更多');
+                            nowNum=num*10;
+                            if(eval(total)<=eval(nowNum))
+                            {
+                                $('#add').hide();
+                            }
+                            $("#subTotal").html(data.data.subTotal);    
+                            $("#total").html(data.data.total); 
+                            $("#subTotalIn").html(data.data.subTotalIn); 
+                            $("#subTotalOut").html(data.data.subTotalOut);
+                            $("#subTo").val(data.data.subTotal);
+                            $("#subMonOut").val(data.data.subTotalOut);
+                            $("#subMonIn").val(data.data.subTotalIn);
+                            $("#totalIn").html(data.data.totalIn); 
+                            $("#totalOut").html(data.data.totalOut); 
+                        }
+                    }
+                });
+            });
+        });
+    </script>

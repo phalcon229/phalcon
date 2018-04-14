@@ -1,0 +1,73 @@
+<div class="prize-result-body">
+        <ul class="prize-list">    
+            <?php foreach ($res as $key => $value) {?>
+            <li class="item ">
+                <a class="flex" href="/result/detail?lotId=<?php echo $res[$key]['bet_id'] ?>">
+                    <img src="<?php echo $betImg[$res[$key]['bet_id']]; ?>">
+                    <div class="prize-data flex1">
+                        <p class="tit"><?php echo $res[$key]['bet_name'] ?>
+                            <em class="num">第<?php echo $res[$key]['bres_periods'] ?>期</em>
+                        </p> 
+                        <?php if(!in_array($res[$key]['bet_id'], ['3','5'])){ ?>
+                        <div class="text">
+                            <?php for($i=0; $i < count($res[$key]['bres_result']);$i++){ ?>
+                            <span>
+                                <i class="circle"><?php echo $res[$key]['bres_result'][$i] ?></i>
+                                <em></em>
+                            </span>
+                            <?php } ?>
+                        </div>
+                        <?php }else{ ?>
+                            <div class="text">
+                            <span>
+                                <i class="mbg <?php echo $ballColor[$res[$key]['bres_result'][0]-1] ?>"><?php echo $res[$key]['bres_result'][0] ?></i>
+                                <em></em>
+                            </span>
+                            <span>
+                                <i class="mbg <?php echo $ballColor[$res[$key]['bres_result'][1]-1] ?>"><?php echo $res[$key]['bres_result'][1] ?></i>
+                                <em></em>
+                            </span>
+                            <span>
+                                <i class="mbg <?php echo $ballColor[$res[$key]['bres_result'][2]-1] ?>"><?php echo $res[$key]['bres_result'][2] ?></i>
+                                <em></em>
+                            </span>
+                            <span>
+                                <i class="mbg <?php echo $ballColor[$res[$key]['bres_result'][3]-1] ?>"><?php echo $res[$key]['bres_result'][3] ?></i>
+                                <em></em>
+                            </span>
+                            <span>
+                                <i class="mbg <?php echo $ballColor[$res[$key]['bres_result'][4]-1] ?>"><?php echo $res[$key]['bres_result'][4] ?></i>
+                                <em></em>
+                            </span>
+                            <span>
+                                <i class="mbg <?php echo $ballColor[$res[$key]['bres_result'][5]-1] ?>"><?php echo $res[$key]['bres_result'][5] ?></i>
+                                <em></em>
+                            </span>
+                            <span>
+                                <i class="mbg <?php echo $ballColor[$res[$key]['bres_result'][6]-1] ?>"><?php echo $res[$key]['bres_result'][6] ?></i>
+                                <em></em>
+                            </span>
+                            <span>
+                                <i class="mbg <?php echo $ballColor[$res[$key]['bres_result'][7]-1] ?>"><?php echo $res[$key]['bres_result'][7] ?></i>
+                                <em></em>
+                            </span>
+                            <span>
+                                <i class="mbg <?php echo $ballColor[$res[$key]['bres_result'][8]-1] ?>"><?php echo $res[$key]['bres_result'][8] ?></i>
+                                <em></em>
+                            </span>
+                            <span>
+                                <i class="mbg <?php echo $ballColor[$res[$key]['bres_result'][9]-1] ?>"><?php echo $res[$key]['bres_result'][9] ?></i>
+                                <em></em>
+                            </span>
+                        </div>
+                        <?php } ?>
+                    </div>
+                    <i class="right-arrow"></i>
+                </a>
+            </li>
+            <?php }?> 
+        </ul>
+    </div>
+<script>
+
+</script>

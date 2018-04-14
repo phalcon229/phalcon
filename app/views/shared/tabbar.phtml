@@ -1,0 +1,43 @@
+<footer class="fixed bottom-nav">
+    <div class="nav flex">
+        <a href="/" class="item flex1 <?=$ctrl=='index' ? 'on' : '';?>"><i class="hall"></i><span>彩票大厅</span></a>
+        <?php 
+
+           $userId=$uId;
+           $loginname=$uName;
+           $name=$uName;
+           $mtime=number_format(microtime(true),3,'','');  
+$hashCode=md5(strtoupper(urlencode($userId.$loginname.$name.$mtime.'dazhongcai99889988')));
+           $infoValue= urlencode('userId='.$userId.'&loginname='.$loginname.'&name='.$name.'&timestamp='.$mtime.'&hashCode='.$hashCode);
+           $enterurl='http://'.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING'];
+           
+        ?>
+        <?php if ( strpos($_SERVER['HTTP_USER_AGENT'], 'MicroMessenger') == false ){  ?>
+            <a  href=""  class="item flex1"><i class="online"></i><span>在线客服</span></a>
+        <?php }else{ ?>
+            <a id="wxkf" href="javascript:;"  class="item flex1"><i class="online"></i><span>在线客服</span></a>
+        <?php } ?>
+        <!--        <a href="/activity/index" class="item flex1"><i class="activity"></i><span>优惠活动</span></a>
+        -->
+        <a href="/order/report" class="item flex1"><i class="activity"></i><span>个人报表</span>
+        <a href="/result/index" class="item flex1"><i class="results"></i><span>开奖结果</span></a>
+        <a href="/wallet/show" class="item flex1 <?=$ctrl=='wallet' ? 'on' : '';?>"><i class="centre"></i><span>账户中心</span></a>
+    </div>
+</footer>
+    <div class="qr-pop unsee" id="scankf">
+        <i class="qr-close" id="close"></i>
+        <div class="qr-title">扫一扫，联系客服</div>
+        <div class="qr-box">
+            <img src="<?php echo $this->redis->get('wxcustomerservicebase64'); ?>" />
+        </div>
+    </div>
+<script>
+    $('#wxkf').click(function(){
+        $('#scankf').removeClass('unsee');
+        $('.mask').removeClass('unsee');
+    })
+    $('#close').click(function(){
+        $('#scankf').addClass('unsee');
+        $('.mask').addClass('unsee');
+    })
+</script>

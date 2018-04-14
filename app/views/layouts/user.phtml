@@ -1,0 +1,60 @@
+<div class="account-centre-body">
+    <?php $this->partial("shared/usertop"); ?>
+    <div class="content">
+        <ul class="tap">
+            <li class="item <?=$_SERVER['REQUEST_URI'] == '/bank/show' ? 'on' : '';?>">
+                <a href="/bank/show">
+                    <i class="card"></i>
+                    <span class="text">银行卡管理</span>
+                </a>
+            </li>
+            <li class="item <?=$_SERVER['REQUEST_URI'] == '/user/msg' ? 'on' : '';?>">
+                <a href="/user/msg">
+                    <i class="site"></i>
+                    <span class="text">站内信息</span>
+                </a>
+            </li>
+            <li class="item">
+                <a href="/user/pwd <?=$_SERVER['REQUEST_URI'] == '/user/pwd' ? 'on' : '';?>">
+                    <i class="modify-pwd"></i>
+                    <span class="text">修改密码</span>
+                </a>
+            </li>
+            <!-- <li class="item <?=$_SERVER['REQUEST_URI'] == '/user/agent' ? 'on' : '';?>">
+                <a href="/user/agent">
+                    <i class="agent"></i>
+                    <span class="text">代理管理</span>
+                </a>
+            </li> -->
+            <li class="item">
+                <a href="/recharge/index <?=$_SERVER['REQUEST_URI'] == '/recharge/index' ? 'on' : '';?>">
+                    <i class="recharge"></i>
+                    <span class="text">充值</span>
+                </a>
+            </li>
+            <li class="item">
+                <a href="/withdraw/index <?=$_SERVER['REQUEST_URI'] == '/widraw/index' ? 'on' : '';?>">
+                    <i class="withdrawal"></i>
+                    <span class="text">提现</span>
+                </a>
+            </li>
+            <li class="item <?=$_SERVER['REQUEST_URI'] == '/wallet/show' ? 'on' : '';?>">
+                <a href="/wallet/show">
+                    <i class="history"></i>
+                    <span class="text">交易记录</span>
+                </a>
+            </li>
+            <li class="item <?=$_SERVER['REQUEST_URI'] == '/user/base' ? 'on' : '';?>">
+                <a href="/user/base">
+                    <i class="info-icon"></i>
+                    <span class="text">个人信息</span>
+                </a>
+            </li>
+        </ul>
+        <div class="context">
+            <?=$this->view->getContent();?>
+        </div>
+    </div>
+</div>
+
+<?php $this->partial("shared/tabbar"); ?>

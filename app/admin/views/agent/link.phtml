@@ -1,0 +1,101 @@
+        <div class="search-box">
+            <a class="add-btn" href="/agent/addlink">
+                <i class="add-white"></i> 添加链接
+            </a>
+        </div>
+        <div class="table-box">
+            <table class="main-table" cellpadding="0" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>推广渠道链接</th>
+                        <th>注册人数</th>
+                        <th>开户类型</th>
+                        <th>生成时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php if (!empty($lists)) : foreach ($lists as $v) : ?>
+                    <tr>
+                        <td><?=$domain . 'auth/reg?c=' . $v['ur_code']?></td>
+                        <td><?=$v['ur_reg_nums']?></td>
+                        <td><?=$v['ur_type'] ? !empty($utype[$v['ur_type']]) ? $utype[$v['ur_type']] : $utype[1] : $utype[1];?></td>
+                        <td><?=date('Y-m-d', $v['ur_created_time'])?></td>
+                        <td>
+                            <a class="operate" href='/agent/editlink?id=<?=$v['ur_id']?>'>编辑</a>
+                            <span class="divide-line"></span>
+                            <a class="operate dellink" id=<?=$v['ur_id']?>>删除</a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+        <div class="pages">
+            <div class="posl">
+                共<em class="counts"><?=$total?></em>条 每页显示
+                <div class="select-box line-num">
+                    <select class="list" id="limit">
+                    <?php foreach ($perPage as $value) : ?>
+                        <option value="<?=$value?>" <?=$nums == $value ? 'selected="selected"': '' ?>><?=$value?></option>
+                    <?php endforeach; ?>
+                    </select>
+                    <em class="txt"><?=$this->request->get('limit') ?: current($perPage)?></em>
+                    <i class="i-arrow"></i>
+                </div>条
+            </div>
+            <div class="switch-box">
+                <a class="page-btn mr10" id="left"><i class="left"></i></a> 第
+                <div class="select-box line-num">
+                    <select class="list" id="page">
+                    <?php for($i = 1; $i <= ceil($total/$nums); $i++) :?>
+                        <option value="<?=$i?>" <?= $this->request->get('page') == $i ? 'selected="selected"' : '';?>><?=$i?></option>
+                    <?php endfor; ?>
+                    </select>
+                    <em class="txt"><?=!empty($this->request->get('page')) ? $this->request->get('page') : 1;?></em>
+                    <i class="i-arrow"></i>
+                </div>
+                共<em id="total"><?=ceil($total/$nums)?></em>页
+                <a class="page-btn ml10" id="right"><i class="right"></i></a>
+            </div>
+        </div>
+    <?php else : ?>
+            <tr class="null">
+                <td colspan="5">暂无数据！</td>
+            </tr>
+    <?php endif; ?>
+<script type="text/javascript">
+    $('.dellink').on('click', function(){
+        var id = $(this).attr('id');
+        var tr = $(this).parent().parent();
+        layer.msg('确定删除此条链接？', {
+            time: 0 //不自动关闭
+            ,btn: ['确定', '取消']
+            ,yes: function(index){
+                layer.close(index);
+                $.ajax({
+                    url: '/agent/dellink',
+                    type: 'POST',
+                    data: {id:id},
+                    dataType: 'json',
+                    error: function()
+                    {
+                        layer.msg('没有权限或服务器连接超时!');
+                    },
+                    success: function(msgObj)
+                    {
+                        if(msgObj.ret == 1)
+                        {
+                            tr.remove();
+                            layer.msg(msgObj.msg);
+                        }
+                        else
+                        {
+                            layer.msg(msgObj.msg);
+                        }
+                    }
+                });
+            }
+        });
+    });
+</script>>

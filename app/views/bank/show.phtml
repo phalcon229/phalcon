@@ -1,0 +1,62 @@
+<?php $this->assets->outputJs() ?>
+        <?php $this->partial("shared/usertop"); ?>
+        <div class="wd-auto">
+                <table class="info t-format">
+                    <?php if(!empty($info)){ ?>
+                    <thead>
+                        <tr class="head">
+                            <td>姓名</td>
+                            <td>银行名称</td>
+                            <td>出款账号</td>
+                            <td>省市</td>
+                            <td>状态</td>
+                            <td>操作</td>
+                        </tr>
+                    </thead>
+                    <?php } ?>
+                    <tbody>
+                        <?php for ($i = 0; $i < count($info) ; $i++){ ?>
+                    <tr id = 'banklist'>
+                        <td><?php echo substr($info[$i]['ubc_uname'],0,3) ?>**</td>
+                        <td><?php echo $info[$i]['ubc_bank_name'] ?></td>
+                        <td><?php echo substr($info[$i]['ubc_number'],0,3) ?>**********<?php echo substr($info[$i]['ubc_number'],-3) ?></td>
+                        <td><?php echo $info[$i]['ubc_province'] ?><?php echo $info[$i]['ubc_city'] ?></td>
+                        <td class="state"><?php echo $info[$i]['ubc_status'] ?></td>
+                        <td id="del"><i class="del-card" data-ubcid=<?php echo $info[$i]['ubc_id'] ?> ></i></td>
+                    </tr>
+                    <?php } ?>
+                    </tbody>
+                </table>
+            </div>
+            <div class="btn-center">
+                <input type="submit" value="绑定银行卡" class="btn">
+            </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".btn").click(function(){
+              window.location.href = "/bank/add";
+            });
+            $('#banklist .del-card').each(function(){
+                $(this).click(function(){
+                    var ubcId = $(this).attr("data-ubcid");
+                    var r=confirm("确定要删除银行卡吗？")
+                    if (r==true)
+                    {
+                        $.ajax({
+                            type: "POST",
+                            url: "/bank/del",
+                            data:{ubcId:ubcId},
+                            dataType: "json",
+                            success: function(data){
+                                if(data.code == 200)
+                                {
+                                    alert("删除成功");
+                                    window.location.href='/bank/show';
+                                }
+                             }
+                        });     
+                    }
+                });
+            })
+        });
+    </script>

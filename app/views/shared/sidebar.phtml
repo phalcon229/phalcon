@@ -1,0 +1,99 @@
+<div class="side-nav">
+    <div class="top">
+        <p class="name"><?=$uName;?></p>
+        <p class="showm"><i class="wallet"></i><span class="money-show toggle-money"></span></p>
+        <p class="hidem unsee toggle-money"><i class="wallet"></i>隐藏金额</p>
+        <i class="reload"></i>
+    </div>
+    <ul class="box">
+        <li>
+            <a href="/">
+                <i class="hall-ss"></i>返回大厅
+            </a>
+        </li>
+        <li>
+            <a href="/order/report">
+                <i class="chart-ss"></i>个人报表
+            </a>
+        </li>
+        <?php if($type==3){ ?>
+        <li>
+            <a href="/team/report">
+                <i class="key-ss"></i>下线报表
+            </a>
+        </li>
+        <?php } ?>
+        <?php if($type==3){ ?>
+        <li>
+            <a href="/agent/link">
+                <i class="money-ss"></i>赚取佣金
+            </a>
+        </li>
+        <?php } ?>
+        <li>
+            <a href="/wallet/show">
+                <i class="set-ss"></i>账户中心
+            </a>
+        </li>
+        <li>
+            <a href="/result/index">
+                <i class="result-ss"></i>开奖结果
+            </a>
+        </li>
+        <li>
+            <a href="/game/help">
+                <i class="safari-ss"></i>新手帮助
+            </a>
+        </li>
+        <?php 
+
+           $userId=$uId;
+           $loginname=$uName;
+           $name=$uName;
+           $mtime=number_format(microtime(true),3,'','');  
+           $hashCode=md5(strtoupper(urlencode($userId.$loginname.$name.$mtime.'dazhongcai99889988')));
+           $infoValue= urlencode('userId='.$userId.'&loginname='.$loginname.'&name='.$name.'&timestamp='.$mtime.'&hashCode='.$hashCode);
+           $http_type = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')) ? 'https://' : 'http://';
+           $enterurl= $http_type.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING'];
+           
+        ?>
+        <?php if ( strpos($_SERVER['HTTP_USER_AGENT'], 'MicroMessenger') !== false ){  ?>
+        <li>
+            <a class="item flex1" id ='sidekefu'>
+                <i class="online-ss" ></i>在线客服
+            </a>
+        </li>
+        <?php }else{ ?>
+            <li>
+            <a href="" class="item flex1" >
+                <i class="online-ss" ></i>在线客服
+            </a>
+        </li>
+        <?php } ?>
+        <li>
+            <a href="/auth/logout">
+                <i class="out-ss"></i>退出登录
+            </a>
+        </li>
+    </ul>
+</div>
+
+<div class="mask unsee"></div>
+<div class="qr-pop unsee" id="scankf">
+        <i class="qr-close" id="close"></i>
+        <div class="qr-title">扫一扫，联系客服</div>
+        <div class="qr-box">
+            <img src="<?php echo $this->redis->get('wxcustomerservicebase64'); ?>" />
+        </div>
+    </div>  
+<script>
+    $('#sidekefu').click(function(){
+        $('.mask').click();
+        $('#scankf').removeClass('unsee');
+        $('.mask').removeClass('unsee');
+    })
+    $('#close').click(function(){
+        $('#scankf').addClass('unsee');
+        $('.mask').addClass('unsee');
+    })
+</script>

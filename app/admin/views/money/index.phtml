@@ -1,0 +1,173 @@
+        <form action="" method="get">
+        <div class="search-box " id="search1">
+            <div class="box fl ">
+                <input type="text" class="input-panel" name = 'value' value= '<?php echo $this->request->get('value'); ?>'>
+                <div class="select-box right-box">
+                    <select class="list" name= 'condition'>
+                        <option value="2" <?php echo $this->request->get('condition') == 2 ? 'selected="selected"' : ''  ?>>订单号</option>
+                        <option  value="1" <?php echo $this->request->get('condition') == 1 ? 'selected="selected"' : ''  ?>>用户名</option>
+                        <option value="3" <?php echo $this->request->get('condition') == 3 ? 'selected="selected"' : ''  ?>>银行卡号</option>
+                    </select>
+                    <em class="txt"><?php echo isset($_GET['condition']) ? ($_GET['condition'] == 2 ? '订单号' : ($_GET['condition'] == 3 ? '银行卡号' : '用户名') ): '订单号' ?></em>
+                    <i class="i-arrow"></i>
+                </div>
+            </div>
+            <button class="search-btn fl">查询</button>
+        </div>
+        </form>
+        <div class="table-box" id="box1">
+            <table class="main-table " cellpadding="0" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>订单号</th>
+                        <th>用户名</th>
+                        <th>用户ID</th>
+                        <th>备注名</th>
+                        <th>姓名</th>
+                        <th>开户行</th>
+                        <th>银行账号</th>
+                        <th>省市</th>
+                        <th>提款金额</th>
+                        <th>时间</th>
+                        <!-- <th>提款金额/余额</th> -->
+<!--                         <th>手续费</th> -->
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($list as $item) {
+                    ?>
+                    <tr>
+                        <td><?=$item['uw_id']?></td>
+                        <td><?=$item['ubc_sn']?></td>
+                        <td><?=$item['u_name']?></td>
+                        <td><?=$item['u_id']?></td>
+                        <td><?=$item['u_nick']?></td>
+                        <td><?=$item['ubc_uname']?></td>
+                        <td><?=$item['ubc_name']?></td>
+                        <td><?=$item['ubc_number']?></td>
+                        <td><?=$item['ubc_province'].$item['ubc_city']?></td>
+                        <td><?=$item['uw_limit']?></td>
+                        <td><?php echo $item['uw_updated_time']? date('Y-m-d H:i:s', $item['uw_updated_time']) : ''; ?></td>
+                        <!-- <td><?=$item['uw_limit'].'/'.$item['w_money']?></td> -->
+<!--                         <td>1.00</td> -->
+                        <?php switch ($item['uw_status']) {
+                            case '1':
+                                    echo '<td class="orange">待审核</td><td><a class="w-btn passes " data = "'.$item['uw_id'].'">确定</a> <a class="w-btn w-cancel stop" data = "'.$item['uw_id'].'">取消</a></td>';
+                                break;
+                            case '3':
+                                    echo '<td class="green">成功</td>';
+                                break;
+                            case '5':
+                                    echo '<td class="red">失败</td>';
+                                break;
+                            case '7':
+                                    echo '<td class="red">失败</td>';
+                                break;
+                            case '9':
+                                    echo '<td class="orange">提现中</td>';
+                                break;
+                        }?>
+                        <td></td>
+                    </tr>
+                    <?php } ?>
+                    <?php if (empty($list)){?>
+                    <tr class="null">
+                        <td colspan="12">暂无数据！</td>
+                    </tr>
+                    <?php }?>
+                </tbody>
+            </table>
+        </div>
+
+        <?php if($total > 0){?>
+        <div class="pages">
+            <div class="posl">
+                共<em class="counts"><?=$total?></em>条 每页显示
+                <div class="select-box line-num">
+                    <select class="list" id="limit">
+                    <?php foreach ($perpage as $key => $value) : ?>
+                        <option value="<?=$key?>"><?=$value?></option>
+                    <?php endforeach ?>
+                    </select>
+                    <em class="txt"><?=!empty($urlLimit) ? $urlLimit : current($perpage)?></em>
+                    <i class="i-arrow"></i>
+                </div>条
+            </div>
+            <div class="switch-box">
+                <a class="page-btn mr10" id="left"><i class="left"></i></a> 第
+                <div class="select-box line-num">
+                    <select class="list" id='page'>
+                    <?php for($i = 1; $i <= ceil($total / $nums); $i++) :?>
+                        <option value="<?=$i?>"  <?=$this->request->get('page') == $i ? 'selected="selected"' : '';?>><?=$i?></option>
+                    <?php endfor;?>
+                    </select>
+                    <em class="txt"><?=!empty($this->request->get('page')) ? $this->request->get('page'): 1?></em>
+                    <i class="i-arrow"></i>
+                </div>
+                共<em id='total'><?=ceil($total/$nums)?></em>页
+                <a class="page-btn ml10" id="right"><i class="right"></i></a>
+            </div>
+        </div>
+        <?php }?>
+    </div>
+
+<script type="text/javascript">
+
+    $("body").on('click', '.stop', function() {
+        if(!confirm("确定审核不通过？"))return
+        var id = $(this).attr('data');
+    $.ajax({
+                 url: "/money/stop",
+                 type: "POST",
+                 data: {uwId:id},
+                 dataType:'json',
+                 error: function(e){
+                   layer.msg("获取参数失败！");
+                 },
+                 success: function (msgObj) {
+
+                    if (msgObj.code == 500) {
+                        layer.msg(msgObj.msg);
+                        return false;
+                    }
+                    layer.msg('修改审核状态成功');
+                    setTimeout("reload()",1000);
+
+                 }
+            });
+    });
+
+    $("body").on('click', '.passes', function() {
+        if(!confirm("确定申请提现审核？"))return
+        var id = $(this).attr('data');
+    $.ajax({
+                 url: "/money/passes",
+                 type: "POST",
+                 data: {uwId:id},
+                 dataType:'json',
+                 error: function(e){
+                   layer.msg("获取参数失败！");
+                 },
+                 success: function (msgObj) {
+
+                    if (msgObj.code == 500) {
+                        layer.msg(msgObj.msg);
+                        return false;
+                    }
+                    layer.msg('已修改提现审核状态');
+                    setTimeout("reload()",1000);
+
+                 }
+            });
+    });
+
+    function reload()
+    {
+        var url = '<?=substr($_SERVER["QUERY_STRING"], stripos($_SERVER["QUERY_STRING"], "/"))?>';
+        window.location.href = url;
+    }
+
+</script>

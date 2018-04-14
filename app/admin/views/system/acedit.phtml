@@ -1,0 +1,114 @@
+
+        <?php if(!empty($info)): ?>
+        <form action="acdoedit" id="rule" enctype="multipart/form-data">
+        <div class="act-set">
+            <div class="act-content">
+                <dl class="item">
+                    <dd class="width4">活动类型:</dd>
+                    <dt>
+                        <p><?=$type[$info['pa_type']]?></p>
+                        <?php if($info['pa_type'] ==1) {?>
+                            <p class="free">赠送金额<em class="red"><?=$info['pa_gift_money']?></em></p>
+                        <?php } else { ?>
+                        <p class="free">充<em class="red"><?=$info['pa_money']?></em>送<em class="red"><?=$info['pa_gift_money']?></em></p>
+                        <?php }?>
+                    </dt>
+                </dl>
+                <dl class="item dis-t">
+                    <dd class="width4">活动名称:</dd>
+                    <dt>
+                        <input type="text" class="input-txt" value="<?=$info['pa_title']?>" name="a_title">
+                    </dt>
+                </dl>
+                <dl class="item">
+                    <dd class="width4">开始结束时间:</dd>
+                    <dt>
+                        <em class="start" ><?=date('Y-m-d H:i:s',$info['pa_starttime'])?></em>
+                        <em class="lineae"></em>
+                        <em class="start"><?=date('Y-m-d H:i:s',$info['pa_endtime'])?></em>
+                    </dt>
+                </dl>
+                <dl class="item">
+                    <dd class="width4">提现最低流水:</dd>
+                    <dt>
+                        <?=$info['pa_history_money']?>元
+                    </dt>
+                </dl>
+
+                <dl class="item">
+                    <dd class="width4">活动图片:</dd>
+                    <dt>
+                        <div class="img-box">
+                            <img class="ImgPr" src="<?=$url.$info['pa_img']?>">
+                        </div>
+
+                        <span class="update-img">修改图片
+                            <input name="img" type="file" class="up" />
+                        </span>
+                    </dt>
+                </dl>
+                <dl class="item">
+                    <dd class="width4">活动内容:</dd>
+                    <dt>
+                        <textarea class="act-contxt" name="a_content"><?=$info['pa_content']?></textarea>
+                    </dt>
+                </dl>
+            </div>
+            <input type="hidden" name="a_id" value="<?=$info['pa_id']?>">
+            <div class="divide-btn">
+                <button class="regist-btn">确定</button>
+            </div>
+        </div>
+        </form>
+    <?php endif;?>
+    <script type="text/javascript">
+
+    function reload()
+    {
+        location.href = 'aclist';
+    }
+   $.validator.setDefaults({
+        submitHandler: function() {
+        $('form').ajaxSubmit({
+            dataType: 'json',
+            type: "POST",
+              success: function (msgObj) {
+                if(msgObj.ret == 1)
+                {
+                    layer.msg(msgObj.msg);
+                    setTimeout("reload()",1000);
+                }else {
+                    layer.msg(msgObj.msg);
+                    setTimeout("reload()",1000);
+                }
+            },
+            error: function(e){
+                layer.msg("<h2>System mistake</h2>");
+            },
+        });
+        return false;
+        }
+    });
+
+    $().ready(function() {
+    // 在键盘按下并释放及提交后验证提交表单
+      $("#rule").validate({
+          rules: {
+            a_title: {
+                required: true,
+            },
+            a_content: {
+                required: true,
+            },
+        },
+            messages: {
+              a_title: {
+                required: "请输入名称",
+              },
+              a_content: {
+                required: '请输入内容',
+            },
+          }
+      });
+    });
+</script>

@@ -1,0 +1,54 @@
+    <div class="withdrawal-body container">
+        <div class="top-title">
+            <i class="withdrawal-red"></i> <em class="tit" id='withdraw'>提款记录</em>
+        </div>
+        <div class="home-bar">
+            <a class="item-tit <?=$name == 'index' ? 'on' : '';?>" data-id="1" id ="tit1" href="/money">
+                    提款记录
+            </a>
+            <a class="item-tit <?=$name == 'rechargeList' ? 'on' : '';?>" data-id="2" id ="tit2" href='/money/rechargeList'>
+                    充值记录
+            </a>
+            <a class="item-tit <?=$name == 'manual' ? 'on' : '';?>" data-id="3" id ="tit3" href='/money/manual'>
+                    人工汇款
+            </a>
+            <a class="item-tit <?=$name == 'report' ? 'on' : '';?>" data-id="4" id ="tit4" href='/money/report'>
+                    现金结算
+            </a>
+        </div>
+
+        <?php echo $this->view->getContent(); ?>
+    </div>
+<script type="text/javascript">
+$('#withdraw').html($('.item-tit.on').text());
+    getMsg();
+
+    var str = '<i class="tip-circle"></i>';
+    function getMsg()
+    {
+        api.get('/money/msg', {}, function(res) {
+            if (res.data.xsrecharge == 1) {
+                $('#tit2').append(str);
+                return
+            }
+            if (res.data.xxrecharge == 1) {
+                $('#tit3').append(str);
+                msgComp = true;
+                return
+                }
+            if (res.data.withdraw == 1) {
+                $('#tit1').append(str);
+                msgComp = true;
+                return
+            }
+            }, function() {
+                setTimeout('getMsg()', 3000);
+        });
+    }
+    function settime()
+    {
+        $('.i-withdrawal').parent('a').find('.tip-circle').remove();
+    }
+</script>
+
+

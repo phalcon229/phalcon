@@ -1,0 +1,86 @@
+        <div class="agent-set">
+            <form method="post" action="doaddlink">
+                <div class="agent-input dis-top">
+                    <label class="link-title">用户类型:</label>
+                    <div class="select-box  variety-c">
+                        <select name="type" class="list">
+                        <?php foreach ($type as $key => $value) : ?>
+                            <option value="<?=$key?>"><?=$value?></option>
+                        <?php endforeach;?>
+                        </select>
+                        <em class="txt on"><?=current($type)?></em>
+                        <i class="i-arrow"></i>
+                    </div>
+                </div>
+
+                <div class="agent-input dis-bottom">
+                <label class="link-title">设置赔率:</label>
+                <div class="select-box  variety-c">
+                    <input type="text" value='<?=$bonus?>' class="br" />
+                    <button type="button" class="button-set">设置</button>
+                </div>
+            </div>
+
+                <div class="rate-set">
+                    <label class="link-title rel-top">返点率:</label>
+                    <div class="right-box">
+                        <div class="range-val">
+                            <span class="left-txt">当前赔率:<em class="bouns red"><?=$rateMoney?></em></span>
+                            <span class="right-txt">返点率:<em class="js-display-decimal red">0.00</em>%</span>
+                        </div>
+                        <div class="range-change">
+                            <i class="reduce"></i>
+                            <input type="text" name='rate' class="js-decimal" style="display: none;" data-max="<?=$rate?>" data-min="0.00">
+                            <i class="add"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="divide-btn">
+                    <button class="regist-btn">生成链接</button>
+                </div>
+            </form>
+        </div>
+
+<script type="text/javascript">
+    var pl = parseFloat($('.br').val());
+    var rateMoney = 0;
+    $.ajax({
+        dataType: 'json',
+        type: "POST",
+        data:{br:pl},
+        url:'/agent/ajaxrate',
+          success: function (res) {
+            rateMoney = res.msg;
+        },
+    });
+
+    var range = new RangeSlider(document.querySelector('.js-decimal'), {
+        max: $('.js-decimal').data('max'),
+        min: $('.js-decimal').data('min'),
+
+        formula: function(rate) {
+            var money = rateMoney * 1 + pl * rate / 100;
+            var m = money.toFixed(2);
+            return m+'0';
+        }
+    });
+
+    $('.button-set').on('click',function(){
+        var val = parseFloat($('.br').val());
+        if (isNaN(val)) {
+            layer.msg("<h2>请输入正确数字</h2>");
+            return false;
+        }
+        pl = val;
+        $.ajax({
+            dataType: 'json',
+            type: "POST",
+            data:{br:pl},
+            url:'/agent/ajaxrate',
+              success: function (res) {
+                rateMoney = res.msg;
+                $('.bouns.red').html(rateMoney);
+            },
+        });
+    });
+</script>

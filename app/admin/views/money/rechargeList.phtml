@@ -1,0 +1,196 @@
+   <?php
+    $js4 = '';
+    if (isset($_GET['limit'])) {
+        $urlLimit = $_GET['limit'];
+        if (!in_array($_GET['limit'], $perpage))
+            $urlLimit = current($perpage);
+
+    }
+    if (!empty($_GET['page'])) {
+        if (is_numeric($_GET['page'])) {
+            $js4 = '$("#page").val('.intval($_GET['page']).');';
+            $page = $_GET['page'];
+        }
+        else {
+            $js4 = '$("#page").val(1);';
+            $page =1;
+        }
+    }
+    ?>
+    <form action="" method="get">
+        <div class="search-box " id="search1">
+            <div class="box fl ">
+                <input type="text" class="input-panel" name = 'value' value= '<?php echo $this->request->get('value'); ?>'>
+                <div class="select-box right-box">
+                    <select class="list" name= 'condition'>
+                        <option  value="1" <?php echo $this->request->get('condition') == 1 ? 'selected="selected"' : ''  ?>>订单号</option>
+                        <option value="2" <?php echo $this->request->get('condition') == 2 ? 'selected="selected"' : ''  ?>>用户名</option>
+                    </select>
+                    <em class="txt"><?php echo isset($_GET['condition']) ?($_GET['condition']==1?'订单号':'用户名'): '订单号'  ?></em>
+                    <i class="i-arrow"></i>
+                </div>
+            </div>
+            <button class="search-btn fl">查询</button>
+        </div>
+    <form>
+        <div class="table-box" id="box2">
+            <table class="main-table " cellpadding="0" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>订单号</th>
+                        <th>用户名</th>
+                        <th>用户ID</th>
+                         <th>备注名</th>
+                        <th>时间</th>
+                        <th>金额</th>
+                        <th>充值方式</th>
+                        <th>是否参加活动</th>
+                        <th>活动赠送金额</th>
+                        <th>订单状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                     foreach ($info as $values) {
+                    ?>
+                    <tr>
+                        <td><?=$values['ure_id']?></td>
+                        <td><?=$values['ure_sn']?></td>
+                        <td><?=$values['u_name']?></td>
+                        <td><?=$values['u_id']?></td>
+                        <td><?=$values['u_nick']?></td>
+                        <td><?php echo $values['ure_updated_time']? date('Y-m-d H:i:s', $values['ure_updated_time']) : date('Y-m-d H:i:s', $values['ure_created_time']) ; ?></td>
+
+                        <td><?=$values['ure_money']?></td>
+                        <td><?=array_key_exists($values['ure_pay_way'], $payType) ? $payType[$values['ure_pay_way']] : ''; ?></td>
+                        <td><?=!empty($values['ure_activity_id']) ? '是': '否' ;?></td>
+                        <td><?=$values['ure_gift_money']?></td>
+                        <?php switch ($values['ure_status']) {
+                                                    case '1':
+                                                            echo '<td class="orange">进行中</td>';
+                                                        break;
+                                                    case '3':
+                                                            echo '<td class="green">成功</td>';
+                                                        break;
+                                                    case '5':
+                                                            echo '<td class="red">失败</td>';
+                                                        break;
+                                                    case '7':
+                                                        echo '<td style="color:blue">补单成功</td>';
+                                                        break;
+                                                    default:
+                                                            echo '<td class="red"></td>';
+                                                        break;
+
+                                                }?>
+                        <td><?php if($values['ure_status'] == 1 ){?><a class="w-btn repair" data-type="<?=$values['ure_pay_way']?>" data = "<?=$values['ure_id']?>">补单</a><a class="w-btn w-cancel refuse" data = "<?=$values['ure_id']?>">取消</a><?php } ?></td>
+                    </tr>
+                    <?php }?>
+
+                    <?php if (empty($info)){?>
+                    <tr class="null">
+                        <td colspan="12">暂无数据！</td>
+                    </tr>
+                    <?php }?>
+                </tbody>
+            </table>
+        </div>
+
+        <?php if($total > 0){?>
+        <div class="pages">
+            <div class="posl">
+                共<em class="counts"><?=$total?></em>条 每页显示
+                <div class="select-box line-num">
+                    <select class="list" id="limit">
+                    <?php foreach ($perpage as $key => $value) : ?>
+                         <?php if(!empty($urlLimit)){ ?>
+                            <option value="<?=$key?>" <?php echo intval($urlLimit) == intval($value) ? 'selected="selected"' : '';?>><?=$value?></option>
+                        <?php }else{ ?>
+                            <option value="<?=$key?>"><?=$value?></option>
+                        <?php } ?>
+                    <?php endforeach ?>
+                    </select>
+                    <em class="txt"><?=!empty($urlLimit) ? $urlLimit : current($perpage)?></em>
+                    <i class="i-arrow"></i>
+                </div>条
+            </div>
+            <div class="switch-box">
+                <a class="page-btn mr10" id="left"><i class="left"></i></a> 第
+                <div class="select-box line-num">
+                    <select class="list" id="page">
+                        <?php if(!empty($limit)): for($i=1; $i <= $limit; $i++ ) : ?>
+                        <?php if(!empty($_GET['page'])) {?>
+                            <option value="<?=$i?>" <?php echo intval($_GET['page']) == intval($i) ? 'selected="selected"' : '';?>><?=$i?></option>
+                        <?php }else{ ?>
+                            <option value="<?=$i?>"><?=$i?></option>
+                        <?php } ?>
+                    <?php endfor; endif;?>
+                    </select>
+                    <em class="txt"><?=!empty($_GET['page']) ? $_GET['page']: 1?></em>
+                    <i class="i-arrow"></i>
+                </div>
+                共<em id="total"><?=$limit?></em>页
+                <a class="page-btn ml10" id="right"><i class="right" ></i></a>
+            </div>
+        </div>
+        <?php }?>
+    </div>
+
+<script type="text/javascript">
+    $("body").on('click', '.repair', function() {
+        if(!confirm("确定对此订单补单？"))return
+        var id = $(this).attr('data');
+    $.ajax({
+                 url: "/money/repair",
+                 type: "POST",
+                 data: {ureId:id},
+                 dataType:'json',
+                 error: function(e){
+                   layer.msg("获取参数失败！");
+                 },
+                 success: function (msgObj) {
+
+                    if (msgObj.code == 500) {
+                        layer.msg(msgObj.msg);
+                        return false;
+                    }
+                    layer.msg('补单成功');
+                    setTimeout("reload()",1000);
+
+                 }
+            });
+    });
+
+    $("body").on('click', '.refuse', function() {
+        if(!confirm("确定取消此定单？"))return
+        var id = $(this).attr('data');
+    $.ajax({
+                 url: "/money/cancle",
+                 type: "POST",
+                 data: {ureId:id},
+                 dataType:'json',
+                 error: function(e){
+                   layer.msg("获取参数失败！");
+                 },
+                 success: function (msgObj) {
+
+                    if (msgObj.code == 500) {
+                        layer.msg(msgObj.msg);
+                        return false;
+                    }
+                    layer.msg('取消成功');
+                    setTimeout("reload()",1000);
+
+                 }
+            });
+    });
+
+    function reload()
+    {
+        var url = '<?=substr($_SERVER["QUERY_STRING"], stripos($_SERVER["QUERY_STRING"], "/"))?>';
+        window.location.href = url;
+    }
+
+</script>

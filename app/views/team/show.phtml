@@ -1,0 +1,175 @@
+<?php $this->assets->outputJs() ?>
+<div class="team-view-body">
+        <?php $this->partial("shared/usertop"); ?>
+        <div class="search-box">
+            <div class="date flex">
+                <span class="box flex1">
+                    <input type="date" id="startDay"  value="" placeholder="请选择日期">
+                    <em>请选择日期</em>
+                </span>
+                <label class="word">至</label>
+                <span class="box flex1">
+                    <input type="date" id="endDay" value="" placeholder="请选择日期">
+                    <em>请选择日期</em>
+                </span>
+            </div>
+            <input type="submit" value="搜索" class="btn">
+            <div class="options-list">
+                <span id="today" sdate="<?php echo $todayBegin ?>" edate="<?php echo $todayBegin ?>">今日</span>
+                <span id="today" sdate="<?php echo $yBegin ?>" edate="<?php echo $yBegin ?>">昨日</span>
+                <span class="on" id="today" sdate="<?php echo $tWeekFirst ?>" edate="<?php echo $tWeekLast ?>">本周</span>
+                <span id="today" sdate="<?php echo $lWeekFirst ?>" edate="<?php echo $lWeekLast ?>">上周</span>
+                <span id="today" sdate="<?php echo $tMonthFirst ?>" edate="<?php echo $tMonthLast ?>">本月</span>
+                <span id="today" sdate="<?php echo $lMonthFirst ?>" edate="<?php echo $lMonthLast ?>">上月</span>
+                <input type="hidden" name="selectUid" id="selectUid" value="<?php echo $selectUid ?>">
+            </div>
+        </div>
+        <ul class="data-list clearfix">
+            <li class="item flex">
+                <span class="tit">总人数</span>
+                <span class="va flex1" id="teamNum"><?php echo $num ?>人</span>
+            </li>
+            <li class="item flex">
+                <span class="tit">注册人数</span>
+                <span class="va flex1" id="regNum"><?php echo $regNum ?>人</span>
+            </li>
+            <li class="item flex">
+                <span class="tit">在线人数</span>
+                <span class="va flex1" id="regNum"><?php echo $online ?>人</span>
+            </li>
+            <li class="item flex">
+                <span class="tit">总余额</span>
+                <span class="va flex1" id="money"><?php echo $balance?></span>
+            </li>
+            <li class="item flex">
+                <span class="tit">提现</span>
+                <span class="va flex1" id="widraw"><?php echo $info[0]['ar_team_withdraw_money'] ?></span>
+            </li>
+            <li class="item flex">
+                <span class="tit">充值</span>
+                <span class="va flex1" id="recharge"><?php echo $info[0]['ar_team_recharge_money'] ?></span>
+            </li>
+            <li class="item flex">
+                <span class="tit">投注金额</span>
+                <span class="va flex1" id="betMoney"><?php echo $info[0]['ar_team_bet_money'] ?></span>
+            </li>
+<!--            <li class="item flex">
+                <span class="tit">派彩金额</span>
+                <span class="va flex1" id="bonusMoney"><?php echo $info[0]['ar_team_earn_money'] ?></span>
+            </li>-->
+            <li class="item flex">
+                <span class="tit">下级佣金</span>
+                <span class="va flex1" id="nextbackMoney"><?php echo $info[0]['ar_team_back_money'] - $info[0]['ar_my_back_money'] ?></span>
+            </li>
+            <li class="item flex">
+                <span class="tit">本级佣金</span>
+                <span class="va flex1" id="backMoney"><?php echo $info[0]['ar_my_back_money'] ?></span>
+            </li>
+<!--            <li class="item flex">
+                <span class="tit">回水</span>
+                <span class="va flex1" id="rebackMoney"><?php echo $info[0]['ar_team_reback_money'] ?></span>
+            </li>-->
+            <li class="item flex">
+                <span class="tit">下线盈亏</span>
+                <span class="va flex1" id="earnMoney"><?php echo $info[0]['ar_team_earn_money']-$info[0]['ar_team_bet_money']+$info[0]['ar_team_reback_money']+$info[0]['ar_team_back_money'] ?></span>
+            </li>
+        </ul>
+        <p class="txt">
+<!--            注:<span>净盈利=中奖金额+代理回水-投注金额</span>-->
+        </p>
+    <script type="text/javascript">
+    $(function(){
+        $(".options-list span").each(function() {
+        $(this).click(function() {
+            var sDate = $(this).attr("sdate");
+            var eDate = $(this).attr("edate");
+            $('#startDay').val(sDate);
+            $('#endDay').val(eDate);
+            $('#startDay').next().html(sDate);
+            $('#endDay').next().html(eDate);
+            var selectUid=$('#selectUid').val();
+            $(".options-list span").removeClass("on");
+            $(this).addClass("on");
+            $.ajax({
+                    type: "POST",
+                    url: "showFresh",
+                    data:{startDay:sDate, endDay:eDate, selectUid:selectUid},
+                    dataType: "json",
+                    success: function(data){
+                        if(data.code == 501)
+                        {
+                            alert("请选择开始日期");return;
+                        }
+                        else if(data.code == 502)
+                        {
+                            alert("请选择截止日期");return;
+                        }
+                        else if(data.code == 503)
+                        {
+                            alert("开始日期不能大于截止日期");return;
+                        }
+                        else
+                        {
+                            $("#selectUid").val(data.data.selectUid);
+                            $("#teamNum").html(data.data.num+'人');
+                            $("#regNum").html(data.data.regNum+'人');
+                            $("#widraw").html(data.data.info[0].ar_team_withdraw_money);
+                            $("#recharge").html(data.data.info[0].ar_team_recharge_money);
+                            $("#betMoney").html(data.data.info[0].ar_team_bet_money);
+//                            $("#bonusMoney").html(data.data.info[0].ar_team_earn_money);
+                            $("#nextbackMoney").html(data.data.info[0].ar_next_back_money);
+                            $("#backMoney").html(data.data.info[0].ar_my_back_money);
+//                            $("#rebackMoney").html(data.data.info[0].ar_team_reback_money);
+                            $("#earnMoney").html(data.data.info[0].ar_team_earn);
+                        }
+
+                    }
+                });
+
+            });
+        });
+    });
+        $(function(){
+           $('.btn').click(function(){
+            var startDay = $("#startDay").val();
+            var endDay = $("#endDay").val();
+            var selectUid=$('#selectUid').val();
+            $.ajax({
+                    type: "POST",
+                    url: "showFresh",
+                    data:{startDay:startDay, endDay:endDay, selectUid:selectUid},
+                    dataType: "json",
+                    success: function(data){
+                        if(data.code == 501)
+                        {
+                            alert("请选择开始日期");return;
+                        }
+                        else if(data.code == 502)
+                        {
+                            alert("请选择截止日期");return;
+                        }
+                        else if(data.code == 503)
+                        {
+                            alert("开始日期不能大于截止日期");return;
+                        }
+                        else
+                        {
+                            $("#selectUid").val(data.data.selectUid);
+                            $("#teamNum").html(data.data.num+'人');
+                            $("#regNum").html(data.data.regNum+'人');
+                            $("#widraw").html(data.data.info[0].ar_team_withdraw_money);
+                            $("#recharge").html(data.data.info[0].ar_team_recharge_money);
+                            $("#betMoney").html(data.data.info[0].ar_team_bet_money);
+//                            $("#bonusMoney").html(data.data.info[0].ar_team_earn_money);
+                            $("#nextbackMoney").html(data.data.info[0].ar_next_back_money);
+                            $("#backMoney").html(data.data.info[0].ar_my_back_money);
+//                            $("#rebackMoney").html(data.data.info[0].ar_team_reback_money);
+                            $("#earnMoney").html(data.data.info[0].ar_team_earn);
+                        }
+
+                    }
+                });
+           });
+       });
+
+    </script>

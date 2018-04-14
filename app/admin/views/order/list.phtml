@@ -1,0 +1,98 @@
+ <?php //var_dump($game);exit;?>
+
+        <div class="down-list">
+            <div class="select-box date">
+                <select class="list" name="issue">
+                <?php foreach ($issues as $issue): ?>
+                    <option value="<?=$issue?>" <?=$this->request->get('issue') == $issue ? 'selected="selected"' :''?>><?=$issue?>期</option>
+                <?php endforeach;?>
+                </select>
+                <em class="txt"><?=$this->request->get('issue') ? $this->request->get('issue'):$issues[0] ?>期  </em>
+                <i class="i-arrow"></i>
+            </div>
+        </div>
+        <div class="table-box">
+            <table class="main-table mt20" cellpadding="0" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>账号</th>
+                        <th>下注时间</th>
+                        <th>归属代理</th>
+                        <th>投注金额</th>
+                        <th>下注号码</th>
+                        <th>中奖金额</th>
+                        <th>交易号码</th>
+                        <th>奖金/返点</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php if (!empty($lists)) : foreach ($lists as $list) :?>
+                    <tr>
+                        <td><?=$list['u_name']?></td>
+                        <td><?=date('Y-m-d H:i', $list['bo_created_time'])?></td>
+                        <td><?=$list['bo_u_name']?></td>
+                        <td><?=$list['bo_money']?></td>
+                        <td>
+                            <span class="bett-size red">
+                        <?=$game['rule_type'][$list['br_type']]?>：<i class="circle mr5"><?=$game['rule_base_type'][$list['br_base_type']]?></i>
+                            </span>
+                        </td>
+                        <td><?=$list['bo_bonus']?></td>
+                        <td><?=$list['bo_sn']?></td>
+                        <td><?=$list['bo_odds']?>/<?=$list['bo_rs_tax']?>%</td>
+                    </tr>
+                <?php endforeach;?>
+
+                </tbody>
+            </table>
+        </div>
+        <div class="pages">
+            <div class="posl">
+                共<em class="counts"><?=$total?></em>条 每页显示
+                <div class="select-box line-num">
+                    <select class="list" id="limit">
+                    <?php foreach ($numsPage as $v) : ?>
+                        <option value="<?=$v?>" <?=$this->request->get('limit') == $v ? 'selected="selected"' : '';?>><?=$v?></option>
+                    <?php endforeach;?>
+                    </select>
+                    <em class="txt"><?=$this->request->get('limit') ?: current($numsPage)?></em>
+                    <i class="i-arrow"></i>
+                </div>条
+            </div>
+            <div class="switch-box">
+                <a class="page-btn mr10" id="left"><i class="left"></i></a> 第
+                <div class="select-box line-num">
+                    <select class="list" id="page">
+                    <?php for($i = 1; $i <= ceil($total / $nums); $i++) {?>
+                        <option value="<?=$i?>" <?=$this->request->get('page') == $i ? 'selected="selected"' : '';?>><?=$i?></option>
+                    <?php } ?>
+                    </select>
+                    <em class="txt"><?=!empty($this->request->get('page')) ? $this->request->get('page'): 1?></em>
+                    <i class="i-arrow"></i>
+                </div>
+                共<em id='total'><?=ceil($total / $nums)?></em>页
+                <a class="page-btn ml10" id="right"><i class="right"></i></a>
+            </div>
+        </div>
+    <?php else : ?>
+        <tr class="null">
+            <td colspan="8">暂无数据！</td>
+        </tr>
+    <?php endif;?>
+
+
+<script type="text/javascript">
+    $('#bet').on('change',function(){
+        var betId = $(this).val();
+        var issue = "<?=current($issues);?>";
+        var url = '/order/list?bet=' + betId;
+        location.href = url;
+    });
+
+    $('select[name="issue"]').on('change', function(){
+        var issue = parseInt($(this).val());
+        var betId = "<?=$this->request->get('bet');?>";
+        var url = '/order/list?bet=' + betId + '&issue=' + issue;
+        location.href = url;
+    });
+</script>

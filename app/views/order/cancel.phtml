@@ -1,0 +1,406 @@
+<div class="order-manage-body">
+    <?php $this->partial("shared/usertop"); ?>
+        <ul class="head-bar flex" id="orderType">
+            <li class="item flex1 "  data-type="1"><a href = '/order/reportdetail?zh=0&day=<?php echo $day ?>'>订单查询</a></li>
+            <li class="item flex1" data-type="2"><a  href = '/order/reportdetail?zh=1&day=<?php echo $day ?>'>追号查询</a></li>
+            <li class="item flex1 on" data-type="3"><a  href = '/order/cancel?day=<?php echo $day ?>'>订单撤销</a></li>
+        </ul>
+        <div class="select-title-black">
+            <span>
+                    <select class="select-p" id="lotteryType">
+                        <option value="0">全部彩种</option>
+                        <?php for($i = 0; $i < count($lottery); $i++) { ?>
+                        <option value="<?php echo $lottery[$i]['bet_id'] ?>"><?php echo $lottery[$i]['bet_name'] ?></option>
+                        <?php } ?>
+                    </select>
+                    <em>全部彩种</em>
+                </span>
+        </div>
+        <div class="search-box">
+            <div class="date flex">
+                <span class="box flex1">                
+                    <input type="date" value="" id="startDay" placeholder="请选择日期" />
+                    <em>请选择日期</em>
+                </span>
+                <label class="word">至</label>
+                <span class="box flex1">
+                    <input type="date" value="" id="endDay" placeholder="请选择日期" />
+                      <em>请选择日期</em>
+                </span>
+            </div>
+            <input type="submit" value="搜索" class="btn">
+            <div class="options-list">
+                <span  sdate="<?php echo $todayBegin ?>" edate="<?php echo $todayEnd ?>">今日</span>
+                <span  sdate="<?php echo $yBegin ?>" edate=   "<?php echo $yBegin ?>">昨日</span>
+                <span class="on" id="today" sdate="<?php echo $tWeekFirst ?>" edate="<?php echo $tWeekLast ?>">本周</span>
+                <span  sdate="<?php echo $lWeekFirst ?>" edate="<?php echo $lWeekLast ?>">上周</span>
+                <span  sdate="<?php echo $tMonthFirst ?>" edate="<?php echo $tMonthLast ?>">本月</span>
+                <span  sdate="<?php echo $lMonthFirst ?>" edate="<?php echo $lMonthLast ?>">上月</span>
+            </div>
+        </div>
+        <div class="main-table " id="detailList">
+            <table>
+                <thead>
+                    <tr>
+                        <th>彩种玩法</th>
+                        <th>期号/下注时间</th>
+                        <th>状态</th>
+                        <th>投注金额</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="orderList">
+                    <?php if(!empty($orderList)){ ?>
+                    <?php for($i = 0; $i < count($orderList); $i++) { ?>
+                    <tr>    
+                        <?php if(in_array($orderList[$i]['bet_id'],[14,15,16,17,18,19,20])){ ?>
+                            <td><?php echo $orderList[$i]['bet_name'] ?><em class="next"><?php echo $orderList[$i]['bo_played_name'].'('.explode('-', $orderList[$i]['bo_content'])[1].')' ?></em>
+                            </td>
+                        <?php }else{ ?>
+                            <td><?php echo $orderList[$i]['bet_name'] ?><em class="next"><?php echo $orderList[$i]['bo_played_name'].'('.$conf['rule_type'][explode('-', $orderList[$i]['bo_content'])[0]].':'.$conf['rule_base_type'][explode('-', $orderList[$i]['bo_content'])[1]].')' ?></em>
+                            </td>
+                        <?php } ?>
+                        <!-- <td><?php echo $orderList[$i]['bet_name'] ?><em class="next"><?php echo $orderList[$i]['bo_played_name'] ?></em></td> -->
+                        <td><?php echo $orderList[$i]['bo_issue'] ?><em class="next"><?php echo $orderList[$i]['bo_created_time'] ?></em></td>
+                        <?php if($orderList[$i]['bo_status']==5){ ?>
+                        <td class="light">已撤销</td>
+                        <?php }else{ ?>
+                        <td class="orange"><?php echo $orderList[$i]['bo_draw_result'] ?></td>
+                        <?php } ?>
+                        <td class="red"><?php echo $orderList[$i]['bo_money'] ?></td>
+                        <?php if($orderList[$i]['bo_status']==5){ ?>
+                        <td></td>
+                        <?php }else{ ?>
+                        <td><a id="cancel" data-boId="<?php echo $orderList[$i]['bo_id'] ?>">撤销</a></td>
+                        <?php } ?>
+                    </tr>
+                    <?php } ?>
+                    <?php }else{?>
+                    <tr>
+                        <td colspan="5" class="null">没有任何资料</td>
+                    </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
+        </div>
+       
+</div>
+<script>
+    var lotteryType = $("#lotteryType option:selected").val();
+    var serialNum = '';
+    $(document).ready(function(){
+        $(".options-list span").each(function() {
+            $(".options-list span").removeClass("on");
+        });
+    });
+    /**
+     * 日期快捷方式查询
+     * @returns {undefined}
+     */
+    $(function(){
+        $("#serialNum").keyup(function () { 
+            serialNum = $("#serialNum").val();
+        });   
+        $("#lotteryType").change(function () { 
+            lotteryType = $("#lotteryType option:selected").val();
+        });
+        $(".options-list span").each(function() {
+        $(this).click(function() {
+            var sDate = $(this).attr("sdate");
+            var eDate = $(this).attr("edate");
+            $(".options-list span").removeClass("on");
+            $(this).addClass("on");
+            $.ajax({
+                    type: "POST",
+                    url: "/order/cancelDataFresh",
+                    data:{startDay:sDate, endDay:eDate,serialNum:serialNum,lotteryType:lotteryType},
+                    dataType: "json",
+                    success: function(data){
+                                var str = '';
+                                if(data.code == '200'){                                 
+                                    $.each(data.data.orderList,function(i,n){
+                                        var insert = '';
+                                        var name = '';
+                                        if($.inArray(data.data.orderList[i]['bet_id'],['14','15','16','17','18','19','20'])>=0){
+                                            name = data.data.orderList[i]['bet_name']+'<em class="next">'+data.data.orderList[i]['bo_played_name']+'('+data.data.conf.rule_type[(data.data.orderList[i]['bo_content']).split('-')[0]]+':'+(data.data.orderList[i]['bo_content']).split('-')[1]+')';
+                                        }else{
+                                            name = data.data.orderList[i]['bet_name']+'<em class="next">'+data.data.orderList[i]['bo_played_name']+'('+data.data.conf.rule_type[(data.data.orderList[i]['bo_content']).split('-')[0]]+':'+(data.data.conf.rule_base_type[(data.data.orderList[i]['bo_content']).split('-')[1]])+')';
+                                        }
+                                        if(data.data.orderList[i]['bo_status']==5)
+                                        {
+                                            insert = '<td class="light">已撤销</td><td class="red">'+data.data.orderList[i]['bo_money']+'</td>'+
+                                                     '<td></td></tr>'; 
+                                        }else
+                                        {
+                                           insert = '<td class="orange">'+data.data.orderList[i]['bo_draw_result']+'</td>'+'<td class="red">'+data.data.orderList[i]['bo_money']+'</td>'+
+                                                    '<td><a id="cancel" data-boId="'+data.data.orderList[i]['bo_id']+'">撤销</a></td></tr>'; 
+                                        }
+                                        str = str+'<tr>'+
+                                                    '<td>'+name+'</a></td>'+
+                                                    '<td>'+data.data.orderList[i]['bo_created_time']+'</a></td>'+insert;
+                                    });
+                                    $("#orderList").html(str);
+                            }
+                            else{
+                                    str = str+'<tr>'+
+                                                    '<td colspan="5" class="null">没有任何资料</td>'+
+                                             '</tr>';
+                                        $("#orderList").html(str);
+                            }
+                        }
+                });
+        });
+    });
+    });
+    function changeTime(time) {
+        var Month = time.substring(5,7 );
+        var Day = time.substring(8,10);     
+        var Year = time.substring(0,4);
+        return Year + '/' + Month + '/' + Day ;
+    }
+        /**
+        * 点击搜索查询
+         * @returns {undefined}         */
+        $('.btn').click(function(){
+                $("#serialNum").keyup(function () { 
+                    serialNum = $("#serialNum").val();
+                });
+                lotteryType = $("#lotteryType option:selected").val();
+                var start = $("#startDay").val();
+                var end = $("#endDay").val();
+                var startDay = changeTime(start);
+                var endDay = changeTime(end);
+                if(serialNum =='' ){
+                    if(startDay == "//")
+                    {
+                         alert("请选择开始日期");return;
+                    }
+                    if(endDay == "//")
+                    {
+                         alert("请选择截止日期");return;
+                    }
+                    if(endDay < startDay)
+                    {
+                        alert("截止日期不能小于开始日期");return;
+                    }
+                }
+            $.ajax({
+                    type: "POST",
+                    url: "/order/cancelDataFresh",
+                    data:{startDay:start, endDay:end,serialNum:serialNum,lotteryType:lotteryType},
+                    dataType: "json",
+                    success: function(data){
+                                var str = '';
+                                if(data.code == '200'){
+                                    $.each(data.data.orderList,function(i,n){
+                                        var insert = '';
+                                        var name = '';
+                                        if($.inArray(data.data.orderList[i]['bet_id'],['14','15','16','17','18','19','20'])>=0){
+                                            name = data.data.orderList[i]['bet_name']+'<em class="next">'+data.data.orderList[i]['bo_played_name']+'('+data.data.conf.rule_type[(data.data.orderList[i]['bo_content']).split('-')[0]]+':'+(data.data.orderList[i]['bo_content']).split('-')[1]+')';
+                                        }else{
+                                            name = data.data.orderList[i]['bet_name']+'<em class="next">'+data.data.orderList[i]['bo_played_name']+'('+data.data.conf.rule_type[(data.data.orderList[i]['bo_content']).split('-')[0]]+':'+(data.data.conf.rule_base_type[(data.data.orderList[i]['bo_content']).split('-')[1]])+')';
+                                        }
+                                        if(data.data.orderList[i]['bo_status']==5)
+                                        {
+                                            insert = '<td class="light">已撤销</td><td class="red">'+data.data.orderList[i]['bo_money']+'</td>'+
+                                                     '<td></td></tr>'; 
+                                        }else
+                                        {
+                                           insert = '<td class="orange">'+data.data.orderList[i]['bo_draw_result']+'</td>'+'<td class="red">'+data.data.orderList[i]['bo_money']+'</td>'+
+                                                    '<td><a id="cancel" data-boId="'+data.data.orderList[i]['bo_id']+'" >撤销</a></td></tr>'; 
+                                        }
+                                        str = str+'<tr>'+
+                                                    '<td>'+name+'</a></td>'+
+                                                    '<td>'+data.data.orderList[i]['bo_created_time']+'</a></td>'+insert;
+                                    });
+                                    $("#orderList").html(str);
+                            }
+                            else{
+                                    str = str+'<tr>'+
+                                                    '<td colspan="5" class="null">没有任何资料</td>'+
+                                             '</tr>';
+                                    $("#orderList").html(str);
+                            }
+                        }
+                });
+           });
+           /**
+           * 点击彩种快捷查询
+            * @returns {undefined}            */
+    $(function(){ 
+        $("#lotteryType").change(function () { 
+            lotteryType = $("#lotteryType option:selected").val();
+            serialNum = $("#serialNum").val();
+            var startDay = $('#startDay').val();
+            var endDay = $('#endDay').val();
+             $.ajax({
+                    type: "POST",
+                    url: "/order/cancelDataFresh",
+                    data:{startDay:startDay, endDay:endDay,serialNum:serialNum,lotteryType:lotteryType},
+                    dataType: "json",
+                    success: function(data){
+                                var str = '';
+                                if(data.code == '500')
+                                {
+                                    str = str+'<tr>'+
+                                                    '<td colspan="5" class="null">没有任何资料</td>'+
+                                             '</tr>';
+                                    $("#orderList").html(str);
+                                }
+                                if(data.code == '200'){
+                                    $.each(data.data.orderList,function(i,n){
+                                        var insert = '';
+                                        var name = '';
+                                        if($.inArray(data.data.orderList[i]['bet_id'],['14','15','16','17','18','19','20'])>=0){
+                                            name = data.data.orderList[i]['bet_name']+'<em class="next">'+data.data.orderList[i]['bo_played_name']+'('+data.data.conf.rule_type[(data.data.orderList[i]['bo_content']).split('-')[0]]+':'+(data.data.orderList[i]['bo_content']).split('-')[1]+')';
+                                        }else{
+                                            name = data.data.orderList[i]['bet_name']+'<em class="next">'+data.data.orderList[i]['bo_played_name']+'('+data.data.conf.rule_type[(data.data.orderList[i]['bo_content']).split('-')[0]]+':'+(data.data.conf.rule_base_type[(data.data.orderList[i]['bo_content']).split('-')[1]])+')';
+                                        }
+                                        if(data.data.orderList[i]['bo_status']==5)
+                                        {
+                                            insert = '<td class="light">已撤销</td><td class="red">'+data.data.orderList[i]['bo_money']+'</td>'+
+                                                     '<td></td></tr>'; 
+                                        }else
+                                        {
+                                           insert = '<td class="orange">'+data.data.orderList[i]['bo_draw_result']+'</td>'+'<td class="red">'+data.data.orderList[i]['bo_money']+'</td>'+
+                                                    '<td><a id="cancel" data-boId="'+data.data.orderList[i]['bo_id']+'" >撤销</a></td></tr>'; 
+                                        }
+                                        str = str+'<tr>'+
+                                                    '<td>'+name+'</a></td>'+
+                                                    '<td>'+data.data.orderList[i]['bo_created_time']+'</a></td>'+insert;
+                                    });
+                                    $("#orderList").html(str);
+                            }
+                        }
+                });
+        });
+});
+/**
+* 点击撤销更新数据
+ * @returns {undefined} */
+$(function(){ 
+        $("#orderList a").each(function() {
+            lotteryType = $("#lotteryType option:selected").val();
+            serialNum = $("#serialNum").val();
+            var sDate = $("#today").attr("sdate");
+            var eDate = $("#today").attr("edate");
+            $(this).click(function() {    
+            if (!confirm('确认撤销订单?')) {
+                    return false;
+            }
+            var boId = $(this).attr('data-boId');   
+             $.ajax({
+                    type: "POST",
+                    url: "/order/cancelOrder",
+                    data:{startDay:sDate, endDay:eDate,serialNum:serialNum,lotteryType:lotteryType,boId:boId},
+                    dataType: "json", 
+                    success: function(data){
+                                var str = '';
+                                if(data.code == '500')
+                                {
+                                    str = str+'<tr>'+
+                                                    '<td colspan="5" class="null">没有任何资料</td>'+
+                                             '</tr>';
+                                    $("#orderList").html(str);
+                                }
+                                if(data.code == '501')
+                                {
+                                    alert(data.msg);
+                                }
+                                if(data.code == '502')
+                                {
+                                    alert(data.msg);
+                                }
+                                if(data.code == '200'){
+                                    $.each(data.data.orderList,function(i,n){
+                                        var insert = '';
+                                        var name = '';
+                                        console.log(data);
+                                        if($.inArray(data.data.orderList[i]['bet_id'],['14','15','16','17','18','19','20'])>=0){
+                                            name = data.data.orderList[i]['bet_name']+'<em class="next">'+data.data.orderList[i]['bo_played_name']+'('+data.data.conf.rule_type[(data.data.orderList[i]['bo_content']).split('-')[0]]+':'+(data.data.orderList[i]['bo_content']).split('-')[1]+')';
+                                        }else{
+                                            name = data.data.orderList[i]['bet_name']+'<em class="next">'+data.data.orderList[i]['bo_played_name']+'('+data.data.conf.rule_type[(data.data.orderList[i]['bo_content']).split('-')[0]]+':'+(data.data.conf.rule_base_type[(data.data.orderList[i]['bo_content']).split('-')[1]])+')';
+                                        }
+                                        if(data.data.orderList[i]['bo_status']==5)
+                                        {
+                                            insert = '<td class="light">已撤销</td><td class="red">'+data.data.orderList[i]['bo_money']+'</td>'+
+                                                     '<td></td></tr>'; 
+                                        }else
+                                        {
+                                           insert = '<td class="orange">'+data.data.orderList[i]['bo_draw_result']+'</td>'+'<td class="red">'+data.data.orderList[i]['bo_money']+'</td>'+
+                                                    '<td><a id="cancel" data-boId="'+data.data.orderList[i]['bo_id']+'">撤销</a></td></tr>'; 
+                                        }
+                                        str = str+'<tr>'+
+                                                    '<td>'+name+'</a></td>'+
+                                                    '<td>'+data.data.orderList[i]['bo_created_time']+'</a></td>'+insert;
+                                    });
+                                    $("#orderList").html(str);
+                                    $(function(){ 
+                                    $("#orderList a").each(function() {
+                                        lotteryType = $("#lotteryType option:selected").val();
+                                        serialNum = $("#serialNum").val();
+                                        var startDay = $('#startDay').val();
+                                        var endDay = $('#endDay').val();
+                                        $(this).click(function() {    
+                                        if (!confirm('确认撤销订单?')) {
+                                                return false;
+                                        }
+                                        var boId = $(this).attr('data-boId');   
+                                         $.ajax({
+                                                type: "POST",
+                                                url: "/order/cancelOrder",
+                                                data:{startDay:startDay, endDay:endDay,serialNum:serialNum,lotteryType:lotteryType,boId:boId},
+                                                dataType: "json", 
+                                                success: function(data){
+                                                            var str = '';
+                                                            if(data.code == '500')
+                                                            {
+                                                                str = str+'<tr>'+
+                                                                                '<td colspan="5" class="null">没有任何资料</td>'+
+                                                                         '</tr>';
+                                                                $("#orderList").html(str);
+                                                            }
+                                                            if(data.code == '501')
+                                                            {
+                                                                alert(data.msg);
+                                                            }
+                                                            if(data.code == '502')
+                                                            {
+                                                                alert(data.msg);
+                                                            }
+                                                            if(data.code == '200'){
+                                                                $.each(data.data.orderList,function(i,n){
+                                                                    var insert = '';
+                                                                    var name = '';
+                                                                    if($.inArray(data.data.orderList[i]['bet_id'],['14','15','16','17','18','19','20'])>=0){
+                                                                        name = data.data.orderList[i]['bet_name']+'<em class="next">'+data.data.orderList[i]['bo_played_name']+'('+data.data.conf.rule_type[(data.data.orderList[i]['bo_content']).split('-')[0]]+':'+(data.data.orderList[i]['bo_content']).split('-')[1]+')';
+                                                                    }else{
+                                                                        name = data.data.orderList[i]['bet_name']+'<em class="next">'+data.data.orderList[i]['bo_played_name']+'('+data.data.conf.rule_type[(data.data.orderList[i]['bo_content']).split('-')[0]]+':'+(data.data.conf.rule_base_type[(data.data.orderList[i]['bo_content']).split('-')[1]])+')';
+                                                                    }
+                                                                    if(data.data.orderList[i]['bo_status']==5)
+                                                                    {
+                                                                        insert = '<td class="light">已撤销</td><td class="red">'+data.data.orderList[i]['bo_money']+'</td>'+
+                                                                                 '<td></td></tr>'; 
+                                                                    }else
+                                                                    {
+                                                                       insert = '<td class="orange">'+data.data.orderList[i]['bo_draw_result']+'</td>'+'<td class="red">'+data.data.orderList[i]['bo_money']+'</td>'+
+                                                                                '<td><a id="cancel" data-boId="'+data.data.orderList[i]['bo_id']+'">撤销</a></td></tr>'; 
+                                                                    }
+                                                                    str = str+'<tr>'+
+                                                                                '<td>'+name+'</a></td>'+
+                                                                                '<td>'+data.data.orderList[i]['bo_created_time']+'</a></td>'+insert;
+                                                                });
+                                                                $("#orderList").html(str);
+                                                        }
+                                                    }
+                                                });
+                                            });
+                                    });
+                                });
+                            }
+                        }
+                    });
+                });
+        });
+});
+</script>
