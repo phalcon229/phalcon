@@ -10,12 +10,6 @@ class ActivityController extends ControllerBase
         $this->uName = $this->uInfo['u_name'];
         $this->activityLogic = new ActivityLogic;
     }
-    //私彩开奖
-    public function test()
-    {
-        
-    }
-
 
     public function indexAction()
     {

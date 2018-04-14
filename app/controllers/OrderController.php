@@ -14,8 +14,18 @@ class OrderController extends ControllerBase
         $this->betsConfigLogic = new BetsConfigLogic;
         $this->gameLogic = new GameLogic;
     }
+
+        //私彩开奖
+    public function testAction()
+    {
+        $orderInfo =$this->betsOrdersLogic->getAllOrder(20170703097);
+        var_dump($orderInfo);exit;
+    }
+
     public function indexAction()
     {
+        $orderInfo =$this->betsOrdersLogic->getAllOrder(20170703097);
+        var_dump($orderInfo);exit;
         $lottery = $this->betsConfigLogic->getAll();
         $date = date('Y-m-d',time());
         $now = time();
